@@ -1,2 +1,3 @@
-Some Person;8909111999222;some@example.com
-Some1 Person1;999222333;some1@example.com
+Иванов Иван Иванович;+79211234567;ivanov.ii@email.com
+Петров Петр Петрович;+79119876543;petrov.pp@email.com
+Сидорова Анна Викторовна;+79502223344;sidorova.av@email.com
