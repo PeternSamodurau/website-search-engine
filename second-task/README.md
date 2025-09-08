@@ -3,22 +3,23 @@
 #### Этап 1: Настройка проекта и создание основной сущности
 Подготовка основы проекта и определение модели данных студента.
 
-*   **`build.gradle`**: Обновление файла сборки. Добавление зависимостей:
+*   **`build.gradle`** Добавление зависимостей:
     *   `spring-boot-starter`
-    *   `spring-boot-starter-shell` (версии 3.2.5, как рекомендовано)
+    *   `spring-boot-starter-shell` (версии 3.2.5)
     *   `lombok`
-*   **`Student.java`**: Создание класса-сущности `Student` с полями `id` (Long), `firstName` (String), `lastName` (String), `age` (int). Использование аннотаций Lombok (`@Data`, `@AllArgsConstructor`) для автоматической генерации `getters`, `setters`, `toString` и конструкторов.
+*   **`Student.java`**: Создание класса-сущности `Student` с полями `id` (UUID), `firstName` (String), `lastName` (String), `age` (int). 
+        Использование аннотаций Lombok (`@Data`, `@AllArgsConstructor`) для автоматической генерации `getters`, `setters`, `toString` и конструкторов.
 
 #### Этап 2: Создание слоя хранения данных (Repository)
 Создание компонента для хранения студентов в памяти (в коллекции `Map`, как рекомендовано).
 
 *   **`StudentRepository.java`**: Создание интерфейса, описывающего операции с хранилищем: `findAll()`, `save()`, `deleteById()`, `deleteAll()`.
-*   **`InMemoryStudentRepository.java`**: Создание реализации интерфейса. Использование `java.util.Map<Long, Student>` для хранения данных и `java.util.concurrent.atomic.AtomicLong` для потокобезопасной генерации уникальных `id` при сохранении.
+*   **`InMemoryStudentRepository.java`**: Создание реализации интерфейса. Использование `java.util.Map<Long, Student>` для хранения данных.
 
 #### Этап 3: Создание слоя бизнес-логики (Service)
 Создание центрального сервиса для управления логикой и публикации событий.
 
-*   **`StudentService.java`**: Создание интерфейса для бизнес-операций: `getAllStudents()`, `addStudent()`, `deleteStudent()`, `clearStudents()`.
+*   **`StudentService.java`**: Создание интерфейса для сервиса: `getAllStudents()`, `addStudent()`, `deleteStudent()`, `clearStudents()`.
 *   **`StudentServiceImpl.java`**: Создание реализации сервиса. Использование `StudentRepository` для доступа к данным и `ApplicationEventPublisher` для публикации событий.
 
 #### Этап 4: Реализация системы событий

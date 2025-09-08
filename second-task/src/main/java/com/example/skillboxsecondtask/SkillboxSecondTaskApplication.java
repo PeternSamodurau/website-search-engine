@@ -13,11 +13,5 @@ public class SkillboxSecondTaskApplication {
     public static void main(String[] args) {
         SpringApplication.run(SkillboxSecondTaskApplication.class, args);
     }
-    @EventListener
-    public void onApplicationEvent(WebServerInitializedEvent event) {
-        int port = event.getWebServer().getPort();
-        String url = "http://localhost:" + port;
-        log.info("=================== SkillboxSecondTaskApplication started on URL : {}", url);
-    }
 
 }

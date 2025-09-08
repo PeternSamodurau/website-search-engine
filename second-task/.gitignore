@@ -36,8 +36,10 @@ out/
 ### VS Code ###
 .vscode/
 
+
 # Log files
 *.log
+log.txt
 
 # OS-specific files
 .DS_Store
