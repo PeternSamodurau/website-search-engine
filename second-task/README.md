@@ -24,9 +24,6 @@
 *   **`StudentServicePublisher.java`**: Создание интерфейса для сервиса: `getAllStudents()`, `addStudent()`, `deleteStudent()`, `clearStudents()`.
 *   **`StudentServicePublisherImpl.java`**: Создание реализации сервиса. Использование `StudentRepository` для доступа к данным.
 
-#### Этап 4: Реализация системы событий (Удалено)
-(В текущей реализации система событий через `ApplicationEventPublisher` не используется, логика упрощена).
-
 #### Этап 5: Создание пользовательского интерфейса (Spring Shell)
 Реализация возможности управлять приложением через консольные команды.
 
