@@ -1,0 +1,10 @@
+Иван,Петров,ivan.petrov@example.com,80296531990
+Елена,Сидорова,elena.sidorova@example.com,80291234567
+Дмитрий,Иванов,dmitry.ivanov@example.com,80297654321
+Ольга,Смирнова,olga.smirnova@example.com,80298887766
+Андрей,Кузнецов,andrey.kuznetsov@example.com,80295554433
+Татьяна,Попова,tatiana.popova@example.com,80292223344
+Алексей,Васильев,alexey.vasilyev@example.com,80291110099
+Мария,Соколова,maria.sokolova@example.com,80293334455
+Сергей,Михайлов,sergey.mikhaylov@example.com,80296667788
+Наталья,Новикова,natalya.novikova@example.com,80299998877

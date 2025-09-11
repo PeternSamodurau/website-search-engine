@@ -1,0 +1,51 @@
+2025-09-10 17:46:20 [INFO ] com.example.demo.DemoApplication - Starting DemoApplication using Java 17.0.16 with PID 2080 (C:\Users\user\IdeaProjects\demo\build\classes\java\main started by user in C:\Users\user\IdeaProjects\demo)
+2025-09-10 17:46:20 [DEBUG] com.example.demo.DemoApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2025-09-10 17:46:20 [INFO ] com.example.demo.DemoApplication - The following 1 profile is active: "init"
+2025-09-10 17:46:23 [INFO ] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2025-09-10 17:46:23 [INFO ] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 97 ms. Found 0 JDBC repository interfaces.
+2025-09-10 17:46:25 [INFO ] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8086 (http)
+2025-09-10 17:46:25 [INFO ] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+2025-09-10 17:46:25 [INFO ] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-09-10 17:46:25 [INFO ] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2025-09-10 17:46:25 [INFO ] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-09-10 17:46:25 [INFO ] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 5203 ms
+2025-09-10 17:46:26 [INFO ] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-09-10 17:46:27 [INFO ] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@ab24484
+2025-09-10 17:46:27 [INFO ] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-09-10 17:46:27 [INFO ] c.e.d.r.JdbcContactRepository - JdbcContactRepository initialized with JdbcTemplate and ContactRowMapper.
+2025-09-10 17:46:28 [INFO ] c.e.demo.init.ContactInitializer - Profile 'init' is active. Initializing contacts from file: default-contacts.txt
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Attempting to save new contact: Contact(id=null, firstName=Иван, lastName=Петров, email=ivan.petrov@example.com, phone=80296531990)
+2025-09-10 17:46:28 [DEBUG] c.e.d.r.JdbcContactRepository - Executing SQL: INSERT INTO contacts (id, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?) with parameters: id=25c133d2-dda5-4f95-b33b-6f76b737450e, firstName=Иван, lastName=Петров, email=ivan.petrov@example.com, phone=80296531990
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Contact saved successfully with ID: 25c133d2-dda5-4f95-b33b-6f76b737450e
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Attempting to save new contact: Contact(id=null, firstName=Елена, lastName=Сидорова, email=elena.sidorova@example.com, phone=80291234567)
+2025-09-10 17:46:28 [DEBUG] c.e.d.r.JdbcContactRepository - Executing SQL: INSERT INTO contacts (id, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?) with parameters: id=5b9b12d8-41df-4cfe-a717-073da2e5010c, firstName=Елена, lastName=Сидорова, email=elena.sidorova@example.com, phone=80291234567
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Contact saved successfully with ID: 5b9b12d8-41df-4cfe-a717-073da2e5010c
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Attempting to save new contact: Contact(id=null, firstName=Дмитрий, lastName=Иванов, email=dmitry.ivanov@example.com, phone=80297654321)
+2025-09-10 17:46:28 [DEBUG] c.e.d.r.JdbcContactRepository - Executing SQL: INSERT INTO contacts (id, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?) with parameters: id=7462ff32-914f-41c2-a5a9-067860ff7c65, firstName=Дмитрий, lastName=Иванов, email=dmitry.ivanov@example.com, phone=80297654321
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Contact saved successfully with ID: 7462ff32-914f-41c2-a5a9-067860ff7c65
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Attempting to save new contact: Contact(id=null, firstName=Ольга, lastName=Смирнова, email=olga.smirnova@example.com, phone=80298887766)
+2025-09-10 17:46:28 [DEBUG] c.e.d.r.JdbcContactRepository - Executing SQL: INSERT INTO contacts (id, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?) with parameters: id=08847a9d-b45d-4a89-988b-72e07349168a, firstName=Ольга, lastName=Смирнова, email=olga.smirnova@example.com, phone=80298887766
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Contact saved successfully with ID: 08847a9d-b45d-4a89-988b-72e07349168a
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Attempting to save new contact: Contact(id=null, firstName=Андрей, lastName=Кузнецов, email=andrey.kuznetsov@example.com, phone=80295554433)
+2025-09-10 17:46:28 [DEBUG] c.e.d.r.JdbcContactRepository - Executing SQL: INSERT INTO contacts (id, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?) with parameters: id=49dd3ae0-31e8-44b2-b9a8-e4688bb9cc0b, firstName=Андрей, lastName=Кузнецов, email=andrey.kuznetsov@example.com, phone=80295554433
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Contact saved successfully with ID: 49dd3ae0-31e8-44b2-b9a8-e4688bb9cc0b
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Attempting to save new contact: Contact(id=null, firstName=Татьяна, lastName=Попова, email=tatiana.popova@example.com, phone=80292223344)
+2025-09-10 17:46:28 [DEBUG] c.e.d.r.JdbcContactRepository - Executing SQL: INSERT INTO contacts (id, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?) with parameters: id=28e3fa10-5f4c-4cc2-8c7b-dc2695b03757, firstName=Татьяна, lastName=Попова, email=tatiana.popova@example.com, phone=80292223344
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Contact saved successfully with ID: 28e3fa10-5f4c-4cc2-8c7b-dc2695b03757
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Attempting to save new contact: Contact(id=null, firstName=Алексей, lastName=Васильев, email=alexey.vasilyev@example.com, phone=80291110099)
+2025-09-10 17:46:28 [DEBUG] c.e.d.r.JdbcContactRepository - Executing SQL: INSERT INTO contacts (id, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?) with parameters: id=e114a2dd-937a-4cb0-b22d-9dd42bba4250, firstName=Алексей, lastName=Васильев, email=alexey.vasilyev@example.com, phone=80291110099
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Contact saved successfully with ID: e114a2dd-937a-4cb0-b22d-9dd42bba4250
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Attempting to save new contact: Contact(id=null, firstName=Мария, lastName=Соколова, email=maria.sokolova@example.com, phone=80293334455)
+2025-09-10 17:46:28 [DEBUG] c.e.d.r.JdbcContactRepository - Executing SQL: INSERT INTO contacts (id, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?) with parameters: id=ee89610f-a253-4ef5-84c2-82f7405cba05, firstName=Мария, lastName=Соколова, email=maria.sokolova@example.com, phone=80293334455
+2025-09-10 17:46:28 [INFO ] c.e.d.r.JdbcContactRepository - Contact saved successfully with ID: ee89610f-a253-4ef5-84c2-82f7405cba05
+2025-09-10 17:46:29 [INFO ] c.e.d.r.JdbcContactRepository - Attempting to save new contact: Contact(id=null, firstName=Сергей, lastName=Михайлов, email=sergey.mikhaylov@example.com, phone=80296667788)
+2025-09-10 17:46:29 [DEBUG] c.e.d.r.JdbcContactRepository - Executing SQL: INSERT INTO contacts (id, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?) with parameters: id=391b26a4-ef7a-4ed4-a824-4a6e5efcfe28, firstName=Сергей, lastName=Михайлов, email=sergey.mikhaylov@example.com, phone=80296667788
+2025-09-10 17:46:29 [INFO ] c.e.d.r.JdbcContactRepository - Contact saved successfully with ID: 391b26a4-ef7a-4ed4-a824-4a6e5efcfe28
+2025-09-10 17:46:29 [INFO ] c.e.d.r.JdbcContactRepository - Attempting to save new contact: Contact(id=null, firstName=Наталья, lastName=Новикова, email=natalya.novikova@example.com, phone=80299998877)
+2025-09-10 17:46:29 [DEBUG] c.e.d.r.JdbcContactRepository - Executing SQL: INSERT INTO contacts (id, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?) with parameters: id=765c36da-f5c9-4cc6-9603-43d1cc25f45d, firstName=Наталья, lastName=Новикова, email=natalya.novikova@example.com, phone=80299998877
+2025-09-10 17:46:29 [INFO ] c.e.d.r.JdbcContactRepository - Contact saved successfully with ID: 765c36da-f5c9-4cc6-9603-43d1cc25f45d
+2025-09-10 17:46:29 [INFO ] c.e.demo.init.ContactInitializer - Successfully loaded 10 contacts.
+2025-09-10 17:46:32 [INFO ] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+2025-09-10 17:46:32 [INFO ] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8086 (http) with context path '/'
+2025-09-10 17:46:32 [INFO ] com.example.demo.DemoApplication - ===================Application started on URL : http://localhost:8086
+2025-09-10 17:46:32 [INFO ] com.example.demo.DemoApplication - Started DemoApplication in 14.228 seconds (process running for 16.059)
