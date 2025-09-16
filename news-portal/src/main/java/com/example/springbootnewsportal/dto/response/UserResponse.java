@@ -6,5 +6,6 @@ import lombok.Data;
 public class UserResponse {
     private Long id;
     private String username;
-    private String email;
+    private Long newsCount;     // <-- ДОБАВЛЕНО
+    private Long commentsCount; // <-- ДОБАВЛЕНО
 }

@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class CommentResponse {
     private Long id;
-    private String text;
-    private String authorUsername;
+    private String commentText;
+    private String authorUsername; // <-- ДОБАВЛЕНО
 }

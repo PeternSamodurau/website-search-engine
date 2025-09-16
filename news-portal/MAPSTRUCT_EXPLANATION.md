@@ -75,7 +75,6 @@ public interface NewsMapper {
     Она говорит: "Когда внутри `News` тебе встретится поле `List<Comment>`, и его нужно будет преобразовать в `List<CommentResponse>`,
     **используй для этого `CommentMapper`**". 
     MapStruct автоматически найдет нужный метод в `CommentMapper` и применит его к каждому элементу списка.
-
 ### 2. Методы и их аннотации
 
 #### Метод `toNews`
@@ -105,30 +104,49 @@ News toNews(NewsRequest request);
 NewsResponse toNewsResponseWithComments(News news);
 ```
 
-*   **Назначение**: Преобразование сущности `News` из базы данных в "полный" DTO `NewsResponse`, который будет отправлен клиенту.
-*   **`@Mapping(source = "author.username", target = "authorUsername")`**: 
-    Берем исходный объект `news`, из него получи поле `author`, из объекта `author` получи поле `username` и пишем результат в поле `authorUsername`  объекта `NewsResponse`". 
-    MapStruct сгенерирует код.
+*   **Назначение**: Преобразование сущности `News` из базы данных в "полный" DTO `NewsResponse`, который будет отправлен клиенту (например, при запросе одной новости по ID).
+*   **`@Mapping(source = "author.username", target = "authorUsername")`**: Берем исходный объект `news`, из него получаем поле `author`, из объекта `author` получаем поле `username` и пишем результат в поле `authorUsername` объекта `NewsResponse`.
 *   **`@Mapping(source = "category.categoryName", target = "categoryName")`**: Аналогично предыдущему, для категории.
 *   **`@Mapping(target = "commentsCount", expression = "...")`**: 
-    Это маппинг на основе выражения. Для поля `commentsCount` в `NewsResponse` не ищи соответствующее поле в `News`. 
-    Вместо этого **выполни указанный Java-код**". Выражение `java(news.getComments() != null ? (long) news.getComments().size() : 0L)` 
-    безопасно вычисляет размер списка комментариев.
+    Это маппинг на основе выражения. Для поля `commentsCount` в `NewsResponse` не ищи соответствующее поле в `News`. Вместо этого **выполни указанный Java-код**. Выражение `java(news.getComments() != null ? (long) news.getComments().size() : 0L)` безопасно вычисляет размер списка комментариев.
 
-#### Метод `toNewsResponseForList`
+#### Методы для работы со списками (`toNewsResponseForList`)
 
+
+**1. Метод-хелпер для одного элемента списка:**
 ```java
-// ... аннотации для authorUsername, categoryName, commentsCount ...
+@Named("toNewsResponseForList")
+@Mapping(source = "author.username", target = "authorUsername")
+@Mapping(source = "category.categoryName", target = "categoryName")
+@Mapping(target = "commentsCount", expression = "java(news.getComments() != null ? (long) news.getComments().size() : 0L)")
 @Mapping(target = "comments", ignore = true)
 NewsResponse toNewsResponseForList(News news);
 ```
 
-*   **Создание DTO для использования в списках**.
-*   **`@Mapping(target = "comments", ignore = true)`**: 
-    При выполнении этого маппинга, **полностью проигнорируй поле `comments`**". 
-    Это делается для оптимизации: когда клиент запрашивает список из 20 новостей, 
+*   **Назначение**: Создание DTO для **одного элемента списка**. 
+    Этот метод очень похож на `toNewsResponseWithComments`, но с одним ключевым отличием.
+*   **`@Mapping(target = "comments", ignore = true)`**: При выполнении этого маппинга, 
+    полностью игнорируем поле `comments`**. 
+    Это делается для оптимизации: когда клиент запрашивает список из 10 новостей, 
     ему не нужны полные списки комментариев для каждой из них. 
-    Мы отдаем только их количество (`commentsCount`), а сам список — нет.
+    Отдаем только их количество (`commentsCount`), а сам список — нет.
+*   **`@Named("toNewsResponseForList")`**: Эта аннотация дает методу **уникальное имя** "toNewsResponseForList". 
+    Это имя нужно, чтобы MapStruct мог отличить этот метод от `toNewsResponseWithComments`, 
+    так как оба они принимают `News` и возвращают `NewsResponse`.
+
+**2. Метод для преобразования всего списка:**
+```java
+@IterableMapping(qualifiedByName = "toNewsResponseForList")
+List<NewsResponse> toNewsResponseForList(List<News> newsList);
+```
+
+*   **Назначение**: Преобразование `List<News>` в `List<NewsResponse>`.
+*   **`@IterableMapping(qualifiedByName = "toNewsResponseForList")`**: 
+    Когда будем преобразовывать этот список, для **каждого элемента** использется метод,
+    который помечен именем **`toNewsResponseForList`**". 
+    Это явно указывает, какой из двух возможных мапперов 
+    (`toNewsResponseWithComments` или `toNewsResponseForList(News news)`) нужно использовать, 
+     и устраняет ошибку компиляции.
 
 #### Метод `updateNewsFromRequest`
 
@@ -136,17 +154,16 @@ NewsResponse toNewsResponseForList(News news);
 @Mapping(target = "id", ignore = true)
 @Mapping(target = "author", ignore = true)
 @Mapping(target = "category", ignore = true)
+@Mapping(target = "comments", ignore = true)
 void updateNewsFromRequest(NewsRequest request, @MappingTarget News news);
 ```
 
-*   **Обновление полей существующей сущности `News` данными из `NewsRequest`**.
+*   **Назначение**: Обновляет поле сущности `News` данными из `NewsRequest`.
 *   **`@MappingTarget`**: Она говорит MapStruct: "**Не создавай новый объект `News`**. 
     Вместо этого возьми тот объект, который передан в этом параметре, и обнови его поля значениями из `request`". 
     Это позволяет сохранить `id` и другие связанные данные сущности, которую мы предварительно загрузили из базы.
-*   **`@Mapping(target = "id", ignore = true)`**: Запрещает обновление первичного ключа. 
-    Это важно для безопасности и целостности данных.
-*   **`@Mapping(target = "author", ignore = true)`** и **`@Mapping(target = "category", ignore = true)`**: 
-    Запрещают смену автора или категории через этот метод. 
-   
-
-  
+*   **`@Mapping(target = "...", ignore = true)`**: Запрещает обновление ключевых полей:
+    *   `id`: Первичный ключ никогда не должен меняться.
+    *   `author`: Автор новости не может быть изменен.
+    *   `category`: Логика смены категории может быть сложнее, поэтому ее лучше вынести в сервис.
+    *   `comments`: Список комментариев не должен управляться через запрос на обновление новости.
