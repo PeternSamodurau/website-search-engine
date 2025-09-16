@@ -1,0 +1,10 @@
+package com.example.springbootnewsportal.dto.response;
+
+import lombok.Data;
+
+@Data
+public class CommentResponse {
+    private Long id;
+    private String text;
+    private String authorUsername;
+}
