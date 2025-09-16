@@ -38,4 +38,4 @@ out/
 /logs
 
 ### Docker ###
-docker-log.txt
+docker/docker-log.txt

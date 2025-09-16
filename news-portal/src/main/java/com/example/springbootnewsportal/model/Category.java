@@ -1,4 +1,3 @@
-
 package com.example.springbootnewsportal.model;
 
 import jakarta.persistence.*;
@@ -19,8 +18,9 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
+    // ИЗМЕНЕНО И ДОБАВЛЕНО ЯВНОЕ ИМЯ КОЛОНКИ
+    @Column(name = "category_name", unique = true, nullable = false)
+    private String categoryName;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude

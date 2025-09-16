@@ -1,4 +1,3 @@
-
 package com.example.springbootnewsportal.model;
 
 import jakarta.persistence.*;
@@ -19,6 +18,8 @@ public class News {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String sourceName;
 
     @Column(nullable = false)
     private String title;
