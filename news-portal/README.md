@@ -157,3 +157,239 @@
     
     В файле MAPSTRUCT_EXPLANATION.md
 [# Зачем нужен MapStruct](MAPSTRUCT_EXPLANATION.md)
+
+---
+
+
+### Этап 6: Слой Service на примере `NewsServiceImpl`
+
+Он не работает напрямую с HTTP-запросами (это работа контроллера) и не выполняет SQL-запросы (это работа репозитория). 
+Сервис получает данные от контроллера, запрашивает нужные сущности у репозиториев, выполняет логику и возвращает результат.
+
+  1. Сервисы и внедрение репозиториев
+
+Класс-сервис — это Spring-компонент, помеченный аннотацией `@Service`. 
+Чтобы выполнять свою работу, ему нужны репозитории. 
+Внедряем репозитории с помощью механизма **Dependency Injection**.
+
+```java
+@Service // 1.регистрирует этот класс в контексте Spring как сервис.
+@RequiredArgsConstructor // 2. Lombok-аннотация для внедрения зависимостей через конструктор
+@Transactional // 3. Если в середине метода произойдет ошибка, все изменения, сделанные в базе данных с начала метода, будут отменены.
+public class NewsServiceImpl implements NewsService {
+
+    // 4. Зависимости, которые будут внедрены в конструктор
+    private final NewsRepository newsRepository;
+    private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
+    private final NewsMapper newsMapper;
+
+    // ... методы сервиса ...
+}
+```
+
+ 2. Фильтрация (Specification)
+
+Это часть ТЗ. Нужно находить новости не только все подряд, но и с фильтрами (по автору, по категории).
+`Specification` — это часть Spring Data JPA, 
+который позволяет строить `WHERE`-условия для SQL-запроса динамически.
+
+```java
+@Override
+@Transactional(readOnly = true) // Оптимизация для запросов, которые только читают данные
+public Page<NewsResponse> findAll(Long authorId, Long categoryId, Pageable pageable) {
+    
+    // 1. Создаем объект спецификации 
+    Specification<News> spec = (root, query, criteriaBuilder) -> {
+        List<Predicate> predicates = new ArrayList<>(); // 2. Список наших "WHERE"-условий
+
+        // 3. Динамически добавляем условия в список
+        if (authorId != null) {
+            predicates.add(criteriaBuilder.equal(root.get("author").get("id"), authorId));
+        }
+
+        if (categoryId != null) {
+            predicates.add(criteriaBuilder.equal(root.get("category").get("id"), categoryId));
+        }
+
+        // 4. Объединяем все условия через 
+        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    };
+
+    // 5. Выполняем запрос с созданной спецификацией и пагинацией
+    return newsRepository.findAll(spec, pageable)
+            .map(newsMapper::toNewsResponseForList);
+}
+```
+   1.  Создаем реализацию интерфейса `Specification`. 
+   2.  `predicates` — это список условий.
+   3.  Добавляем условие в список, только если соответствующий параметр (`authorId` или `categoryId`) пришел в запросе (не равен `null`).
+    Если оба параметра `null`, список останется пустым, и получим все новости.
+   4.  `criteriaBuilder.and(...)` собирает все условия в одно большое `Predicate`, эквивалентное `WHERE condition1 AND condition2`.
+   5.  `newsRepository.findAll(spec, pageable)` — передаем нашу спецификацию и параметры пагинации в репозиторий.
+     Spring Data JPA сам генерирует и выполняет нужный SQL-запрос.
+
+3. Контроль доступа (Применение AOP)
+4. 
+   Методы update и delete позволяют любому пользователю изменить или удалить любую новость. 
+   Это не безопасно. С помощью AOP (Этап 7) защищаем эти методы, просто добавив аннотацию. 
+   Логика проверки выносится в отдельный класс (аспект), а сервис остается чистым.
+```java
+@Override
+@CheckEntityOwnership // <--- ПРИМЕНЯЕМ АСПЕКТ ДЛЯ ПРОВЕРКИ ПРАВ
+public NewsResponse update(Long id, NewsRequest request) {
+    // ... основная логика обновления новости ...
+}
+
+@Override
+@CheckEntityOwnership // <--- ПРИМЕНЯЕМ АСПЕКТ ДЛЯ ПРОВЕРКИ ПРАВ
+public void deleteById(Long id) {
+    newsRepository.deleteById(id);
+}
+```
+Теперь перед выполнением этих методов всегда будет происходить проверка прав доступа, 
+реализованная в аспекте. 
+Если проверка не пройдена, аспект выбросит исключение AccessDeniedException, 
+и выполнение метода не начнется.
+
+---
+### Этап 7: AOP (Контроль доступа)
+
+Аспектно-ориентированное программирование (AOP) позволяет вынести сквозную логику (например, безопасность, логирование) в отдельные модули — аспекты.
+Используем его для проверки, что пользователь может изменять/удалять только свой собственный контент.
+
+  1. Создание аннотации-маркера `@CheckEntityOwnership`
+
+Это простой флаг, которым мы помечаем методы, требующие проверки. Он не содержит никакой логики.
+
+```java
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface CheckEntityOwnership {
+}
+```
+
+   2. Создание универсального Аспекта `OwnershipCheckAspect`
+
+Этот аспект выполняется **перед** любым методом, помеченным нашей аннотацией `@CheckEntityOwnership`. 
+Он определяет, с какой сущностью (новость или комментарий) работает, и проверяет,
+совпадает ли ID ее автора с ID текущего пользователя.
+
+```java
+@Aspect
+@Component
+@RequiredArgsConstructor
+public class OwnershipCheckAspect {
+
+    // Внедряем все необходимые репозитории
+    private final NewsRepository newsRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
+
+    @Before("@annotation(com.example.springbootnewsportal.aop.CheckEntityOwnership) && args(id, ..)")
+    public void checkOwnership(JoinPoint joinPoint, Long id) {
+        // 1. Получаем юзера из стандартного контекста безопасности Spring
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found in database"));
+
+        // 2. Определяем имя сервиса (NewsServiceImpl или CommentServiceImpl)
+        String targetClassName = joinPoint.getTarget().getClass().getSimpleName();
+
+        // 3. Выполняем проверку в зависимости от типа сущности
+        if (targetClassName.equals("NewsServiceImpl")) {
+            News news = newsRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("News not found with ID: " + id));
+            if (!news.getAuthor().getId().equals(currentUser.getId())) {
+                throw new AccessDeniedException("User does not have permission to modify this resource");
+            }
+        } else if (targetClassName.equals("CommentServiceImpl")) {
+            Comment comment = commentRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Comment not found with ID: " + id));
+            if (!comment.getAuthor().getId().equals(currentUser.getId())) {
+                throw new AccessDeniedException("User does not have permission to modify this resource");
+            }
+        } else {
+            // Защита на случай, если аннотацию по ошибке повесят на другой сервис
+            throw new UnsupportedOperationException("Ownership check not implemented for " + targetClassName);
+        }
+    }
+}
+```
+---
+
+### Этап 9: Исключения (Глобальная обработка)
+
+Чтобы не возвращать клиенту стандартные неинформативные страницы ошибок, 
+создаем глобальный обработчик исключений с аннотацией `@RestControllerAdvice`. 
+Он перехватывает исключения, выброшенные в любой части приложения, 
+и формирует стандартизированный JSON-ответ с корректным HTTP-статусом.
+
+   1. Создание DTO для ответа `ErrorResponseDTO`
+
+Это простой POJO-класс, который определяет структуру JSON-ответа об ошибке.
+
+```java
+@Data
+@AllArgsConstructor
+public class ErrorResponseDTO {
+    private int status;
+    private String message;
+}
+```
+
+   2. Создание кастомных исключений (Пример: `ResourceNotFoundException`)
+
+Cоздаем собственные классы исключений.
+
+```java
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}
+```
+
+   3. Создание обработчика `GlobalExceptionHandler`
+
+Он содержит методы, каждый из которых отвечает за обработку определенного типа исключения.
+
+```java
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    // HTTP 404: Ресурс не найден
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponseDTO handleResourceNotFound(ResourceNotFoundException ex) {
+        return new ErrorResponseDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+    }
+
+    // HTTP 403: Доступ запрещен (от нашего аспекта)
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponseDTO handleAccessDenied(AccessDeniedException ex) {
+        return new ErrorResponseDTO(HttpStatus.FORBIDDEN.value(), "Access is denied. You do not have permission to perform this action.");
+    }
+
+    // HTTP 400: Ошибка валидации DTO (например, @NotBlank)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDTO handleValidationExceptions(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+        return new ErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), "Validation failed: " + errorMessage);
+    }
+
+    // HTTP 500: Все остальные непредвиденные ошибки
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponseDTO handleAllUncaughtException(Exception ex) {
+        // В реальном приложении здесь обязательно должно быть логирование ошибки
+        return new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An unexpected error occurred. Please contact support.");
+    }
+}
+```
+

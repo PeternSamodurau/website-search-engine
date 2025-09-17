@@ -15,4 +15,7 @@ public class NewsRequest {
 
     @NotNull(message = "Category ID cannot be null")
     private Long categoryId;
+
+    @NotNull(message = "Author ID cannot be null")
+    private Long authorId;
 }

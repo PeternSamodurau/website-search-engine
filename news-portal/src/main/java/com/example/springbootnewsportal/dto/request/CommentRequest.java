@@ -12,4 +12,7 @@ public class CommentRequest {
 
     @NotNull(message = "News ID cannot be null")
     private Long newsId;
+
+    @NotNull(message = "Author ID cannot be null")
+    private Long authorId;
 }
