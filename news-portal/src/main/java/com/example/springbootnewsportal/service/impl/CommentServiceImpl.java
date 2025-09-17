@@ -1,6 +1,9 @@
 package com.example.springbootnewsportal.service.impl;
 
+import com.example.springbootnewsportal.dto.request.CommentRequest;
+import com.example.springbootnewsportal.dto.response.CommentResponse;
 import com.example.springbootnewsportal.exception.ResourceNotFoundException;
+import com.example.springbootnewsportal.mapper.CommentMapper;
 import com.example.springbootnewsportal.model.Comment;
 import com.example.springbootnewsportal.model.News;
 import com.example.springbootnewsportal.model.User;
@@ -8,12 +11,12 @@ import com.example.springbootnewsportal.repository.CommentRepository;
 import com.example.springbootnewsportal.repository.NewsRepository;
 import com.example.springbootnewsportal.repository.UserRepository;
 import com.example.springbootnewsportal.service.CommentService;
-import com.example.springbootnewsportal.dto.request.CommentRequest;
-import com.example.springbootnewsportal.dto.response.CommentResponse;
-import com.example.springbootnewsportal.mapper.CommentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +34,14 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findById(id)
                 .map(commentMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found with ID: " + id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CommentResponse> findAllByNewsId(Long newsId) {
+        return commentRepository.findAllByNewsId(newsId).stream()
+                .map(commentMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
