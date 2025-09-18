@@ -30,10 +30,12 @@ public class News {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "published_at")
     private Instant publishedAt;
 
     private String url;
 
+    @Column(name = "image_url")
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -18,9 +18,9 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ИЗМЕНЕНО И ДОБАВЛЕНО ЯВНОЕ ИМЯ КОЛОНКИ
+    // ИЗМЕНЕНО: поле переименовано в 'name' для единообразия, но колонка в БД осталась 'category_name'
     @Column(name = "category_name", unique = true, nullable = false)
-    private String categoryName;
+    private String name;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude

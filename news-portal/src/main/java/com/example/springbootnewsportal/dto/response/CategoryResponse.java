@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class CategoryResponse {
     private Long id;
-    private String categoryName;
-    private Long newsCount; // <-- ДОБАВЛЕНО
+    private String name;
+    private Long newsCount;
 }

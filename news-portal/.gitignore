@@ -39,3 +39,5 @@ out/
 
 ### Docker ###
 docker/docker-log.txt
+
+gemini_app.log

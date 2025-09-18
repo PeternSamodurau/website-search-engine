@@ -66,18 +66,18 @@ public class DataInitializer implements CommandLineRunner {
             String categoryNameFormatted = newsQuery.substring(0, 1).toUpperCase() + newsQuery.substring(1).toLowerCase();
             log.info("Formatted category name: '{}'", categoryNameFormatted);
 
-            Optional<Category> existingCategory = categoryRepository.findByCategoryName(categoryNameFormatted);
+            Optional<Category> existingCategory = categoryRepository.findByName(categoryNameFormatted); // <--- ИЗМЕНЕНО
 
             Category category;
             if (existingCategory.isPresent()) {
 
                 category = existingCategory.get();
-                log.info("Category '{}' already exists. Using it.", category.getCategoryName());
+                log.info("Category '{}' already exists. Using it.", category.getName()); // <--- ИЗМЕНЕНО
             } else {
 
                 log.info("Category '{}' not found. Creating a new one.", categoryNameFormatted);
                 Category newCategoryToSave = Category.builder()
-                        .categoryName(categoryNameFormatted)
+                        .name(categoryNameFormatted) // <--- ИЗМЕНЕНО
                         .build();
                 category = categoryRepository.save(newCategoryToSave);
                 log.info("Successfully saved new category: {}", category);
@@ -114,7 +114,7 @@ public class DataInitializer implements CommandLineRunner {
                 newsRepository.save(news);
             }
 
-            log.info("Data initialization completed successfully. Saved {} news articles for category '{}'.", articlesToSave.size(), category.getCategoryName());
+            log.info("Data initialization completed successfully. Saved {} news articles for category '{}'.", articlesToSave.size(), category.getName()); // <--- ИЗМЕНЕНО
 
         } catch (Exception e) {
             log.error("An error occurred during data initialization: {}", e.getMessage(), e);

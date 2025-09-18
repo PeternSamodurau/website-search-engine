@@ -18,14 +18,14 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String text;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User author;
 
     @ManyToOne

@@ -7,23 +7,16 @@
         </encoder>
     </appender>
 
-    <!-- Appender для записи в файл -->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <!-- Имя файла будет app.log в папке logs -->
         <file>logs/app.log</file>
-        <append>false</append> <!-- Перезаписывать файл при каждом запуске -->
+        <append>false</append>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5level] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- 
-    ИЗМЕНЕНО: Установлен правильный пакет и уровень DEBUG для нашего приложения.
-    Это позволит видеть все сообщения от INFO и выше, а также DEBUG.
-    -->
     <logger name="com.example.springbootnewsportal" level="DEBUG"/>
 
-    <!-- Корневой логгер -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
