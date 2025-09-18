@@ -44,7 +44,7 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Profile 'init' is active. Starting data initialization for query: '{}'", newsQuery);
 
         try {
-            String fromDate = LocalDate.now().minusWeeks(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
+            String fromDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
             String newsApiUrl = String.format(
                     "https://newsapi.org/v2/everything?q=%s&from=%s&sortBy=publishedAt&apiKey=%s",
                     newsQuery,

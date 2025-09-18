@@ -12,6 +12,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication; // <-- ДОБАВЛЕН ИМПОРТ
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -21,18 +22,25 @@ import org.springframework.stereotype.Component;
 public class OwnershipCheckAspect {
 
     private final NewsRepository newsRepository;
-    private final CommentRepository commentRepository; // ВНЕДРЯЕМ РЕПОЗИТОРИЙ КОММЕНТАРИЕВ
+    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
     @Before("@annotation(com.example.springbootnewsportal.aop.CheckEntityOwnership) && args(id, ..)")
     public void checkOwnership(JoinPoint joinPoint, Long id) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Если пользователя нет (аутентификация отключена), просто пропускаем проверку
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
+            return;
+        }
+
+        String username = authentication.getName();
         User currentUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found in database"));
 
         String targetClassName = joinPoint.getTarget().getClass().getSimpleName();
 
-        // ДОБАВЛЯЕМ ЛОГИКУ ПРОВЕРКИ
         if (targetClassName.equals("NewsServiceImpl")) {
             News news = newsRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("News not found with ID: " + id));
@@ -46,7 +54,6 @@ public class OwnershipCheckAspect {
                 throw new AccessDeniedException("User does not have permission to modify this resource");
             }
         } else {
-            // На случай, если аннотацию повесят на другой сервис
             throw new UnsupportedOperationException("Ownership check not implemented for " + targetClassName);
         }
     }
