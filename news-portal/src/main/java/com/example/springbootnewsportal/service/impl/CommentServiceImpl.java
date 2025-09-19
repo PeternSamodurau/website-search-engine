@@ -12,6 +12,7 @@ import com.example.springbootnewsportal.repository.NewsRepository;
 import com.example.springbootnewsportal.repository.UserRepository;
 import com.example.springbootnewsportal.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
@@ -31,50 +33,73 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public CommentResponse findById(Long id) {
+        log.info("Executing findById request for comment with ID: {}", id);
         return commentRepository.findById(id)
                 .map(commentMapper::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment not found with ID: " + id));
+                .orElseThrow(() -> {
+                    log.error("Comment not found with ID: {}", id); // <-- Добавлено
+                    return new ResourceNotFoundException("Comment not found with ID: " + id);
+                });
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<CommentResponse> findAllByNewsId(Long newsId) {
-        return commentRepository.findAllByNewsId(newsId).stream()
+        log.info("Executing findAllByNewsId request for news with ID: {}", newsId);
+        List<CommentResponse> comments = commentRepository.findAllByNewsId(newsId).stream()
                 .map(commentMapper::toResponse)
                 .collect(Collectors.toList());
+        log.info("Found {} comments for news with ID: {}", comments.size(), newsId);
+        return comments;
     }
 
     @Override
     public CommentResponse create(Long newsId, CommentRequest request) {
+        log.info("Executing create request for new comment on news with ID: {}", newsId);
         User author = userRepository.findById(request.getAuthorId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + request.getAuthorId()));
+                .orElseThrow(() -> {
+                    log.error("Cannot create comment. User (author) not found with ID: {}", request.getAuthorId()); // <-- Добавлено
+                    return new ResourceNotFoundException("User not found with ID: " + request.getAuthorId());
+                });
         News news = newsRepository.findById(newsId)
-                .orElseThrow(() -> new ResourceNotFoundException("News not found with ID: " + newsId));
+                .orElseThrow(() -> {
+                    log.error("Cannot create comment. News not found with ID: {}", newsId);
+                    return new ResourceNotFoundException("News not found with ID: " + newsId);
+                });
 
         Comment comment = commentMapper.toComment(request);
         comment.setAuthor(author);
         comment.setNews(news);
 
         Comment savedComment = commentRepository.save(comment);
+        log.info("Successfully created comment with ID: {}", savedComment.getId());
         return commentMapper.toResponse(savedComment);
     }
 
     @Override
     public CommentResponse update(Long id, CommentRequest request) {
+        log.info("Executing update request for comment with ID: {}", id);
         Comment existingComment = commentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment not found with ID: " + id));
+                .orElseThrow(() -> {
+                    log.error("Cannot update. Comment not found with ID: {}", id);
+                    return new ResourceNotFoundException("Comment not found with ID: " + id);
+                });
 
         commentMapper.updateCommentFromRequest(request, existingComment);
 
         Comment updatedComment = commentRepository.save(existingComment);
+        log.info("Successfully updated comment with ID: {}", updatedComment.getId());
         return commentMapper.toResponse(updatedComment);
     }
 
     @Override
     public void deleteById(Long id) {
+        log.info("Executing deleteById request for comment with ID: {}", id);
         if (!commentRepository.existsById(id)) {
+            log.error("Cannot delete. Comment not found with ID: {}", id);
             throw new ResourceNotFoundException("Comment not found with ID: " + id);
         }
         commentRepository.deleteById(id);
+        log.info("Successfully deleted comment with ID: {}", id);
     }
 }

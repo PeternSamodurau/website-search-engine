@@ -2,12 +2,13 @@ package com.example.springbootnewsportal.service;
 
 import com.example.springbootnewsportal.dto.request.UserRequest;
 import com.example.springbootnewsportal.dto.response.UserResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List; // <-- ИЗМЕНЕНИЕ
 
 public interface UserService {
 
-    Page<UserResponse> findAll(Pageable pageable);
+
+    List<UserResponse> findAll();
 
     UserResponse findById(Long id);
 

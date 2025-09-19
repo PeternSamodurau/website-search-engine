@@ -2,12 +2,11 @@ package com.example.springbootnewsportal.service;
 
 import com.example.springbootnewsportal.dto.request.NewsRequest;
 import com.example.springbootnewsportal.dto.response.NewsResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
 
 public interface NewsService {
 
-    Page<NewsResponse> findAll(Long authorId, Long categoryId, Pageable pageable);
+    List<NewsResponse> findAll(Long authorId, Long categoryId);
 
     NewsResponse findById(Long id);
 

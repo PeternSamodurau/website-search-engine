@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/news/{newsId}/comments")
 @RequiredArgsConstructor
+@Slf4j // <-- Добавлено
 public class CommentController {
 
     private final CommentService commentService;
@@ -41,7 +43,10 @@ public class CommentController {
     public ResponseEntity<List<CommentResponse>> getCommentsByNewsId(
             @Parameter(description = "ID новости, для которой нужно получить комментарии") @PathVariable Long newsId
     ) {
-        return ResponseEntity.ok(commentService.findAllByNewsId(newsId));
+        log.info("Request to get all comments for news with id: {}", newsId); // <-- Добавлено
+        List<CommentResponse> comments = commentService.findAllByNewsId(newsId);
+        log.info("Successfully retrieved {} comments for news with id: {}", comments.size(), newsId); // <-- Добавлено
+        return ResponseEntity.ok(comments);
     }
 
     @Operation(
@@ -60,7 +65,9 @@ public class CommentController {
             @Parameter(description = "ID новости, к которой добавляется комментарий") @PathVariable Long newsId,
             @RequestBody(description = "Текст комментария") @Valid @org.springframework.web.bind.annotation.RequestBody CommentRequest request
     ) {
+        log.info("Request to create a new comment for news with id: {}", newsId); // <-- Добавлено
         CommentResponse createdComment = commentService.create(newsId, request);
+        log.info("Successfully created a new comment with id: {} for news with id: {}", createdComment.getId(), newsId); // <-- Добавлено
         return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
     }
 
@@ -81,7 +88,10 @@ public class CommentController {
             @Parameter(description = "ID комментария, который нужно обновить") @PathVariable Long commentId,
             @RequestBody(description = "Новый текст комментария") @Valid @org.springframework.web.bind.annotation.RequestBody CommentRequest request
     ) {
-        return ResponseEntity.ok(commentService.update(commentId, request));
+        log.info("Request to update comment with id: {}", commentId); // <-- Добавлено
+        CommentResponse updatedComment = commentService.update(commentId, request);
+        log.info("Successfully updated comment with id: {}", commentId); // <-- Добавлено
+        return ResponseEntity.ok(updatedComment);
     }
 
     @Operation(
@@ -98,7 +108,9 @@ public class CommentController {
             @Parameter(description = "ID новости (игнорируется, но нужен для пути)") @PathVariable Long newsId,
             @Parameter(description = "ID комментария, который нужно удалить") @PathVariable Long commentId
     ) {
+        log.info("Request to delete comment with id: {}", commentId); // <-- Добавлено
         commentService.deleteById(commentId);
+        log.info("Successfully deleted comment with id: {}", commentId); // <-- Добавлено
         return ResponseEntity.noContent().build();
     }
 }

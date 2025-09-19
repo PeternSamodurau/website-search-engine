@@ -37,7 +37,7 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         log.info("Request to get all categories");
-        List<CategoryResponse> categories = categoryService.findAllAsList();
+        List<CategoryResponse> categories = categoryService.findAll();
         log.info("Successfully retrieved {} categories", categories.size());
         return ResponseEntity.ok(categories);
     }

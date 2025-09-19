@@ -13,11 +13,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List; // <-- ИЗМЕНЕНИЕ
 
 @Tag(name = "Пользователи", description = "Операции для управления пользователями и их данными.")
 @RestController
@@ -27,14 +27,16 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "Получить всех пользователей", description = "Возвращает постраничный список всех пользователей.")
+    @Operation(summary = "Получить всех пользователей", description = "Возвращает список всех пользователей.") // <-- ИЗМЕНЕНИЕ
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Список пользователей успешно получен")
     })
     @GetMapping
-    public ResponseEntity<Page<UserResponse>> getAllUsers(Pageable pageable) {
-        return ResponseEntity.ok(userService.findAll(pageable));
+    // --- ИЗМЕНЕНИЕ ---
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        return ResponseEntity.ok(userService.findAll());
     }
+    // --------------------
 
     @Operation(summary = "Получить пользователя по ID", description = "Возвращает одного пользователя по его уникальному идентификатору.")
     @ApiResponses(value = {
