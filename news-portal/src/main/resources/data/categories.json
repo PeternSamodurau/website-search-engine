@@ -1,17 +1,17 @@
 [
   {
-    "name": "Technology"
+    "categoryName": "Technology"
   },
   {
-    "name": "Business"
+    "categoryName": "Business"
   },
   {
-    "name": "Sports"
+    "categoryName": "Sports"
   },
   {
-    "name": "Health"
+    "categoryName": "Health"
   },
   {
-    "name": "Science"
+    "categoryName": "Science"
   }
 ]

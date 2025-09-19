@@ -1,23 +1,24 @@
 package com.example.springbootnewsportal.service.impl;
 
-import com.example.springbootnewsportal.exception.ResourceNotFoundException;
+import com.example.springbootnewsportal.dto.request.CategoryRequest;
+import com.example.springbootnewsportal.dto.response.CategoryResponse;
+import com.example.springbootnewsportal.exception.EntityExistsException;
+import com.example.springbootnewsportal.exception.EntityNotFoundException;
+import com.example.springbootnewsportal.mapper.CategoryMapper;
 import com.example.springbootnewsportal.model.Category;
 import com.example.springbootnewsportal.repository.CategoryRepository;
 import com.example.springbootnewsportal.service.CategoryService;
-import com.example.springbootnewsportal.dto.request.CategoryRequest;
-import com.example.springbootnewsportal.dto.response.CategoryResponse;
-import com.example.springbootnewsportal.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
@@ -27,10 +28,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public List<CategoryResponse> findAll() {
-        log.info("Executing findAll categories request");
-        return categoryRepository.findAll()
-                .stream()
-                .map(categoryMapper::toResponse)
+        log.info("Executing findAll request for categories");
+        return categoryRepository.findAll().stream()
+                .map(categoryMapper::toCategoryResponse)
                 .collect(Collectors.toList());
     }
 
@@ -38,46 +38,45 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public CategoryResponse findById(Long id) {
         log.info("Executing findById request for category with ID: {}", id);
-        return categoryRepository.findById(id)
-                .map(categoryMapper::toResponse)
-                .orElseThrow(() -> {
-                    log.error("Category not found with ID: {}", id);
-                    return new ResourceNotFoundException("Category not found with ID: " + id);
-                });
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category with ID " + id + " not found"));
+        return categoryMapper.toCategoryResponse(category);
     }
 
     @Override
+    @Transactional
     public CategoryResponse create(CategoryRequest request) {
-        log.info("Executing create request for new category with name: '{}'", request.getName());
+        log.info("Executing create request for new category with name: '{}'", request.getCategoryName());
+        if (categoryRepository.findByCategoryName(request.getCategoryName()).isPresent()) {
+            throw new EntityExistsException("Category with name '" + request.getCategoryName() + "' already exists");
+        }
         Category category = categoryMapper.toCategory(request);
         Category savedCategory = categoryRepository.save(category);
-        log.info("Successfully created category with ID: {}", savedCategory.getId());
-        return categoryMapper.toResponse(savedCategory);
+        return categoryMapper.toCategoryResponse(savedCategory);
     }
 
     @Override
+    @Transactional
     public CategoryResponse update(Long id, CategoryRequest request) {
         log.info("Executing update request for category with ID: {}", id);
+        Optional<Category> existingByName = categoryRepository.findByCategoryName(request.getCategoryName());
+        if (existingByName.isPresent() && !existingByName.get().getId().equals(id)) {
+            throw new EntityExistsException("Another category with name '" + request.getCategoryName() + "' already exists");
+        }
         Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Cannot update. Category not found with ID: {}", id);
-                    return new ResourceNotFoundException("Category not found with ID: " + id);
-                });
-
+                .orElseThrow(() -> new EntityNotFoundException("Category with ID " + id + " not found"));
         categoryMapper.updateCategoryFromRequest(request, existingCategory);
         Category updatedCategory = categoryRepository.save(existingCategory);
-        log.info("Successfully updated category with ID: {}", updatedCategory.getId());
-        return categoryMapper.toResponse(updatedCategory);
+        return categoryMapper.toCategoryResponse(updatedCategory);
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
-        log.info("Executing deleteById request for category with ID: {}", id);
+        log.info("Executing delete request for category with ID: {}", id);
         if (!categoryRepository.existsById(id)) {
-            log.error("Cannot delete. Category not found with ID: {}", id);
-            throw new ResourceNotFoundException("Category not found with ID: " + id);
+            throw new EntityNotFoundException("Category with ID " + id + " not found");
         }
         categoryRepository.deleteById(id);
-        log.info("Successfully deleted category with ID: {}", id);
     }
 }

@@ -11,13 +11,13 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CategoryMapper {
 
-    // Считаем кол-во новостей в категории для ответа
+    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
     @Mapping(target = "newsCount", expression = "java(category.getNewsList() != null ? (long) category.getNewsList().size() : 0L)")
-    CategoryResponse toResponse(Category category);
+    CategoryResponse toCategoryResponse(Category category); // МЕТОД ПЕРЕИМЕНОВАН
+    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
 
     Category toCategory(CategoryRequest request);
 
-    // При обновлении запрещаем менять ID
     @Mapping(target = "id", ignore = true)
     void updateCategoryFromRequest(CategoryRequest request, @MappingTarget Category category);
 }

@@ -37,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findById(id)
                 .map(commentMapper::toResponse)
                 .orElseThrow(() -> {
-                    log.error("Comment not found with ID: {}", id); // <-- Добавлено
+                    log.error("Comment not found with ID: {}", id);
                     return new ResourceNotFoundException("Comment not found with ID: " + id);
                 });
     }
@@ -54,17 +54,17 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponse create(Long newsId, CommentRequest request) {
-        log.info("Executing create request for new comment on news with ID: {}", newsId);
+    public CommentResponse create(CommentRequest request) {
+        log.info("Executing create request for new comment on news with ID: {}", request.getNewsId());
         User author = userRepository.findById(request.getAuthorId())
                 .orElseThrow(() -> {
-                    log.error("Cannot create comment. User (author) not found with ID: {}", request.getAuthorId()); // <-- Добавлено
+                    log.error("Cannot create comment. User (author) not found with ID: {}", request.getAuthorId());
                     return new ResourceNotFoundException("User not found with ID: " + request.getAuthorId());
                 });
-        News news = newsRepository.findById(newsId)
+        News news = newsRepository.findById(request.getNewsId())
                 .orElseThrow(() -> {
-                    log.error("Cannot create comment. News not found with ID: {}", newsId);
-                    return new ResourceNotFoundException("News not found with ID: " + newsId);
+                    log.error("Cannot create comment. News not found with ID: {}", request.getNewsId());
+                    return new ResourceNotFoundException("News not found with ID: " + request.getNewsId());
                 });
 
         Comment comment = commentMapper.toComment(request);

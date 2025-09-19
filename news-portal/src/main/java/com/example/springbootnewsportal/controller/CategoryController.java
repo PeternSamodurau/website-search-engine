@@ -64,7 +64,7 @@ public class CategoryController {
     })
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
-        log.info("Request to create a new category with name: {}", request.getName());
+        log.info("Request to create a new category with name: {}", request.getCategoryName());
         CategoryResponse createdCategory = categoryService.create(request);
         log.info("Successfully created a new category with id: {}. Response code: 201", createdCategory.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);

@@ -12,7 +12,7 @@ public interface CommentService {
 
     List<CommentResponse> findAllByNewsId(Long newsId);
 
-    CommentResponse create(Long newsId, CommentRequest request);
+    CommentResponse create(CommentRequest request);
 
     @CheckOwnership(entityType = "comment")
     CommentResponse update(Long id, CommentRequest request);

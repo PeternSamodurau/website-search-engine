@@ -34,7 +34,7 @@ public class News {
     private String title;
 
     @Column(columnDefinition = "TEXT")
-    private String content;
+    private String text; // <--- ПОЛЕ ПЕРЕИМЕНОВАНО
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")

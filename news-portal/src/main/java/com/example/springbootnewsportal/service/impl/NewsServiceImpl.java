@@ -46,7 +46,7 @@ public class NewsServiceImpl implements NewsService {
     @Transactional
     public NewsResponse create(NewsRequest request) {
         log.info("Creating new news with title: {}", request.getTitle());
-        if (newsRepository.existsByTitleAndContent(request.getTitle(), request.getContent())) {
+        if (newsRepository.existsByTitleAndText(request.getTitle(), request.getText())) {
             log.warn("Attempted to create a news with a duplicate title and content.");
             throw new DuplicateNewsException("A news item with the same title and content already exists.");
         }

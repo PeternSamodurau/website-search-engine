@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class CommentResponse {
     private Long id;
-    private String commentText;
-    private String authorUsername; // <-- ДОБАВЛЕНО
+    private String text; // <--- ПОЛЕ ПЕРЕИМЕНОВАНО
+    private String authorUsername;
 }

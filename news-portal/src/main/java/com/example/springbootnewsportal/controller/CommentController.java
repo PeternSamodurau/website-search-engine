@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Комментарии", description = "Операции для управления комментариями к новостям.")
+@Tag(name = "Комментарии", description = "Операции для управления комментариями")
 @RestController
 @RequestMapping("/api/v1/news/{newsId}/comments")
 @RequiredArgsConstructor
@@ -29,6 +28,30 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
+
+    @Operation(
+            summary = "Создать новый комментарий",
+            description = "Добавляет новый комментарий к новости, принимая текст и ID автора как отдельные поля."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Комментарий успешно создан",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommentResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Некорректные данные в запросе", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Новость или автор с таким ID не найдены", content = @Content)
+    })
+    @PostMapping
+    public ResponseEntity<CommentResponse> createComment(
+            @Parameter(description = "ID новости, к которой добавляется комментарий", required = true) @PathVariable Long newsId,
+            @Parameter(description = "Текст комментария", required = true) @RequestParam String text,
+            @Parameter(description = "ID автора комментария", required = true) @RequestParam Long authorId
+    ) {
+        log.info("Request to create a new comment for news with id: {} by author: {}", newsId, authorId);
+        // Создаем DTO вручную из параметров запроса
+        CommentRequest request = new CommentRequest(text, authorId, newsId);
+        CommentResponse createdComment = commentService.create(request);
+        log.info("Successfully created a new comment with id: {} for news with id: {}. Response code: 201", createdComment.getId(), newsId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
+    }
 
     @Operation(
             summary = "Получить все комментарии к новости",
@@ -50,45 +73,24 @@ public class CommentController {
     }
 
     @Operation(
-            summary = "Создать новый комментарий",
-            description = "Добавляет новый комментарий к новости. Требует аутентификации."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Комментарий успешно создан",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = CommentResponse.class)) }),
-            @ApiResponse(responseCode = "400", description = "Некорректные данные в запросе", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен (пользователь не аутентифицирован)", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Новость с таким ID не найдена", content = @Content)
-    })
-    @PostMapping
-    public ResponseEntity<CommentResponse> createComment(
-            @Parameter(description = "ID новости, к которой добавляется комментарий") @PathVariable Long newsId,
-            @RequestBody(description = "Текст комментария") @Valid @org.springframework.web.bind.annotation.RequestBody CommentRequest request
-    ) {
-        log.info("Request to create a new comment for news with id: {}", newsId);
-        CommentResponse createdComment = commentService.create(newsId, request);
-        log.info("Successfully created a new comment with id: {} for news with id: {}. Response code: 201", createdComment.getId(), newsId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
-    }
-
-    @Operation(
             summary = "Обновить комментарий",
-            description = "Обновляет существующий комментарий. Требуется аутентификация и право собственности на комментарий."
+            description = "Обновляет существующий комментарий."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комментарий успешно обновлен",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = CommentResponse.class)) }),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommentResponse.class))),
             @ApiResponse(responseCode = "400", description = "Некорректные данные в запросе", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен (нет прав на редактирование)", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Комментарий или новость не найдены", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Комментарий не найден", content = @Content)
     })
     @PutMapping("/{commentId}")
     public ResponseEntity<CommentResponse> updateComment(
-            @Parameter(description = "ID новости (игнорируется, но нужен для пути)") @PathVariable Long newsId,
-            @Parameter(description = "ID комментария, который нужно обновить") @PathVariable Long commentId,
-            @RequestBody(description = "Новый текст комментария") @Valid @org.springframework.web.bind.annotation.RequestBody CommentRequest request
+            @Parameter(description = "ID новости") @PathVariable Long newsId,
+            @Parameter(description = "ID комментария") @PathVariable Long commentId,
+            @Valid @RequestBody CommentRequest request
     ) {
         log.info("Request to update comment with id: {}", commentId);
+        // Убедимся, что ID новости из пути соответствует DTO, если он там есть
+        request.setNewsId(newsId);
         CommentResponse updatedComment = commentService.update(commentId, request);
         log.info("Successfully updated comment with id: {}. Response code: 200", commentId);
         return ResponseEntity.ok(updatedComment);
@@ -96,17 +98,16 @@ public class CommentController {
 
     @Operation(
             summary = "Удалить комментарий",
-            description = "Удаляет комментарий по его ID. Требуется аутентификация и право собственности на комментарий."
+            description = "Удаляет комментарий по его ID."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Комментарий успешно удален", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен (нет прав на удаление)", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Комментарий или новость не найдены", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Комментарий не найден", content = @Content)
     })
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(
-            @Parameter(description = "ID новости (игнорируется, но нужен для пути)") @PathVariable Long newsId,
-            @Parameter(description = "ID комментария, который нужно удалить") @PathVariable Long commentId // <-- ИСПРАВЛЕНО
+            @Parameter(description = "ID новости") @PathVariable Long newsId,
+            @Parameter(description = "ID комментария") @PathVariable Long commentId
     ) {
         log.info("Request to delete comment with id: {}", commentId);
         commentService.deleteById(commentId);

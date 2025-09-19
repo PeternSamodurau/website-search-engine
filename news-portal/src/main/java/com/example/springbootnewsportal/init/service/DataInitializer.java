@@ -46,10 +46,15 @@ public class DataInitializer implements CommandLineRunner {
             if (categoryRepository.count() == 0) {
                 initializeCategories();
             }
+
+            long newsCount;
             if (newsRepository.count() == 0) {
-                initializeNews();
+                newsCount = initializeNews();
+            } else {
+                newsCount = newsRepository.count();
             }
-            log.info("Data initialization finished.");
+
+            log.info("Data initialization finished. {} news items loaded.", newsCount);
         } catch (Exception e) {
             log.error("Error during data initialization", e);
         }
@@ -70,10 +75,10 @@ public class DataInitializer implements CommandLineRunner {
         categoryRepository.saveAll(categories);
     }
 
-    private void initializeNews() throws Exception {
+    // ИЗМЕНЕНИЕ: Метод теперь возвращает количество созданных новостей
+    private int initializeNews() throws Exception {
         log.info("Initializing news...");
         File file = new ClassPathResource("data/news.json").getFile();
-        // ИЗМЕНЕНИЕ: Используем Map вместо NewsDto
         List<Map<String, String>> newsData = objectMapper.readValue(file, new TypeReference<>() {});
 
         List<User> users = userRepository.findAll();
@@ -82,19 +87,20 @@ public class DataInitializer implements CommandLineRunner {
 
         if (users.isEmpty() || categories.isEmpty()) {
             log.warn("Cannot initialize news because there are no users or categories.");
-            return;
+            return 0; // Возвращаем 0, если ничего не создано
         }
 
         List<News> newsList = new ArrayList<>();
-        for (Map<String, String> newsMap : newsData) { // <-- ИЗМЕНЕНИЕ
+        for (Map<String, String> newsMap : newsData) {
             News news = News.builder()
-                    .title(newsMap.get("title")) // <-- ИЗМЕНЕНИЕ
-                    .content(newsMap.get("content")) // <-- ИЗМЕНЕНИЕ
+                    .title(newsMap.get("title"))
+                    .text(newsMap.get("text"))
                     .author(users.get(random.nextInt(users.size())))
                     .category(categories.get(random.nextInt(categories.size())))
                     .build();
             newsList.add(news);
         }
         newsRepository.saveAll(newsList);
+        return newsList.size(); // Возвращаем реальное количество
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public interface CommentMapper {
 
     @Mapping(source = "author.username", target = "authorUsername")
-    CommentResponse toResponse(Comment comment);
+    CommentResponse toResponse(Comment comment); // <--- ЛИШНЯЯ АННОТАЦИЯ УДАЛЕНА
 
     List<CommentResponse> toResponseList(List<Comment> comments);
 
