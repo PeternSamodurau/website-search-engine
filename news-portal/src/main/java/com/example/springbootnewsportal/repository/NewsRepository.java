@@ -1,4 +1,3 @@
-
 package com.example.springbootnewsportal.repository;
 
 import com.example.springbootnewsportal.model.News;
@@ -8,4 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long>, JpaSpecificationExecutor<News> {
+
+    // Метод для проверки дубликатов по title И content
+    boolean existsByTitleAndContent(String title, String content);
 }

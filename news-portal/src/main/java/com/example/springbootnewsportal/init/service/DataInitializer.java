@@ -1,123 +1,100 @@
 package com.example.springbootnewsportal.init.service;
 
-import com.example.springbootnewsportal.init.dto.NewsApiResponse;
-import com.example.springbootnewsportal.init.dto.NewsDto;
 import com.example.springbootnewsportal.model.Category;
 import com.example.springbootnewsportal.model.News;
 import com.example.springbootnewsportal.model.User;
 import com.example.springbootnewsportal.repository.CategoryRepository;
 import com.example.springbootnewsportal.repository.NewsRepository;
 import com.example.springbootnewsportal.repository.UserRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.Map;
+import java.util.Random;
 
-@Component
+@Service
 @RequiredArgsConstructor
 @Slf4j
 @Profile("init")
 public class DataInitializer implements CommandLineRunner {
 
-    private final RestTemplate restTemplate;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final NewsRepository newsRepository;
-
-    @Value("${news.api.key}")
-    private String apiKey;
-
-    @Value("${news.api.query}")
-    private String newsQuery;
+    private final PasswordEncoder passwordEncoder;
+    private final ObjectMapper objectMapper;
 
     @Override
+    @Transactional
     public void run(String... args) {
-        log.info("Profile 'init' is active. Starting data initialization for query: '{}'", newsQuery);
-
         try {
-            String fromDate = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
-            String newsApiUrl = String.format(
-                    "https://newsapi.org/v2/everything?q=%s&from=%s&sortBy=publishedAt&apiKey=%s",
-                    newsQuery,
-                    fromDate,
-                    apiKey
-            );
-
-            log.info("Fetching news from URL: {}", newsApiUrl);
-            NewsApiResponse response = restTemplate.getForObject(newsApiUrl, NewsApiResponse.class);
-
-            if (response == null || response.getArticles() == null || response.getArticles().isEmpty()) {
-                log.warn("Failed to fetch news from the API or the article list is empty.");
-                return;
+            log.info("Data initialization started...");
+            if (userRepository.count() == 0) {
+                initializeUsers();
             }
-
-            List<NewsDto> articlesToSave = response.getArticles().stream().limit(10).toList();
-            log.info("Received {} articles to save.", articlesToSave.size());
-
-            String categoryNameFormatted = newsQuery.substring(0, 1).toUpperCase() + newsQuery.substring(1).toLowerCase();
-            log.info("Formatted category name: '{}'", categoryNameFormatted);
-
-            Optional<Category> existingCategory = categoryRepository.findByName(categoryNameFormatted); // <--- ИЗМЕНЕНО
-
-            Category category;
-            if (existingCategory.isPresent()) {
-
-                category = existingCategory.get();
-                log.info("Category '{}' already exists. Using it.", category.getName()); // <--- ИЗМЕНЕНО
-            } else {
-
-                log.info("Category '{}' not found. Creating a new one.", categoryNameFormatted);
-                Category newCategoryToSave = Category.builder()
-                        .name(categoryNameFormatted) // <--- ИЗМЕНЕНО
-                        .build();
-                category = categoryRepository.save(newCategoryToSave);
-                log.info("Successfully saved new category: {}", category);
+            if (categoryRepository.count() == 0) {
+                initializeCategories();
             }
-
-            for (NewsDto newsDto : articlesToSave) {
-                if (newsDto.getAuthor() == null || newsDto.getContent() == null) {
-                    log.warn("Skipping article with no author or content. Title: {}", newsDto.getTitle());
-                    continue;
-                }
-
-                User author = userRepository.findByUsername(newsDto.getAuthor())
-                        .orElseGet(() -> {
-                            User newUser = User.builder()
-                                    .username(newsDto.getAuthor())
-                                    .email(newsDto.getAuthor().replaceAll("\s+", "_") + "@example.com")
-                                    .password(UUID.randomUUID().toString())
-                                    .build();
-                            return userRepository.save(newUser);
-                        });
-
-                News news = News.builder()
-                        .sourceName(newsDto.getSourceName())
-                        .title(newsDto.getTitle())
-                        .description(newsDto.getDescription())
-                        .content(newsDto.getContent())
-                        .publishedAt(newsDto.getPublishedAt())
-                        .url(newsDto.getUrl())
-                        .imageUrl(newsDto.getUrlToImage())
-                        .author(author)
-                        .category(category)
-                        .build();
-
-                newsRepository.save(news);
+            if (newsRepository.count() == 0) {
+                initializeNews();
             }
-
-            log.info("Data initialization completed successfully. Saved {} news articles for category '{}'.", articlesToSave.size(), category.getName()); // <--- ИЗМЕНЕНО
-
+            log.info("Data initialization finished.");
         } catch (Exception e) {
-            log.error("An error occurred during data initialization: {}", e.getMessage(), e);
+            log.error("Error during data initialization", e);
         }
+    }
+
+    private void initializeUsers() throws Exception {
+        log.info("Initializing users...");
+        File file = new ClassPathResource("data/users.json").getFile();
+        List<User> users = objectMapper.readValue(file, new TypeReference<>() {});
+        users.forEach(user -> user.setPassword(passwordEncoder.encode(user.getPassword())));
+        userRepository.saveAll(users);
+    }
+
+    private void initializeCategories() throws Exception {
+        log.info("Initializing categories...");
+        File file = new ClassPathResource("data/categories.json").getFile();
+        List<Category> categories = objectMapper.readValue(file, new TypeReference<>() {});
+        categoryRepository.saveAll(categories);
+    }
+
+    private void initializeNews() throws Exception {
+        log.info("Initializing news...");
+        File file = new ClassPathResource("data/news.json").getFile();
+        // ИЗМЕНЕНИЕ: Используем Map вместо NewsDto
+        List<Map<String, String>> newsData = objectMapper.readValue(file, new TypeReference<>() {});
+
+        List<User> users = userRepository.findAll();
+        List<Category> categories = categoryRepository.findAll();
+        Random random = new Random();
+
+        if (users.isEmpty() || categories.isEmpty()) {
+            log.warn("Cannot initialize news because there are no users or categories.");
+            return;
+        }
+
+        List<News> newsList = new ArrayList<>();
+        for (Map<String, String> newsMap : newsData) { // <-- ИЗМЕНЕНИЕ
+            News news = News.builder()
+                    .title(newsMap.get("title")) // <-- ИЗМЕНЕНИЕ
+                    .content(newsMap.get("content")) // <-- ИЗМЕНЕНИЕ
+                    .author(users.get(random.nextInt(users.size())))
+                    .category(categories.get(random.nextInt(categories.size())))
+                    .build();
+            newsList.add(news);
+        }
+        newsRepository.saveAll(newsList);
     }
 }

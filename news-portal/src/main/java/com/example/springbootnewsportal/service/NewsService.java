@@ -1,18 +1,22 @@
 package com.example.springbootnewsportal.service;
 
+import com.example.springbootnewsportal.aop.annotation.CheckOwnership;
 import com.example.springbootnewsportal.dto.request.NewsRequest;
 import com.example.springbootnewsportal.dto.response.NewsResponse;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface NewsService {
 
-    List<NewsResponse> findAll(Long authorId, Long categoryId);
+    Page<NewsResponse> findAll(Long authorId, Long categoryId, Pageable pageable);
 
     NewsResponse findById(Long id);
 
     NewsResponse create(NewsRequest request);
 
+    @CheckOwnership(entityType = "news")
     NewsResponse update(Long id, NewsRequest request);
 
+    @CheckOwnership(entityType = "news")
     void deleteById(Long id);
 }

@@ -23,9 +23,9 @@ import java.util.List;
 
 @Tag(name = "Комментарии", description = "Операции для управления комментариями к новостям.")
 @RestController
-@RequestMapping("/api/news/{newsId}/comments")
+@RequestMapping("/api/v1/news/{newsId}/comments")
 @RequiredArgsConstructor
-@Slf4j // <-- Добавлено
+@Slf4j
 public class CommentController {
 
     private final CommentService commentService;
@@ -43,9 +43,9 @@ public class CommentController {
     public ResponseEntity<List<CommentResponse>> getCommentsByNewsId(
             @Parameter(description = "ID новости, для которой нужно получить комментарии") @PathVariable Long newsId
     ) {
-        log.info("Request to get all comments for news with id: {}", newsId); // <-- Добавлено
+        log.info("Request to get all comments for news with id: {}", newsId);
         List<CommentResponse> comments = commentService.findAllByNewsId(newsId);
-        log.info("Successfully retrieved {} comments for news with id: {}", comments.size(), newsId); // <-- Добавлено
+        log.info("Successfully retrieved {} comments for news with id: {}. Response code: 200", comments.size(), newsId);
         return ResponseEntity.ok(comments);
     }
 
@@ -65,15 +65,15 @@ public class CommentController {
             @Parameter(description = "ID новости, к которой добавляется комментарий") @PathVariable Long newsId,
             @RequestBody(description = "Текст комментария") @Valid @org.springframework.web.bind.annotation.RequestBody CommentRequest request
     ) {
-        log.info("Request to create a new comment for news with id: {}", newsId); // <-- Добавлено
+        log.info("Request to create a new comment for news with id: {}", newsId);
         CommentResponse createdComment = commentService.create(newsId, request);
-        log.info("Successfully created a new comment with id: {} for news with id: {}", createdComment.getId(), newsId); // <-- Добавлено
-        return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
+        log.info("Successfully created a new comment with id: {} for news with id: {}. Response code: 201", createdComment.getId(), newsId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
     }
 
     @Operation(
             summary = "Обновить комментарий",
-            description = "Обновляет существующий комментарий по его ID. Требуется аутентификация и право собственности на комментарий."
+            description = "Обновляет существующий комментарий. Требуется аутентификация и право собственности на комментарий."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комментарий успешно обновлен",
@@ -88,9 +88,9 @@ public class CommentController {
             @Parameter(description = "ID комментария, который нужно обновить") @PathVariable Long commentId,
             @RequestBody(description = "Новый текст комментария") @Valid @org.springframework.web.bind.annotation.RequestBody CommentRequest request
     ) {
-        log.info("Request to update comment with id: {}", commentId); // <-- Добавлено
+        log.info("Request to update comment with id: {}", commentId);
         CommentResponse updatedComment = commentService.update(commentId, request);
-        log.info("Successfully updated comment with id: {}", commentId); // <-- Добавлено
+        log.info("Successfully updated comment with id: {}. Response code: 200", commentId);
         return ResponseEntity.ok(updatedComment);
     }
 
@@ -106,11 +106,11 @@ public class CommentController {
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @Parameter(description = "ID новости (игнорируется, но нужен для пути)") @PathVariable Long newsId,
-            @Parameter(description = "ID комментария, который нужно удалить") @PathVariable Long commentId
+            @Parameter(description = "ID комментария, который нужно удалить") @PathVariable Long commentId // <-- ИСПРАВЛЕНО
     ) {
-        log.info("Request to delete comment with id: {}", commentId); // <-- Добавлено
+        log.info("Request to delete comment with id: {}", commentId);
         commentService.deleteById(commentId);
-        log.info("Successfully deleted comment with id: {}", commentId); // <-- Добавлено
+        log.info("Successfully deleted comment with id: {}. Response code: 204", commentId);
         return ResponseEntity.noContent().build();
     }
 }

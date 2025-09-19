@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
         return new ErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), "Validation Error: " + errorMessage);
     }
 
-    // НОВЫЙ ОБРАБОТЧИК для ошибок уникальности от БД
+    // Обработчик для ошибок уникальности от БД
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponseDTO handleDataIntegrityViolation(DataIntegrityViolationException ex) {
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
         return new ErrorResponseDTO(HttpStatus.CONFLICT.value(), message);
     }
 
-    // ВАШИ СУЩЕСТВУЮЩИЕ ОБРАБОТЧИКИ
+    // Ваши существующие обработчики
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDTO handleResourceNotFoundException(ResourceNotFoundException ex) {
@@ -48,6 +48,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponseDTO handleDuplicateResourceException(DuplicateResourceException ex) {
         log.error("Duplicate resource conflict: {}", ex.getMessage());
+        return new ErrorResponseDTO(HttpStatus.CONFLICT.value(), ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateNewsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponseDTO handleDuplicateNewsException(DuplicateNewsException ex) {
+        log.warn("Attempt to create duplicate news: {}", ex.getMessage());
         return new ErrorResponseDTO(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
 
@@ -72,14 +79,15 @@ public class GlobalExceptionHandler {
         return new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An unexpected error occurred. Please contact support.");
     }
 
-    // НОВЫЙ ПРИВАТНЫЙ МЕТОД для парсинга сообщения об ошибке
+    // Приватный метод для парсинга сообщения об ошибке
     private Optional<String> extractDuplicateEntryMessage(DataIntegrityViolationException ex) {
         String causeMessage = ex.getMostSpecificCause().getMessage();
+
         if (causeMessage != null && causeMessage.contains("violates unique constraint")) {
-            // Пример сообщения: ERROR: duplicate key value violates unique constraint "users_email_key"
-            // Подробности: Key (email)=(test@example.com) already exists.
-            Pattern pattern = Pattern.compile("Key \\((.*?)\\)=\\((.*?)\\) already exists");
+
+            Pattern pattern = Pattern.compile("Key \\(([^)]+)\\)=\\(([^)]+)\\) already exists");
             Matcher matcher = pattern.matcher(causeMessage);
+
             if (matcher.find()) {
                 String field = matcher.group(1);
                 String value = matcher.group(2);

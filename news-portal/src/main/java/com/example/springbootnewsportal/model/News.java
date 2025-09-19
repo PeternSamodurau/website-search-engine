@@ -2,6 +2,8 @@ package com.example.springbootnewsportal.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -19,24 +21,20 @@ public class News {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String sourceName;
+    @CreationTimestamp
+    @Column(name = "create_at", updatable = false)
+    private Instant createAt;
+
+    @UpdateTimestamp
+    @Column(name = "update_at")
+    private Instant updateAt;
+    // --------------------
 
     @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
-    private String description;
-
-    @Column(columnDefinition = "TEXT")
     private String content;
-
-    @Column(name = "published_at")
-    private Instant publishedAt;
-
-    private String url;
-
-    @Column(name = "image_url")
-    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
@@ -55,4 +53,6 @@ public class News {
     @EqualsAndHashCode.Exclude
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
+
+    // Ненужные поля убраны для упрощения
 }

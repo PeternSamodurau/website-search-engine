@@ -21,7 +21,7 @@ import java.util.List;
 
 @Tag(name = "Категории", description = "Операции с категориями новостей")
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
 @Slf4j
 public class CategoryController {
@@ -38,7 +38,7 @@ public class CategoryController {
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         log.info("Request to get all categories");
         List<CategoryResponse> categories = categoryService.findAll();
-        log.info("Successfully retrieved {} categories", categories.size());
+        log.info("Successfully retrieved {} categories. Response code: 200", categories.size());
         return ResponseEntity.ok(categories);
     }
 
@@ -52,7 +52,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
         log.info("Request to get category with id: {}", id);
         CategoryResponse category = categoryService.findById(id);
-        log.info("Successfully retrieved category with id: {}", id);
+        log.info("Successfully retrieved category with id: {}. Response code: 200", id);
         return ResponseEntity.ok(category);
     }
 
@@ -66,7 +66,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
         log.info("Request to create a new category with name: {}", request.getName());
         CategoryResponse createdCategory = categoryService.create(request);
-        log.info("Successfully created a new category with id: {}", createdCategory.getId());
+        log.info("Successfully created a new category with id: {}. Response code: 201", createdCategory.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
     }
 
@@ -81,7 +81,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequest request) {
         log.info("Request to update category with id: {}", id);
         CategoryResponse updatedCategory = categoryService.update(id, request);
-        log.info("Successfully updated category with id: {}", id);
+        log.info("Successfully updated category with id: {}. Response code: 200", id);
         return ResponseEntity.ok(updatedCategory);
     }
 
@@ -94,7 +94,7 @@ public class CategoryController {
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         log.info("Request to delete category with id: {}", id);
         categoryService.deleteById(id);
-        log.info("Successfully deleted category with id: {}", id);
+        log.info("Successfully deleted category with id: {}. Response code: 204", id);
         return ResponseEntity.noContent().build();
     }
 }

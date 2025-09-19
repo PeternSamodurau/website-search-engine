@@ -1,4 +1,4 @@
-package com.example.springbootnewsportal.aop;
+package com.example.springbootnewsportal.aop.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CheckEntityOwnership {
+public @interface CheckOwnership {
+    String entityType(); // "news" или "comment"
 }

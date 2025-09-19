@@ -1,0 +1,152 @@
+[
+  {
+    "title": "AI Revolution: How Artificial Intelligence is Changing Everything",
+    "text": "From healthcare to finance, AI is disrupting industries and creating new possibilities. This article explores the latest trends and what they mean for the future.",
+    "author_id": 1,
+    "category_id": 2
+  },
+  {
+    "title": "The Future of Remote Work: A Hybrid Approach",
+    "text": "Companies are embracing a mix of in-office and remote work. We look at the benefits and challenges of this new model.",
+    "author_id": 2,
+    "category_id": 3
+  },
+  {
+    "title": "SpaceX Launches New Starlink Satellites",
+    "text": "Another successful launch for SpaceX as it continues to build out its global satellite internet constellation.",
+    "author_id": 2,
+    "category_id": 3
+  },
+  {
+    "title": "Breakthrough in Fusion Energy: A Clean Energy Milestone",
+    "text": "Scientists have achieved a net energy gain in a fusion reaction, a major step towards limitless clean energy.",
+    "author_id": 2,
+    "category_id": 4
+  },
+  {
+    "title": "Global Stock Markets Rally on Positive Economic News",
+    "text": "Investors are optimistic as new data shows inflation is cooling and economic growth remains strong.",
+    "author_id": 2,
+    "category_id": 5
+  },
+  {
+    "title": "The Rise of Sustainable Investing",
+    "text": "More and more investors are putting their money into companies that prioritize environmental, social, and governance (ESG) factors.",
+    "author_id": 3,
+    "category_id": 5
+  },
+  {
+    "title": "New Study Finds Link Between Gut Health and Mental Well-being",
+    "text": "Researchers have discovered a strong connection between the gut microbiome and mental health, opening up new avenues for treatment.",
+    "author_id": 3,
+    "category_id": 4
+  },
+  {
+    "title": "Champions League Final: A Thrilling Encounter",
+    "text": "The final match of the season was a nail-biter, with the winning goal scored in the last minute of extra time.",
+    "author_id": 3,
+    "category_id": 2
+  },
+  {
+    "title": "How to Protect Your Digital Privacy in an Online World",
+    "text": "With data breaches on the rise, it's more important than ever to take steps to protect your personal information online.",
+    "author_id": 1,
+    "category_id": 3
+  },
+  {
+    "title": "The Art of Minimalist Living: Less is More",
+    "text": "Decluttering your life can lead to reduced stress and greater happiness. Here are some tips to get started.",
+    "author_id": 2,
+    "category_id": 1
+  },
+  {
+    "title": "Exploring the Deep Sea: New Species Discovered",
+    "text": "A recent expedition to the Mariana Trench has revealed several new species of marine life, highlighting how little we know about our oceans.",
+    "author_id": 3,
+    "category_id": 3
+  },
+  {
+    "title": "The Psychology of Procrastination",
+    "text": "Why do we delay important tasks? This article delves into the science behind procrastination and offers strategies to overcome it.",
+    "author_id": 1,
+    "category_id": 2
+  },
+  {
+    "title": "Advancements in 3D Printing Technology",
+    "text": "From custom medical implants to entire houses, 3D printing is revolutionizing manufacturing. We explore the latest breakthroughs.",
+    "author_id": 2,
+    "category_id": 1
+  },
+  {
+    "title": "The World's Most Expensive Coffee",
+    "text": "What makes Kopi Luwak coffee so special and expensive? A look into the unique process and the controversy surrounding it.",
+    "author_id": 3,
+    "category_id": 5
+  },
+  {
+    "title": "Urban Gardening: How to Grow Food in Small Spaces",
+    "text": "You don't need a large backyard to grow your own vegetables. Learn how to start your own urban garden on a balcony or windowsill.",
+    "author_id": 2,
+    "category_id": 4
+  },
+  {
+    "title": "The History of the Internet: From ARPANET to the World Wide Web",
+    "text": "A journey through time, exploring the key milestones and individuals that shaped the internet as we know it today.",
+    "author_id": 1,
+    "category_id": 1
+  },
+  {
+    "title": "Debate Over Four-Day Workweek Intensifies",
+    "text": "Several companies are trialing a shorter workweek, reporting increased productivity and employee satisfaction. Is this the future of work?",
+    "author_id": 3,
+    "category_id": 5
+  },
+  {
+    "title": "The Science of Sleep: Why We Need It and How to Get More",
+    "text": "Sleep is crucial for physical and mental health. This guide explains the stages of sleep and provides tips for a better night's rest.",
+    "author_id": 2,
+    "category_id": 2
+  },
+  {
+    "title": "Formula 1 Announces New Regulations for Next Season",
+    "text": "The FIA has unveiled a new set of technical regulations aimed at increasing competition and improving the spectacle of racing.",
+    "author_id": 3,
+    "category_id": 4
+  },
+  {
+    "title": "The Impact of Social Media on Society",
+    "text": "A critical look at how platforms like Facebook, Twitter, and Instagram have reshaped communication, politics, and social interaction.",
+    "author_id": 1,
+    "category_id": 3
+  },
+  {
+    "title": "Beginner's Guide to Cryptocurrency",
+    "text": "What is Bitcoin? What is a blockchain? This guide explains the basics of cryptocurrency for those new to the space.",
+    "author_id": 2,
+    "category_id": 5
+  },
+  {
+    "title": "The Secrets of Ancient Roman Concrete",
+    "text": "Roman concrete has survived for millennia. Scientists are now uncovering the secrets of its incredible durability.",
+    "author_id": 3,
+    "category_id": 3
+  },
+  {
+    "title": "How to Train for Your First Marathon",
+    "text": "A step-by-step guide for aspiring runners, covering everything from training plans to nutrition and race day preparation.",
+    "author_id": 2,
+    "category_id": 4
+  },
+  {
+    "title": "The Ethics of Gene Editing",
+    "text": "CRISPR technology has the potential to cure genetic diseases, but it also raises profound ethical questions. We explore the debate.",
+    "author_id": 1,
+    "category_id": 2
+  },
+  {
+    "title": "The Future of Electric Vehicles: Solid-State Batteries",
+    "text": "Solid-state batteries promise longer range, faster charging, and improved safety for electric vehicles. Are they the next big thing?",
+    "author_id": 3,
+    "category_id": 1
+  }
+]

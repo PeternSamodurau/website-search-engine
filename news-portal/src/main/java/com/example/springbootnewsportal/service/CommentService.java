@@ -1,5 +1,6 @@
 package com.example.springbootnewsportal.service;
 
+import com.example.springbootnewsportal.aop.annotation.CheckOwnership;
 import com.example.springbootnewsportal.dto.request.CommentRequest;
 import com.example.springbootnewsportal.dto.response.CommentResponse;
 
@@ -13,7 +14,9 @@ public interface CommentService {
 
     CommentResponse create(Long newsId, CommentRequest request);
 
+    @CheckOwnership(entityType = "comment")
     CommentResponse update(Long id, CommentRequest request);
 
+    @CheckOwnership(entityType = "comment")
     void deleteById(Long id);
 }
