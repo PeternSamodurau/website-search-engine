@@ -1,9 +1,30 @@
 services:
   postgres:
     image: postgres:12.3
+    container_name: news-portal-db
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=news_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d news_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    container_name: news-portal-app
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/news_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    depends_on:
+      postgres:
+        condition: service_healthy

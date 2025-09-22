@@ -17,7 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
+// === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
+import java.io.InputStream;
+// === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,24 +64,29 @@ public class DataInitializer implements CommandLineRunner {
 
     private void initializeUsers() throws Exception {
         log.info("Initializing users...");
-        File file = new ClassPathResource("data/users.json").getFile();
-        List<User> users = objectMapper.readValue(file, new TypeReference<>() {});
+
+        InputStream inputStream = new ClassPathResource("data/users.json").getInputStream();
+        List<User> users = objectMapper.readValue(inputStream, new TypeReference<>() {});
+
         users.forEach(user -> user.setPassword(passwordEncoder.encode(user.getPassword())));
         userRepository.saveAll(users);
     }
 
     private void initializeCategories() throws Exception {
         log.info("Initializing categories...");
-        File file = new ClassPathResource("data/categories.json").getFile();
-        List<Category> categories = objectMapper.readValue(file, new TypeReference<>() {});
+
+        InputStream inputStream = new ClassPathResource("data/categories.json").getInputStream();
+        List<Category> categories = objectMapper.readValue(inputStream, new TypeReference<>() {});
+
         categoryRepository.saveAll(categories);
     }
 
-    // ИЗМЕНЕНИЕ: Метод теперь возвращает количество созданных новостей
     private int initializeNews() throws Exception {
         log.info("Initializing news...");
-        File file = new ClassPathResource("data/news.json").getFile();
-        List<Map<String, String>> newsData = objectMapper.readValue(file, new TypeReference<>() {});
+
+        InputStream inputStream = new ClassPathResource("data/news.json").getInputStream();
+        List<Map<String, String>> newsData = objectMapper.readValue(inputStream, new TypeReference<>() {});
+
 
         List<User> users = userRepository.findAll();
         List<Category> categories = categoryRepository.findAll();
@@ -87,7 +94,7 @@ public class DataInitializer implements CommandLineRunner {
 
         if (users.isEmpty() || categories.isEmpty()) {
             log.warn("Cannot initialize news because there are no users or categories.");
-            return 0; // Возвращаем 0, если ничего не создано
+            return 0;
         }
 
         List<News> newsList = new ArrayList<>();
@@ -101,6 +108,6 @@ public class DataInitializer implements CommandLineRunner {
             newsList.add(news);
         }
         newsRepository.saveAll(newsList);
-        return newsList.size(); // Возвращаем реальное количество
+        return newsList.size();
     }
 }

@@ -4,8 +4,8 @@
 
 1. Выполните **.\gradlew clean build.**
 2. Выполните **docker-compose -f docker/docker-compose.yml up --build | Tee-Object -FilePath "docker/docker-log.txt"**
-3. Откройте в браузере http://localhost:8081/swagger-ui/index.html
-   Страница загрузится без ошибок и без пароля.
+3. Откройте Swagger в браузере http://localhost:8081/swagger-ui/index.html
+   Страница загрузится без пароля.
 
 
 ### Оглавление
