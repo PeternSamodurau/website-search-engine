@@ -1,37 +1,70 @@
 package com.example.springbootnewsportal.mapper;
 
 import com.example.springbootnewsportal.dto.request.NewsRequest;
+import com.example.springbootnewsportal.dto.request.NewsUpdateRequest;
+import com.example.springbootnewsportal.dto.response.CommentResponse;
 import com.example.springbootnewsportal.dto.response.NewsResponse;
+import com.example.springbootnewsportal.model.Comment;
 import com.example.springbootnewsportal.model.News;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.Mappings;
 
-import java.util.stream.Collectors;
+import java.util.List;
 
-@Mapper(
-    componentModel = "spring",
-    unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    uses = {CommentMapper.class},
-    imports = {Collectors.class}
-)
+// === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
+@Mapper(componentModel = "spring")
 public interface NewsMapper {
 
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "createAt", ignore = true),
+            @Mapping(target = "updateAt", ignore = true),
+            @Mapping(target = "author", ignore = true),
+            @Mapping(target = "category", ignore = true),
+            @Mapping(target = "comments", ignore = true)
+    })
     News toNews(NewsRequest request);
 
-    void updateNewsFromRequest(NewsRequest request, @MappingTarget News news);
+    @Mappings({
+            @Mapping(target = "authorUsername", source = "author.username"),
+            @Mapping(target = "categoryName", source = "category.categoryName"),
+            // ИСПРАВЛЕНО: Добавлено недостающее поле
+            @Mapping(target = "commentsCount", expression = "java(news.getComments() != null ? (long) news.getComments().size() : 0L)")
+    })
+    NewsResponse toNewsResponse(News news);
 
-    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
-    @Mapping(source = "author.username", target = "authorUsername")
-    @Mapping(source = "category.categoryName", target = "categoryName") // ИСПРАВЛЕНО
-    @Mapping(target = "commentsCount", expression = "java(news.getComments() != null ? (long) news.getComments().size() : 0L)")
+    @Mappings({
+            @Mapping(target = "authorUsername", source = "author.username"),
+            @Mapping(target = "categoryName", source = "category.categoryName"),
+            // ИСПРАВЛЕНО: Тип выражения изменен с int на long
+            @Mapping(target = "commentsCount", expression = "java(news.getComments() != null ? (long) news.getComments().size() : 0L)")
+    })
     NewsResponse toNewsResponseForList(News news);
 
-    @Mapping(source = "author.username", target = "authorUsername")
-    @Mapping(source = "category.categoryName", target = "categoryName") // ИСПРАВЛЕНО
-    @Mapping(target = "commentsCount", expression = "java(news.getComments() != null ? (long) news.getComments().size() : 0L)")
-    @Mapping(target = "comments", expression = "java(news.getComments().stream().map(commentMapper::toResponse).collect(Collectors.toList()))")
+    @Mappings({
+            @Mapping(target = "authorUsername", source = "author.username"),
+            @Mapping(target = "categoryName", source = "category.categoryName"),
+            @Mapping(target = "comments", source = "comments"),
+            // ИСПРАВЛЕНО: Добавлено недостающее поле и исправлен тип
+            @Mapping(target = "commentsCount", expression = "java(news.getComments() != null ? (long) news.getComments().size() : 0L)")
+    })
     NewsResponse toNewsResponseWithComments(News news);
-    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
+
+    @Mapping(target = "authorUsername", source = "author.username")
+    CommentResponse toCommentResponse(Comment comment);
+
+    List<CommentResponse> toCommentResponseList(List<Comment> comments);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "createAt", ignore = true),
+            @Mapping(target = "updateAt", ignore = true),
+            @Mapping(target = "author", ignore = true),
+            @Mapping(target = "category", ignore = true),
+            @Mapping(target = "comments", ignore = true)
+    })
+    void updateNewsFromRequest(NewsUpdateRequest request, @MappingTarget News news);
 }
+// === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===

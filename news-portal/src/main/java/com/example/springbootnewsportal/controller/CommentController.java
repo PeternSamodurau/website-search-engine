@@ -1,6 +1,7 @@
 package com.example.springbootnewsportal.controller;
 
 import com.example.springbootnewsportal.dto.request.CommentRequest;
+import com.example.springbootnewsportal.dto.request.CommentUpdateRequest; // <--- ИЗМЕНЕНИЕ
 import com.example.springbootnewsportal.dto.response.CommentResponse;
 import com.example.springbootnewsportal.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +30,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    // ... (методы createComment и getCommentsByNewsId без изменений) ...
     @Operation(
             summary = "Создать новый комментарий",
             description = "Добавляет новый комментарий к новости, принимая текст и ID автора как отдельные поля."
@@ -72,6 +74,7 @@ public class CommentController {
         return ResponseEntity.ok(comments);
     }
 
+    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
     @Operation(
             summary = "Обновить комментарий",
             description = "Обновляет существующий комментарий."
@@ -86,15 +89,14 @@ public class CommentController {
     public ResponseEntity<CommentResponse> updateComment(
             @Parameter(description = "ID новости") @PathVariable Long newsId,
             @Parameter(description = "ID комментария") @PathVariable Long commentId,
-            @Valid @RequestBody CommentRequest request
+            @Valid @RequestBody CommentUpdateRequest request // <--- ИЗМЕНЕНИЕ
     ) {
         log.info("Request to update comment with id: {}", commentId);
-        // Убедимся, что ID новости из пути соответствует DTO, если он там есть
-        request.setNewsId(newsId);
-        CommentResponse updatedComment = commentService.update(commentId, request);
+        CommentResponse updatedComment = commentService.update(commentId, request); // <--- ИЗМЕНЕНИЕ
         log.info("Successfully updated comment with id: {}. Response code: 200", commentId);
         return ResponseEntity.ok(updatedComment);
     }
+    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
 
     @Operation(
             summary = "Удалить комментарий",

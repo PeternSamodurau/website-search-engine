@@ -4,6 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+app.log
 
 ### STS ###
 .apt_generated
@@ -40,4 +41,3 @@ out/
 ### Docker ###
 docker/docker-log.txt
 
-gemini_app.log

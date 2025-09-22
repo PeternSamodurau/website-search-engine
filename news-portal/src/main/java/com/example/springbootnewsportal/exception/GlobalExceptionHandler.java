@@ -18,37 +18,36 @@ import java.util.regex.Pattern;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Обработчик для ошибок валидации DTO
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDTO handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
-        log.error("Validation error: {}", errorMessage);
-        return new ErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), "Validation Error: " + errorMessage);
+        // Логика для обработки ошибок валидации
+        return new ErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), "Validation error");
     }
 
-    // Обработчик для ошибок уникальности от БД
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponseDTO handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        String message = extractDuplicateEntryMessage(ex).orElse("Data integrity violation");
-        log.error("Data integrity violation: {}", message);
-        return new ErrorResponseDTO(HttpStatus.CONFLICT.value(), message);
-    }
-
-    // Ваши существующие обработчики
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDTO handleResourceNotFoundException(ResourceNotFoundException ex) {
-        log.error("Resource not found: {}", ex.getMessage());
+        log.warn("Resource not found: {}", ex.getMessage());
         return new ErrorResponseDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 
-    @ExceptionHandler(DuplicateResourceException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponseDTO handleDuplicateResourceException(DuplicateResourceException ex) {
-        log.error("Duplicate resource conflict: {}", ex.getMessage());
-        return new ErrorResponseDTO(HttpStatus.CONFLICT.value(), ex.getMessage());
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponseDTO handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.warn("Entity not found: {}", ex.getMessage());
+        return new ErrorResponseDTO(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        Optional<String> customMessage = extractDuplicateEntryMessage(ex);
+        if (customMessage.isPresent()) {
+            log.warn("Data integrity violation: {}", customMessage.get());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseDTO(HttpStatus.CONFLICT.value(), customMessage.get()));
+        }
+        log.error("An unexpected data integrity violation occurred", ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An unexpected database error occurred."));
     }
 
     @ExceptionHandler(DuplicateNewsException.class)
@@ -57,6 +56,15 @@ public class GlobalExceptionHandler {
         log.warn("Attempt to create duplicate news: {}", ex.getMessage());
         return new ErrorResponseDTO(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
+
+    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
+    @ExceptionHandler(DuplicateCommentException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponseDTO handleDuplicateCommentException(DuplicateCommentException ex) {
+        log.warn("Attempt to create duplicate comment: {}", ex.getMessage());
+        return new ErrorResponseDTO(HttpStatus.CONFLICT.value(), ex.getMessage());
+    }
+    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -84,7 +92,7 @@ public class GlobalExceptionHandler {
         String causeMessage = ex.getMostSpecificCause().getMessage();
 
         if (causeMessage != null && causeMessage.contains("violates unique constraint")) {
-
+            
             Pattern pattern = Pattern.compile("Key \\(([^)]+)\\)=\\(([^)]+)\\) already exists");
             Matcher matcher = pattern.matcher(causeMessage);
 

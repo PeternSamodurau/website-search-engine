@@ -1,6 +1,7 @@
 package com.example.springbootnewsportal.controller;
 
 import com.example.springbootnewsportal.dto.request.NewsRequest;
+import com.example.springbootnewsportal.dto.request.NewsUpdateRequest; // <--- ИЗМЕНЕНИЕ: Новый импорт
 import com.example.springbootnewsportal.dto.response.NewsResponse;
 import com.example.springbootnewsportal.service.NewsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +31,7 @@ public class NewsController {
 
     private final NewsService newsService;
 
+    // ... (методы getAllNews, getNewsById, createNews без изменений) ...
     @Operation(summary = "Получить все новости с пагинацией и фильтрацией",
             description = "Возвращает страницу с новостями. Можно фильтровать по автору и/или категории.")
     @ApiResponses(value = {
@@ -79,6 +81,7 @@ public class NewsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdNews);
     }
 
+    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
     @Operation(summary = "Обновить существующую новость", description = "Обновляет существующую новость.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Новость успешно обновлена",
@@ -87,12 +90,13 @@ public class NewsController {
             @ApiResponse(responseCode = "400", description = "Некорректный запрос", content = @Content)
     })
     @PutMapping("/{id}")
-    public ResponseEntity<NewsResponse> updateNews(@PathVariable Long id, @Valid @RequestBody NewsRequest request) {
+    public ResponseEntity<NewsResponse> updateNews(@PathVariable Long id, @Valid @RequestBody NewsUpdateRequest request) { // <--- ИЗМЕНЕНИЕ
         log.info("Request to update news with id: {}", id);
         NewsResponse updatedNews = newsService.update(id, request);
         log.info("Successfully updated news with id: {}. Response code: 200", id);
         return ResponseEntity.ok(updatedNews);
     }
+    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
 
     @Operation(summary = "Удалить новость", description = "Удаляет новость по ее ID.")
     @ApiResponses(value = {
