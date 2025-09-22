@@ -1,0 +1,29 @@
+{
+  "content": [
+    {
+      "id": 1,
+      "title": "Title",
+      "text": "Text",
+      "authorUsername": "user",
+      "categoryName": "category",
+      "createAt": "${json-unit.ignore}",
+      "updateAt": "${json-unit.ignore}",
+      "commentsCount": null,
+      "comments": []
+    }
+  ],
+  "pageable": "${json-unit.ignore}",
+  "totalPages": 1,
+  "totalElements": 1,
+  "last": true,
+  "size": 1,
+  "number": 0,
+  "sort": {
+    "empty": true,
+    "sorted": false,
+    "unsorted": true
+  },
+  "numberOfElements": 1,
+  "first": true,
+  "empty": false
+}

@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "title": "New Title",
+  "text": "New Text",
+  "authorUsername": "user",
+  "categoryName": "category",
+  "createAt": "${json-unit.ignore}",
+  "updateAt": "${json-unit.ignore}",
+  "commentsCount": null,
+  "comments": []
+}
