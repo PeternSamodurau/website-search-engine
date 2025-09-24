@@ -28,7 +28,7 @@ public class OwnershipAspect {
 
     private final NewsRepository newsRepository;
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository; // Добавляем репозиторий пользователей
+    private final UserRepository userRepository;
 
     @Pointcut("@annotation(checkOwnership) && args(entityId, ..)")
     public void checkOwnershipPointcut(CheckOwnership checkOwnership, Long entityId) {}
@@ -37,7 +37,6 @@ public class OwnershipAspect {
     public void checkOwnership(CheckOwnership checkOwnership, Long entityId) {
         log.info("====== AOP OWNERSHIP CHECK TRIGGERED (TYPE-SAFE) ======");
 
-        // --- ИЗМЕНЕННАЯ ЛОГИКА ПОЛУЧЕНИЯ ПОЛЬЗОВАТЕЛЯ ---
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!(principal instanceof String username)) {
@@ -50,7 +49,6 @@ public class OwnershipAspect {
                     log.error("User with username '{}' not found in database.", username);
                     return new ResourceNotFoundException("User not found: " + username);
                 });
-        // --- КОНЕЦ ИЗМЕНЕННОЙ ЛОГИКИ ---
 
         log.info("Checking ownership for entityType: '{}', entityId: '{}'", checkOwnership.entityType(), entityId);
         log.info("Current user: '{}' (ID: {})", currentUser.getUsername(), currentUser.getId());

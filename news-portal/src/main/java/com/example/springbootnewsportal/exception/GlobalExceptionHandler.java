@@ -87,7 +87,7 @@ public class GlobalExceptionHandler {
         return new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An unexpected error occurred. Please contact support.");
     }
 
-    // Приватный метод для парсинга сообщения об ошибке
+    // для парсинга сообщения об ошибке
     private Optional<String> extractDuplicateEntryMessage(DataIntegrityViolationException ex) {
         String causeMessage = ex.getMostSpecificCause().getMessage();
 

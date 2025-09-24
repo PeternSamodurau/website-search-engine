@@ -1,6 +1,6 @@
 package com.example.springbootnewsportal.mapper;
 
-import com.example.springbootnewsportal.dto.request.CommentUpdateRequest; // <--- ИЗМЕНЕНИЕ
+import com.example.springbootnewsportal.dto.request.CommentUpdateRequest;
 import com.example.springbootnewsportal.model.Comment;
 import com.example.springbootnewsportal.dto.request.CommentRequest;
 import com.example.springbootnewsportal.dto.response.CommentResponse;
@@ -19,16 +19,13 @@ public interface CommentMapper {
 
     List<CommentResponse> toResponseList(List<Comment> comments);
 
-    // Игнорируем author и news, т.к. сервис установит их вручную
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "news", ignore = true)
     Comment toComment(CommentRequest request);
 
-    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
-    // При обновлении запрещаем менять ID, автора и новость
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "news", ignore = true)
-    void updateCommentFromRequest(CommentUpdateRequest request, @MappingTarget Comment comment); // <--- ИЗМЕНЕНИЕ
-    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
+    void updateCommentFromRequest(CommentUpdateRequest request, @MappingTarget Comment comment);
+
 }

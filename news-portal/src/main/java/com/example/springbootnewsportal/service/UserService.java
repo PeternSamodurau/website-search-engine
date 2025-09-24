@@ -2,8 +2,7 @@ package com.example.springbootnewsportal.service;
 
 import com.example.springbootnewsportal.dto.request.UserRequest;
 import com.example.springbootnewsportal.dto.response.UserResponse;
-
-import java.util.List; // <-- ИЗМЕНЕНИЕ
+import java.util.List;
 
 public interface UserService {
 

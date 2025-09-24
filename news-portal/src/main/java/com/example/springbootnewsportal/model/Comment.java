@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp; // <--- ДОБАВЛЕН ИМПОРТ
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -22,11 +22,9 @@ public class Comment {
     @Column(name = "text", nullable = false)
     private String text;
 
-    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
-    @CreationTimestamp // <--- ДОБАВЛЕНА АННОТАЦИЯ
-    @Column(name = "created_at", nullable = false, updatable = false) // Сделано неизменяемым
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
-    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

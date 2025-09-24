@@ -1,7 +1,7 @@
 package com.example.springbootnewsportal.controller;
 
 import com.example.springbootnewsportal.dto.request.CommentRequest;
-import com.example.springbootnewsportal.dto.request.CommentUpdateRequest; // <--- ИЗМЕНЕНИЕ
+import com.example.springbootnewsportal.dto.request.CommentUpdateRequest;
 import com.example.springbootnewsportal.dto.response.CommentResponse;
 import com.example.springbootnewsportal.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +30,6 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    // ... (методы createComment и getCommentsByNewsId без изменений) ...
     @Operation(
             summary = "Создать новый комментарий",
             description = "Добавляет новый комментарий к новости, принимая текст и ID автора как отдельные поля."
@@ -48,10 +47,12 @@ public class CommentController {
             @Parameter(description = "ID автора комментария", required = true) @RequestParam Long authorId
     ) {
         log.info("Request to create a new comment for news with id: {} by author: {}", newsId, authorId);
-        // Создаем DTO вручную из параметров запроса
+
         CommentRequest request = new CommentRequest(text, authorId, newsId);
         CommentResponse createdComment = commentService.create(request);
+
         log.info("Successfully created a new comment with id: {} for news with id: {}. Response code: 201", createdComment.getId(), newsId);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
     }
 
@@ -69,12 +70,13 @@ public class CommentController {
             @Parameter(description = "ID новости, для которой нужно получить комментарии") @PathVariable Long newsId
     ) {
         log.info("Request to get all comments for news with id: {}", newsId);
+
         List<CommentResponse> comments = commentService.findAllByNewsId(newsId);
+
         log.info("Successfully retrieved {} comments for news with id: {}. Response code: 200", comments.size(), newsId);
         return ResponseEntity.ok(comments);
     }
 
-    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
     @Operation(
             summary = "Обновить комментарий",
             description = "Обновляет существующий комментарий."
@@ -89,14 +91,15 @@ public class CommentController {
     public ResponseEntity<CommentResponse> updateComment(
             @Parameter(description = "ID новости") @PathVariable Long newsId,
             @Parameter(description = "ID комментария") @PathVariable Long commentId,
-            @Valid @RequestBody CommentUpdateRequest request // <--- ИЗМЕНЕНИЕ
+            @Valid @RequestBody CommentUpdateRequest request
     ) {
         log.info("Request to update comment with id: {}", commentId);
-        CommentResponse updatedComment = commentService.update(commentId, request); // <--- ИЗМЕНЕНИЕ
+
+        CommentResponse updatedComment = commentService.update(commentId, request);
+
         log.info("Successfully updated comment with id: {}. Response code: 200", commentId);
         return ResponseEntity.ok(updatedComment);
     }
-    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
 
     @Operation(
             summary = "Удалить комментарий",
@@ -112,7 +115,9 @@ public class CommentController {
             @Parameter(description = "ID комментария") @PathVariable Long commentId
     ) {
         log.info("Request to delete comment with id: {}", commentId);
+
         commentService.deleteById(commentId);
+
         log.info("Successfully deleted comment with id: {}. Response code: 204", commentId);
         return ResponseEntity.noContent().build();
     }

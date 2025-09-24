@@ -37,7 +37,9 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         log.info("Request to get all categories");
+
         List<CategoryResponse> categories = categoryService.findAll();
+
         log.info("Successfully retrieved {} categories. Response code: 200", categories.size());
         return ResponseEntity.ok(categories);
     }
@@ -51,7 +53,9 @@ public class CategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
         log.info("Request to get category with id: {}", id);
+
         CategoryResponse category = categoryService.findById(id);
+
         log.info("Successfully retrieved category with id: {}. Response code: 200", id);
         return ResponseEntity.ok(category);
     }
@@ -65,7 +69,9 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
         log.info("Request to create a new category with name: {}", request.getCategoryName());
+
         CategoryResponse createdCategory = categoryService.create(request);
+
         log.info("Successfully created a new category with id: {}. Response code: 201", createdCategory.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
     }
@@ -80,7 +86,9 @@ public class CategoryController {
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequest request) {
         log.info("Request to update category with id: {}", id);
+
         CategoryResponse updatedCategory = categoryService.update(id, request);
+
         log.info("Successfully updated category with id: {}. Response code: 200", id);
         return ResponseEntity.ok(updatedCategory);
     }
@@ -93,7 +101,9 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         log.info("Request to delete category with id: {}", id);
+
         categoryService.deleteById(id);
+
         log.info("Successfully deleted category with id: {}. Response code: 204", id);
         return ResponseEntity.noContent().build();
     }

@@ -4,15 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
-import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @SpringBootApplication
 public class SpringBootNewsPortalApplication {
 
     public static void main(String[] args) {
+        log.info("My ClassLoader for load classes to Metaspace: {}", SpringBootNewsPortalApplication.class.getClassLoader());
         SpringApplication.run(SpringBootNewsPortalApplication.class, args);
     }
 
@@ -22,10 +21,4 @@ public class SpringBootNewsPortalApplication {
         String url = "http://localhost:" + port;
         log.info("=================== SpringBootNewsPortalApplication started on URL : {}", url);
     }
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
 }

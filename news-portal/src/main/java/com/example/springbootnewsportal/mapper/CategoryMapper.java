@@ -11,10 +11,9 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CategoryMapper {
 
-    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
+
     @Mapping(target = "newsCount", expression = "java(category.getNewsList() != null ? (long) category.getNewsList().size() : 0L)")
-    CategoryResponse toCategoryResponse(Category category); // МЕТОД ПЕРЕИМЕНОВАН
-    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
+    CategoryResponse toCategoryResponse(Category category);
 
     Category toCategory(CategoryRequest request);
 

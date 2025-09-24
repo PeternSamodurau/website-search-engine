@@ -1,7 +1,7 @@
 package com.example.springbootnewsportal.service.impl;
 
 import com.example.springbootnewsportal.dto.request.CommentRequest;
-import com.example.springbootnewsportal.dto.request.CommentUpdateRequest; // <--- ИЗМЕНЕНИЕ
+import com.example.springbootnewsportal.dto.request.CommentUpdateRequest;
 import com.example.springbootnewsportal.dto.response.CommentResponse;
 import com.example.springbootnewsportal.exception.DuplicateCommentException;
 import com.example.springbootnewsportal.exception.ResourceNotFoundException;
@@ -84,9 +84,8 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toResponse(savedComment);
     }
 
-    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
     @Override
-    public CommentResponse update(Long id, CommentUpdateRequest request) { // <--- ИЗМЕНЕНИЕ
+    public CommentResponse update(Long id, CommentUpdateRequest request) {
         log.info("Executing update request for comment with ID: {}", id);
         Comment existingComment = commentRepository.findById(id)
                 .orElseThrow(() -> {
@@ -94,13 +93,12 @@ public class CommentServiceImpl implements CommentService {
                     return new ResourceNotFoundException("Comment not found with ID: " + id);
                 });
 
-        commentMapper.updateCommentFromRequest(request, existingComment); // <--- ИЗМЕНЕНИЕ
+        commentMapper.updateCommentFromRequest(request, existingComment);
 
         Comment updatedComment = commentRepository.save(existingComment);
         log.info("Successfully updated comment with ID: {}", updatedComment.getId());
         return commentMapper.toResponse(updatedComment);
     }
-    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
 
     @Override
     public void deleteById(Long id) {

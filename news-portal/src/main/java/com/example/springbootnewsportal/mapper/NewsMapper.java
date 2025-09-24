@@ -10,10 +10,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
-
 import java.util.List;
 
-// === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
 @Mapper(componentModel = "spring")
 public interface NewsMapper {
 
@@ -30,7 +28,6 @@ public interface NewsMapper {
     @Mappings({
             @Mapping(target = "authorUsername", source = "author.username"),
             @Mapping(target = "categoryName", source = "category.categoryName"),
-            // ИСПРАВЛЕНО: Добавлено недостающее поле
             @Mapping(target = "commentsCount", expression = "java(news.getComments() != null ? (long) news.getComments().size() : 0L)")
     })
     NewsResponse toNewsResponse(News news);
@@ -38,7 +35,6 @@ public interface NewsMapper {
     @Mappings({
             @Mapping(target = "authorUsername", source = "author.username"),
             @Mapping(target = "categoryName", source = "category.categoryName"),
-            // ИСПРАВЛЕНО: Тип выражения изменен с int на long
             @Mapping(target = "commentsCount", expression = "java(news.getComments() != null ? (long) news.getComments().size() : 0L)")
     })
     NewsResponse toNewsResponseForList(News news);
@@ -47,7 +43,6 @@ public interface NewsMapper {
             @Mapping(target = "authorUsername", source = "author.username"),
             @Mapping(target = "categoryName", source = "category.categoryName"),
             @Mapping(target = "comments", source = "comments"),
-            // ИСПРАВЛЕНО: Добавлено недостающее поле и исправлен тип
             @Mapping(target = "commentsCount", expression = "java(news.getComments() != null ? (long) news.getComments().size() : 0L)")
     })
     NewsResponse toNewsResponseWithComments(News news);
@@ -67,4 +62,4 @@ public interface NewsMapper {
     })
     void updateNewsFromRequest(NewsUpdateRequest request, @MappingTarget News news);
 }
-// === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
+

@@ -28,13 +28,12 @@ public class News {
     @UpdateTimestamp
     @Column(name = "update_at")
     private Instant updateAt;
-    // --------------------
 
     @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
-    private String text; // <--- ПОЛЕ ПЕРЕИМЕНОВАНО
+    private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
@@ -54,5 +53,4 @@ public class News {
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
-    // Ненужные поля убраны для упрощения
 }

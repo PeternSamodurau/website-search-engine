@@ -56,7 +56,6 @@ public class NewsServiceImpl implements NewsService {
         log.info("Creating new news with title: '{}', authorId: {}, categoryId: {}",
                 request.getTitle(), request.getAuthorId(), request.getCategoryId());
 
-        // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
         if (newsRepository.existsByTitle(request.getTitle())) {
             log.warn("Attempted to create a news with a duplicate title: '{}'", request.getTitle());
             throw new DuplicateNewsException("A news item with the same title already exists.");
@@ -66,7 +65,6 @@ public class NewsServiceImpl implements NewsService {
             log.warn("Attempted to create a news with a duplicate text.");
             throw new DuplicateNewsException("A news item with the same text already exists.");
         }
-        // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
 
         User author = userRepository.findById(request.getAuthorId())
                 .orElseThrow(() -> new EntityNotFoundException("Author with ID " + request.getAuthorId() + " not found"));

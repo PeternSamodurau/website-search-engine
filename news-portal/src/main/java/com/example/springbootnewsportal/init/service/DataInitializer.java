@@ -16,10 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-// === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
 import java.io.InputStream;
-// === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

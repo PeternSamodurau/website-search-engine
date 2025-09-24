@@ -36,7 +36,9 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         log.info("Request to get all users");
+
         List<UserResponse> users = userService.findAll();
+
         log.info("Successfully retrieved {} users. Response code: 200", users.size());
         return ResponseEntity.ok(users);
     }
@@ -51,7 +53,9 @@ public class UserController {
             @Parameter(description = "Уникальный идентификатор пользователя") @PathVariable Long id
     ) {
         log.info("Request to get user with id: {}", id);
+
         UserResponse user = userService.findById(id);
+
         log.info("Successfully retrieved user with id: {}. Response code: 200", id);
         return ResponseEntity.ok(user);
     }
@@ -67,7 +71,9 @@ public class UserController {
             @RequestBody(description = "Данные для создания нового пользователя") @Valid @org.springframework.web.bind.annotation.RequestBody UserRequest request
     ) {
         log.info("Request to create a new user");
+
         UserResponse createdUser = userService.create(request);
+
         log.info("Successfully created a new user with id: {}. Response code: 201", createdUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
@@ -85,7 +91,9 @@ public class UserController {
             @RequestBody(description = "Новые данные для пользователя") @Valid @org.springframework.web.bind.annotation.RequestBody UserRequest request
     ) {
         log.info("Request to update user with id: {}", id);
+
         UserResponse updatedUser = userService.update(id, request);
+
         log.info("Successfully updated user with id: {}. Response code: 200", id);
         return ResponseEntity.ok(updatedUser);
     }
@@ -100,7 +108,9 @@ public class UserController {
             @Parameter(description = "ID пользователя, которого нужно удалить") @PathVariable Long id
     ) {
         log.info("Request to delete user with id: {}", id);
+
         userService.deleteById(id);
+
         log.info("Successfully deleted user with id: {}. Response code: 204", id);
         return ResponseEntity.noContent().build();
     }

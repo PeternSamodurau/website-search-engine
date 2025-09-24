@@ -11,7 +11,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findAllByNewsId(Long newsId);
 
-    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
     boolean existsByTextAndAuthorIdAndNewsId(String text, Long authorId, Long newsId);
-    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
+
 }

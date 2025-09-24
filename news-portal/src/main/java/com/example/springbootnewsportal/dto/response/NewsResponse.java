@@ -19,7 +19,7 @@ public class NewsResponse {
     private Instant createAt;
     private Instant updateAt;
     private String authorUsername;
-    private String categoryName; // <--- ПОЛЕ ПЕРЕИМЕНОВАНО
+    private String categoryName;
     private Long commentsCount;
     private List<CommentResponse> comments = new ArrayList<>();
 }

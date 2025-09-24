@@ -92,7 +92,7 @@ class NewsControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/v1/news/{id}", newsId))
-                .andExpect(status().isInternalServerError()); // Исправлено на 500
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -178,7 +178,7 @@ class NewsControllerTest {
 
         // when & then
         mockMvc.perform(delete("/api/v1/news/{id}", newsId))
-                .andExpect(status().isInternalServerError()); // Исправлено на 500
+                .andExpect(status().isInternalServerError());
     }
 
     private NewsResponse createNewsResponse(Long id, String title, String text, String author, String category) {
@@ -190,7 +190,7 @@ class NewsControllerTest {
         response.setCategoryName(category);
         response.setCreateAt(Instant.now());
         response.setUpdateAt(Instant.now());
-        // `comments` и `commentsCount` будут добавлены Jackson'ом как null/пустой список
+
         return response;
     }
 
