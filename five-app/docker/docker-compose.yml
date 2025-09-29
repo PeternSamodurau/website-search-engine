@@ -1,10 +1,46 @@
-version: '3'
 services:
   postgres:
     image: postgres:12.3
+    container_name: book-app-db
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=book_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d book_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:latest
+    container_name: book-app-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    container_name: book-app
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=init
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/book_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATA_REDIS_HOST=redis
+      - OPENLIBRARY_API_URL=openlibrary.org
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
