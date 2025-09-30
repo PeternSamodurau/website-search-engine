@@ -6,7 +6,7 @@ import com.example.booksManagement.client.googlebooks.VolumeItem;
 import com.example.booksManagement.model.Book;
 import com.example.booksManagement.model.Category;
 import com.example.booksManagement.repository.BookRepository;
-import com.example.booksManagement.repository.CategoryRepository; // ИМПОРТ ДОБАВЛЕН
+import com.example.booksManagement.repository.CategoryRepository;
 import com.example.booksManagement.service.BookService;
 import com.example.booksManagement.service.CategoryService;
 import org.slf4j.Logger;
@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,18 +24,16 @@ import java.util.Optional;
 public class DataInitializer implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
-    private static final int BOOKS_PER_CATEGORY = 10;
 
     private final BookRepository bookRepository;
-    private final CategoryRepository categoryRepository; // ПОЛЕ ДОБАВЛЕНО
+    private final CategoryRepository categoryRepository;
     private final BookService bookService;
     private final CategoryService categoryService;
     private final GoogleBooksClient googleBooksClient;
 
-    // КОНСТРУКТОР ИЗМЕНЕН
     public DataInitializer(BookRepository bookRepository, CategoryRepository categoryRepository, BookService bookService, CategoryService categoryService, GoogleBooksClient googleBooksClient) {
         this.bookRepository = bookRepository;
-        this.categoryRepository = categoryRepository; // ПОЛЕ ДОБАВЛЕНО
+        this.categoryRepository = categoryRepository;
         this.bookService = bookService;
         this.categoryService = categoryService;
         this.googleBooksClient = googleBooksClient;
@@ -50,36 +47,21 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        logger.info("Database is empty. Starting data initialization...");
+        logger.info("Database is empty. Initializing data by fetching books from Google Books API...");
 
-        List<String> categories = Arrays.asList(
-                "Fantasy", "Philosophy", "Thriller", "Business", "Travel", "Mystery",
-                "Technology", "History", "Science", "Cooking", "Art", "Fiction",
-                "Biography", "Romance", "Music"
-        );
+        final int booksPerQuery = 40;
+        final int numberOfQueries = 13; // 13 * 40 = ~520 books
 
-        logger.info("Processing {} predefined categories.", categories.size());
+        logger.info("Attempting to fetch books in {} batches...", numberOfQueries);
 
-        for (String categoryName : categories) {
+        for (int i = 0; i < numberOfQueries; i++) {
             try {
-                // ИСПРАВЛЕНО: Используем репозиторий для поиска, чтобы получить Optional
-                Optional<Category> existingCategory = categoryRepository.findByName(categoryName);
-                Category category = existingCategory.orElseGet(() -> {
-                    Category newCategory = new Category();
-                    newCategory.setName(categoryName);
-                    // Для сохранения используем сервис, это хорошая практика
-                    return categoryService.save(newCategory);
-                });
-
-                logger.info("Fetching up to {} books for category: '{}'", BOOKS_PER_CATEGORY, categoryName);
-
-                GoogleBooksSearchResponse response = googleBooksClient.searchBooks(
-                        "subject:" + categoryName,
-                        BOOKS_PER_CATEGORY
-                );
+                // ИСПРАВЛЕНО: Используем простой и рабочий поисковый запрос "a".
+                // Это даст нам гарантированный и разнообразный результат.
+                GoogleBooksSearchResponse response = googleBooksClient.searchBooks("a", booksPerQuery);
 
                 if (response == null || response.getItems() == null) {
-                    logger.warn("No books found for category '{}'. Skipping.", categoryName);
+                    logger.warn("Received no books on attempt {}. Skipping batch.", i + 1);
                     continue;
                 }
 
@@ -88,23 +70,45 @@ public class DataInitializer implements CommandLineRunner {
                         continue;
                     }
 
-                    Book book = new Book();
-                    book.setTitle(item.getVolumeInfo().getTitle());
+                    // Проверяем, есть ли у книги категория. Если нет - пропускаем.
+                    List<String> bookCategories = item.getVolumeInfo().getCategories();
+                    if (bookCategories == null || bookCategories.isEmpty()) {
+                        continue;
+                    }
+                    String categoryName = bookCategories.get(0);
+                    if (categoryName == null || categoryName.trim().isEmpty()) {
+                        continue;
+                    }
+                    String trimmedCategoryName = categoryName.trim();
 
-                    if (item.getVolumeInfo().getAuthors() != null) {
-                        book.setAuthor(String.join(", ", item.getVolumeInfo().getAuthors()));
+                    // Ищем категорию в базе данных.
+                    Optional<Category> existingCategory = categoryRepository.findByName(trimmedCategoryName);
+
+                    Category categoryToSave;
+                    if (existingCategory.isPresent()) {
+                        // Если нашли - используем ее.
+                        categoryToSave = existingCategory.get();
                     } else {
-                        book.setAuthor("Unknown Author");
+                        // Если не нашли - создаем новую и сохраняем ее.
+                        logger.info("Discovered and creating new category: '{}'", trimmedCategoryName);
+                        Category newCategory = new Category();
+                        newCategory.setName(trimmedCategoryName);
+                        categoryToSave = categoryService.save(newCategory);
                     }
 
-                    book.setCategory(category);
+                    // Сохраняем книгу в базу.
+                    Book book = new Book();
+                    book.setTitle(item.getVolumeInfo().getTitle());
+                    book.setAuthor(item.getVolumeInfo().getAuthors() != null ? String.join(", ", item.getVolumeInfo().getAuthors()) : "Unknown Author");
+                    book.setCategory(categoryToSave);
                     bookService.save(book);
                 }
             } catch (Exception e) {
-                logger.warn("Failed to process category '{}'. Error: {}. Skipping.", categoryName, e.getMessage());
+                logger.error("An error occurred during batch {}. Error: {}. Skipping batch.", i + 1, e.getMessage(), e);
             }
         }
 
-        logger.info("Data initialization finished. Total books in database: {}", bookRepository.count());
+        logger.info("Data initialization finished. Total books in database: {}. Total categories: {}",
+                bookRepository.count(), categoryRepository.count());
     }
 }
