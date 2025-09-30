@@ -3,6 +3,6 @@ package com.example.booksManagement.dto.request;
 import lombok.Data;
 
 @Data
-public class UpsertCategoryRequest {
+public class UserCategoryRequest {
     private String name;
 }

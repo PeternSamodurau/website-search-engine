@@ -3,11 +3,10 @@ package com.example.booksManagement.service.impl;
 import com.example.booksManagement.model.Book;
 import com.example.booksManagement.repository.BookRepository;
 import com.example.booksManagement.service.BookService;
-import com.example.booksManagement.service.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -16,7 +15,6 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
-    private final CategoryService categoryService;
 
     @Override
     public List<Book> findAll() {
@@ -25,19 +23,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book findById(Long id) {
-        return bookRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    @Cacheable(value = "book", key = "#title + #author")
-    public Book findByTitleAndAuthor(String title, String author) {
-        return bookRepository.findByTitleAndAuthor(title, author).orElse(null);
-    }
-
-    @Override
-    @Cacheable(value = "booksByCategory", key = "#categoryName")
-    public List<Book> findAllByCategoryName(String categoryName) {
-        return bookRepository.findAllByCategoryName(categoryName);
+        // ИЗМЕНЕНО: Логика проверки теперь здесь
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found with id: " + id));
     }
 
     @Override
@@ -46,14 +34,18 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @CacheEvict(value = {"book", "booksByCategory"}, allEntries = true)
     public Book update(Book book) {
+        // Для update мы тоже должны сначала найти сущность.
+        // Метод save() в Spring Data JPA работает как "upsert", если ID существует,
+        // но хорошей практикой является явная проверка.
+        findById(book.getId()); // Проверяем, что книга существует, перед обновлением
         return bookRepository.save(book);
     }
 
     @Override
-    @CacheEvict(value = {"book", "booksByCategory"}, allEntries = true)
     public void deleteById(Long id) {
+        // ИЗМЕНЕНО: Логика проверки теперь здесь
+        findById(id); // Проверяем, что книга существует, перед удалением
         bookRepository.deleteById(id);
     }
 }

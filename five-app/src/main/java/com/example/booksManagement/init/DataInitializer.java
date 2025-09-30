@@ -6,6 +6,7 @@ import com.example.booksManagement.client.googlebooks.VolumeItem;
 import com.example.booksManagement.model.Book;
 import com.example.booksManagement.model.Category;
 import com.example.booksManagement.repository.BookRepository;
+import com.example.booksManagement.repository.CategoryRepository; // ИМПОРТ ДОБАВЛЕН
 import com.example.booksManagement.service.BookService;
 import com.example.booksManagement.service.CategoryService;
 import org.slf4j.Logger;
@@ -27,12 +28,15 @@ public class DataInitializer implements CommandLineRunner {
     private static final int BOOKS_PER_CATEGORY = 10;
 
     private final BookRepository bookRepository;
+    private final CategoryRepository categoryRepository; // ПОЛЕ ДОБАВЛЕНО
     private final BookService bookService;
     private final CategoryService categoryService;
     private final GoogleBooksClient googleBooksClient;
 
-    public DataInitializer(BookRepository bookRepository, BookService bookService, CategoryService categoryService, GoogleBooksClient googleBooksClient) {
+    // КОНСТРУКТОР ИЗМЕНЕН
+    public DataInitializer(BookRepository bookRepository, CategoryRepository categoryRepository, BookService bookService, CategoryService categoryService, GoogleBooksClient googleBooksClient) {
         this.bookRepository = bookRepository;
+        this.categoryRepository = categoryRepository; // ПОЛЕ ДОБАВЛЕНО
         this.bookService = bookService;
         this.categoryService = categoryService;
         this.googleBooksClient = googleBooksClient;
@@ -58,11 +62,12 @@ public class DataInitializer implements CommandLineRunner {
 
         for (String categoryName : categories) {
             try {
-                // ПРАВИЛЬНАЯ ЛОГИКА: Найти или создать категорию
-                Optional<Category> existingCategory = categoryService.findByName(categoryName);
+                // ИСПРАВЛЕНО: Используем репозиторий для поиска, чтобы получить Optional
+                Optional<Category> existingCategory = categoryRepository.findByName(categoryName);
                 Category category = existingCategory.orElseGet(() -> {
                     Category newCategory = new Category();
                     newCategory.setName(categoryName);
+                    // Для сохранения используем сервис, это хорошая практика
                     return categoryService.save(newCategory);
                 });
 

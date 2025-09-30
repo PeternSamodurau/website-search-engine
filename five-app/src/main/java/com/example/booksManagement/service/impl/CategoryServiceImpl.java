@@ -4,10 +4,11 @@ import com.example.booksManagement.model.Category;
 import com.example.booksManagement.repository.CategoryRepository;
 import com.example.booksManagement.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +22,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Optional<Category> findById(Long id) {
-        return categoryRepository.findById(id);
+    public Category findById(Long id) {
+        // ИЗМЕНЕНО: Логика проверки теперь здесь
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with id: " + id));
+    }
+
+    @Override
+    public Category findByName(String name) {
+        // ИЗМЕНЕНО: Логика проверки теперь здесь
+        return categoryRepository.findByName(name)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found with name: " + name));
     }
 
     @Override
@@ -32,18 +42,15 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category update(Category category) {
+        // Проверяем, что категория существует, перед обновлением
+        findById(category.getId());
         return categoryRepository.save(category);
     }
 
     @Override
     public void deleteById(Long id) {
+        // ИЗМЕНЕНО: Логика проверки теперь здесь
+        findById(id); // Проверяем, что категория существует, перед удалением
         categoryRepository.deleteById(id);
-    }
-
-
-    @Override
-    public Optional<Category> findByName(String name) {
-
-        return categoryRepository.findByName(name);
     }
 }

@@ -3,8 +3,8 @@
 #1 DONE 0.0s
 
 #2 [internal] load build definition from Dockerfile
-#2 transferring dockerfile: 145B 0.0s done
-#2 DONE 0.0s
+#2 transferring dockerfile: 145B 0.1s done
+#2 DONE 0.1s
 
 #3 [internal] load metadata for docker.io/library/openjdk:17-oracle
 #3 ...
@@ -13,7 +13,7 @@
 #4 DONE 0.0s
 
 #3 [internal] load metadata for docker.io/library/openjdk:17-oracle
-#3 DONE 1.6s
+#3 DONE 2.0s
 
 #5 [internal] load .dockerignore
 #5 transferring context: 2B done
@@ -30,28 +30,28 @@
 #6 DONE 0.1s
 
 #7 [internal] load build context
-#7 transferring context: 78.37MB 5.2s
-#7 transferring context: 79.51MB 5.2s done
-#7 DONE 5.2s
+#7 transferring context: 63.99MB 5.0s
+#7 transferring context: 79.52MB 6.0s done
+#7 DONE 6.1s
 
 #8 [2/3] WORKDIR /app
 #8 CACHED
 
 #9 [3/3] COPY build/libs/*.jar app.jar
-#9 DONE 0.7s
+#9 DONE 0.9s
 
 #10 exporting to image
 #10 exporting layers
-#10 exporting layers 5.0s done
-#10 exporting manifest sha256:67f5736105d11381a1647faf01eee929914926bb160503b8091e782dce460e04 0.0s done
-#10 exporting config sha256:0c6b63c20b2027f25ade966f4de65d8c3a67918f80d33b8346f94b7ca3aa24e9 0.0s done
-#10 exporting attestation manifest sha256:e91a403ac4d60efd152a9147e3f8677fed6a28de9f75d5043efe4d4d7c9f3f47 0.0s done
-#10 exporting manifest list sha256:59d408aebf48cf3be86535c318f393dbda9e260964ca2592e5667651385b76e7 0.0s done
-#10 naming to docker.io/library/docker-app:latest
+#10 exporting layers 5.2s done
+#10 exporting manifest sha256:304ca8d6e9e8cb17e9eb4338e7df43f416f5c76824e35579275e5d4ba8f5f52c 0.0s done
+#10 exporting config sha256:1a5fc0e13bdec8b6ef0d9dde97f101dc0182d5f2942e1700a9d6882901a3bc68 0.0s done
+#10 exporting attestation manifest sha256:8ec84b85315ede3b4c85205d1dbc3c23e1a7e1e598ee232029c81ef41093424d 0.0s done
+#10 exporting manifest list sha256:680559e398ad804584e64711dee53b2849383a699f41f969b328e0673f49419c
+#10 exporting manifest list sha256:680559e398ad804584e64711dee53b2849383a699f41f969b328e0673f49419c 0.0s done
 #10 naming to docker.io/library/docker-app:latest done
 #10 unpacking to docker.io/library/docker-app:latest
-#10 unpacking to docker.io/library/docker-app:latest 0.6s done
-#10 DONE 5.8s
+#10 unpacking to docker.io/library/docker-app:latest 0.7s done
+#10 DONE 6.1s
 
 #11 resolving provenance for metadata file
 #11 DONE 0.0s
@@ -60,123 +60,123 @@ book-app-redis  | Starting Redis Server
 book-app-db     | 
 book-app-db     | PostgreSQL Database directory appears to contain a database; Skipping initialization
 book-app-db     | 
-book-app-redis  | 1:C 29 Sep 2025 16:52:09.593 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
-book-app-redis  | 1:C 29 Sep 2025 16:52:09.594 * Redis version=8.2.1, bits=64, commit=00000000, modified=1, pid=1, just started
-book-app-redis  | 1:C 29 Sep 2025 16:52:09.594 * Configuration loaded
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.595 * monotonic clock: POSIX clock_gettime
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.600 * Running mode=standalone, port=6379.
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.609 * <bf> RedisBloom version 8.2.0 (Git=unknown)
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.609 * <bf> Registering configuration options: [
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.609 * <bf> 	{ bf-error-rate       :      0.01 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.609 * <bf> 	{ bf-initial-size     :       100 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.609 * <bf> 	{ bf-expansion-factor :         2 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.609 * <bf> 	{ cf-bucket-size      :         2 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.609 * <bf> 	{ cf-initial-size     :      1024 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.609 * <bf> 	{ cf-max-iterations   :        20 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.609 * <bf> 	{ cf-expansion-factor :         1 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.609 * <bf> 	{ cf-max-expansions   :        32 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.609 * <bf> ]
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.610 * Module 'bf' loaded from /usr/local/lib/redis/modules//redisbloom.so
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.678 * <search> Redis version found by RedisSearch : 8.2.1 - oss
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.678 * <search> RediSearch version 8.2.1 (Git=dba8dd0)
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.679 * <search> Low level api version 1 initialized successfully
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.684 * <search> gc: ON, prefix min length: 2, min word length to stem: 4, prefix max expansions: 200, query timeout (ms): 500, timeout policy: return, cursor read size: 1000, cursor max idle (ms): 300000, max doctable size: 1000000, max number of search results:  1000000, 
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.691 * <search> Initialized thread pools!
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.691 * <search> Disabled workers threadpool of size 0
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.694 * <search> Subscribe to config changes
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.694 * <search> Enabled role change notification
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.695 * <search> Cluster configuration: AUTO partitions, type: 0, coordinator timeout: 0ms
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.695 * <search> Register write commands
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.695 * Module 'search' loaded from /usr/local/lib/redis/modules//redisearch.so
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.701 * <timeseries> RedisTimeSeries version 80200, git_sha=1439d4a439ca9c063e6ef124a510abff09a5d493
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.701 * <timeseries> Redis version found by RedisTimeSeries : 8.2.1 - oss
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.702 * <timeseries> Registering configuration options: [
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.702 * <timeseries> 	{ ts-compaction-policy   :              }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.702 * <timeseries> 	{ ts-num-threads         :            3 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.707 * <timeseries> 	{ ts-retention-policy    :            0 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.707 * <timeseries> 	{ ts-duplicate-policy    :        block }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.707 * <timeseries> 	{ ts-chunk-size-bytes    :         4096 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.707 * <timeseries> 	{ ts-encoding            :   compressed }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.707 * <timeseries> 	{ ts-ignore-max-time-diff:            0 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.707 * <timeseries> 	{ ts-ignore-max-val-diff :     0.000000 }
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.707 * <timeseries> ]
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.713 * <timeseries> Detected redis oss
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.717 * <timeseries> Enabled diskless replication
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.717 * Module 'timeseries' loaded from /usr/local/lib/redis/modules//redistimeseries.so
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.742 * <ReJSON> Created new data type 'ReJSON-RL'
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.747 * <ReJSON> version: 80200 git sha: unknown branch: unknown
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.748 * <ReJSON> Exported RedisJSON_V1 API
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.748 * <ReJSON> Exported RedisJSON_V2 API
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.748 * <ReJSON> Exported RedisJSON_V3 API
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.748 * <ReJSON> Exported RedisJSON_V4 API
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.748 * <ReJSON> Exported RedisJSON_V5 API
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.749 * <ReJSON> Enabled diskless replication
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.750 * <ReJSON> Initialized shared string cache, thread safe: false.
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.750 * Module 'ReJSON' loaded from /usr/local/lib/redis/modules//rejson.so
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.750 * <search> Acquired RedisJSON_V5 API
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.751 * Server initialized
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.757 * <search> Loading event starts
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.760 * <search> Enabled workers threadpool of size 4
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.764 * Loading RDB produced by version 8.2.1
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.765 * RDB age 1197 seconds
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.765 * RDB memory usage when created 0.96 Mb
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.765 * Done loading RDB, keys loaded: 0, keys expired: 0.
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.765 * <search> Disabled workers threadpool of size 4
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.765 * <search> Loading event ends
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.766 * DB loaded from disk: 0.014 seconds
-book-app-redis  | 1:M 29 Sep 2025 16:52:09.766 * Ready to accept connections tcp
-book-app        | 16:52:21.596 [main] INFO com.example.booksManagement.BooksManagement -- My ClassLoader for load classes to Metaspace: org.springframework.boot.loader.LaunchedURLClassLoader@4dd8dc3
-book-app        | [2m2025-09-29T16:52:23.057Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.booksManagement.BooksManagement     [0;39m [2m:[0;39m Starting BooksManagement v0.0.1-SNAPSHOT using Java 17.0.2 with PID 1 (/app/app.jar started by root in /app)
-book-app        | [2m2025-09-29T16:52:23.062Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.booksManagement.BooksManagement     [0;39m [2m:[0;39m The following 1 profile is active: "init"
-book-app        | [2m2025-09-29T16:52:26.653Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Multiple Spring Data modules found, entering strict repository configuration mode
-book-app        | [2m2025-09-29T16:52:26.658Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-book-app        | [2m2025-09-29T16:52:27.125Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Finished Spring Data repository scanning in 419 ms. Found 2 JPA repository interfaces.
-book-app        | [2m2025-09-29T16:52:27.186Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Multiple Spring Data modules found, entering strict repository configuration mode
-book-app        | [2m2025-09-29T16:52:27.193Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-book-app        | [2m2025-09-29T16:52:27.244Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.RepositoryConfigurationExtensionSupport[0;39m [2m:[0;39m Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.booksManagement.repository.BookRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-book-app        | [2m2025-09-29T16:52:27.245Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.RepositoryConfigurationExtensionSupport[0;39m [2m:[0;39m Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.booksManagement.repository.CategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-book-app        | [2m2025-09-29T16:52:27.245Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Finished Spring Data repository scanning in 17 ms. Found 0 Redis repository interfaces.
-book-app        | [2m2025-09-29T16:52:28.092Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.cloud.context.scope.GenericScope    [0;39m [2m:[0;39m BeanFactory id=b9040c29-8109-3a2d-9e50-0575c2eb75f5
-book-app        | [2m2025-09-29T16:52:28.456Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mtrationDelegate$BeanPostProcessorChecker[0;39m [2m:[0;39m Bean 'com.example.booksManagement.client.GoogleBooksClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
-book-app        | [2m2025-09-29T16:52:29.670Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat initialized with port(s): 8081 (http)
-book-app        | [2m2025-09-29T16:52:29.710Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.apache.catalina.core.StandardService  [0;39m [2m:[0;39m Starting service [Tomcat]
-book-app        | [2m2025-09-29T16:52:29.711Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.apache.catalina.core.StandardEngine   [0;39m [2m:[0;39m Starting Servlet engine: [Apache Tomcat/10.1.20]
-book-app        | [2m2025-09-29T16:52:29.952Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.a.c.c.C.[Tomcat].[localhost].[/]      [0;39m [2m:[0;39m Initializing Spring embedded WebApplicationContext
-book-app        | [2m2025-09-29T16:52:29.956Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mw.s.c.ServletWebServerApplicationContext[0;39m [2m:[0;39m Root WebApplicationContext: initialization completed in 6723 ms
-book-app        | [2m2025-09-29T16:52:31.095Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.zaxxer.hikari.HikariDataSource      [0;39m [2m:[0;39m HikariPool-1 - Starting...
-book-app        | [2m2025-09-29T16:52:31.426Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@43d455c9
-book-app        | [2m2025-09-29T16:52:31.435Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.zaxxer.hikari.HikariDataSource      [0;39m [2m:[0;39m HikariPool-1 - Start completed.
-book-app        | [2m2025-09-29T16:52:31.992Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.hibernate.jpa.internal.util.LogHelper [0;39m [2m:[0;39m HHH000204: Processing PersistenceUnitInfo [name: default]
-book-app        | [2m2025-09-29T16:52:32.125Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36morg.hibernate.Version                   [0;39m [2m:[0;39m HHH000412: Hibernate ORM core version 6.2.24.Final
-book-app        | [2m2025-09-29T16:52:32.134Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36morg.hibernate.cfg.Environment           [0;39m [2m:[0;39m HHH000406: Using bytecode reflection optimizer
-book-app        | [2m2025-09-29T16:52:32.814Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.o.j.p.SpringPersistenceUnitInfo     [0;39m [2m:[0;39m No LoadTimeWeaver setup: ignoring JPA class transformer
-book-app        | [2m2025-09-29T16:52:35.020Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.h.e.t.j.p.i.JtaPlatformInitiator      [0;39m [2m:[0;39m HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-book-app        | [2m2025-09-29T16:52:35.029Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mj.LocalContainerEntityManagerFactoryBean[0;39m [2m:[0;39m Initialized JPA EntityManagerFactory for persistence unit 'default'
-book-app        | [2m2025-09-29T16:52:36.308Z[0;39m [33m WARN[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mJpaBaseConfiguration$JpaWebConfiguration[0;39m [2m:[0;39m spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-book-app        | [2m2025-09-29T16:52:36.607Z[0;39m [33m WARN[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.s.UserDetailsServiceAutoConfiguration[0;39m [2m:[0;39m 
+book-app-redis  | 1:C 30 Sep 2025 07:11:22.406 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+book-app-redis  | 1:C 30 Sep 2025 07:11:22.408 * Redis version=8.2.1, bits=64, commit=00000000, modified=1, pid=1, just started
+book-app-redis  | 1:C 30 Sep 2025 07:11:22.408 * Configuration loaded
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.409 * monotonic clock: POSIX clock_gettime
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.436 * Running mode=standalone, port=6379.
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.459 * <bf> RedisBloom version 8.2.0 (Git=unknown)
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.459 * <bf> Registering configuration options: [
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.459 * <bf> 	{ bf-error-rate       :      0.01 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.459 * <bf> 	{ bf-initial-size     :       100 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.459 * <bf> 	{ bf-expansion-factor :         2 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.459 * <bf> 	{ cf-bucket-size      :         2 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.459 * <bf> 	{ cf-initial-size     :      1024 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.459 * <bf> 	{ cf-max-iterations   :        20 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.459 * <bf> 	{ cf-expansion-factor :         1 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.459 * <bf> 	{ cf-max-expansions   :        32 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.459 * <bf> ]
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.460 * Module 'bf' loaded from /usr/local/lib/redis/modules//redisbloom.so
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.588 * <search> Redis version found by RedisSearch : 8.2.1 - oss
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.588 * <search> RediSearch version 8.2.1 (Git=dba8dd0)
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.592 * <search> Low level api version 1 initialized successfully
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.602 * <search> gc: ON, prefix min length: 2, min word length to stem: 4, prefix max expansions: 200, query timeout (ms): 500, timeout policy: return, cursor read size: 1000, cursor max idle (ms): 300000, max doctable size: 1000000, max number of search results:  1000000, 
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.609 * <search> Initialized thread pools!
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.610 * <search> Disabled workers threadpool of size 0
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.613 * <search> Subscribe to config changes
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.614 * <search> Enabled role change notification
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.615 * <search> Cluster configuration: AUTO partitions, type: 0, coordinator timeout: 0ms
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.615 * <search> Register write commands
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.616 * Module 'search' loaded from /usr/local/lib/redis/modules//redisearch.so
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> RedisTimeSeries version 80200, git_sha=1439d4a439ca9c063e6ef124a510abff09a5d493
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> Redis version found by RedisTimeSeries : 8.2.1 - oss
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> Registering configuration options: [
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> 	{ ts-compaction-policy   :              }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> 	{ ts-num-threads         :            3 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> 	{ ts-retention-policy    :            0 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> 	{ ts-duplicate-policy    :        block }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> 	{ ts-chunk-size-bytes    :         4096 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> 	{ ts-encoding            :   compressed }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> 	{ ts-ignore-max-time-diff:            0 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> 	{ ts-ignore-max-val-diff :     0.000000 }
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.629 * <timeseries> ]
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.630 * <timeseries> Detected redis oss
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.640 * <timeseries> Enabled diskless replication
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.641 * Module 'timeseries' loaded from /usr/local/lib/redis/modules//redistimeseries.so
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.688 * <ReJSON> Created new data type 'ReJSON-RL'
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.710 * <ReJSON> version: 80200 git sha: unknown branch: unknown
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.717 * <ReJSON> Exported RedisJSON_V1 API
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.717 * <ReJSON> Exported RedisJSON_V2 API
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.717 * <ReJSON> Exported RedisJSON_V3 API
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.717 * <ReJSON> Exported RedisJSON_V4 API
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.717 * <ReJSON> Exported RedisJSON_V5 API
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.717 * <ReJSON> Enabled diskless replication
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.722 * <ReJSON> Initialized shared string cache, thread safe: false.
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.722 * Module 'ReJSON' loaded from /usr/local/lib/redis/modules//rejson.so
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.722 * <search> Acquired RedisJSON_V5 API
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.735 * Server initialized
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.738 * <search> Loading event starts
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.739 * <search> Enabled workers threadpool of size 4
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.741 * Loading RDB produced by version 8.2.1
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.741 * RDB age 51275 seconds
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.741 * RDB memory usage when created 0.96 Mb
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.741 * Done loading RDB, keys loaded: 0, keys expired: 0.
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.741 * <search> Disabled workers threadpool of size 4
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.741 * <search> Loading event ends
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.742 * DB loaded from disk: 0.007 seconds
+book-app-redis  | 1:M 30 Sep 2025 07:11:22.742 * Ready to accept connections tcp
+book-app        | 07:11:35.007 [main] INFO com.example.booksManagement.BooksManagement -- My ClassLoader for load classes to Metaspace: org.springframework.boot.loader.LaunchedURLClassLoader@4dd8dc3
+book-app        | [2m2025-09-30T07:11:37.115Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.booksManagement.BooksManagement     [0;39m [2m:[0;39m Starting BooksManagement v0.0.1-SNAPSHOT using Java 17.0.2 with PID 1 (/app/app.jar started by root in /app)
+book-app        | [2m2025-09-30T07:11:37.122Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.booksManagement.BooksManagement     [0;39m [2m:[0;39m The following 1 profile is active: "init"
+book-app        | [2m2025-09-30T07:11:40.407Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Multiple Spring Data modules found, entering strict repository configuration mode
+book-app        | [2m2025-09-30T07:11:40.417Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+book-app        | [2m2025-09-30T07:11:41.153Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Finished Spring Data repository scanning in 702 ms. Found 2 JPA repository interfaces.
+book-app        | [2m2025-09-30T07:11:41.254Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Multiple Spring Data modules found, entering strict repository configuration mode
+book-app        | [2m2025-09-30T07:11:41.257Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+book-app        | [2m2025-09-30T07:11:41.312Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.RepositoryConfigurationExtensionSupport[0;39m [2m:[0;39m Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.booksManagement.repository.BookRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+book-app        | [2m2025-09-30T07:11:41.313Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.RepositoryConfigurationExtensionSupport[0;39m [2m:[0;39m Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.booksManagement.repository.CategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+book-app        | [2m2025-09-30T07:11:41.314Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Finished Spring Data repository scanning in 20 ms. Found 0 Redis repository interfaces.
+book-app        | [2m2025-09-30T07:11:42.232Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.cloud.context.scope.GenericScope    [0;39m [2m:[0;39m BeanFactory id=f217eeaf-5c4e-348d-905d-2f7fab7226b1
+book-app        | [2m2025-09-30T07:11:42.601Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mtrationDelegate$BeanPostProcessorChecker[0;39m [2m:[0;39m Bean 'com.example.booksManagement.client.GoogleBooksClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+book-app        | [2m2025-09-30T07:11:44.403Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat initialized with port(s): 8081 (http)
+book-app        | [2m2025-09-30T07:11:44.456Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.apache.catalina.core.StandardService  [0;39m [2m:[0;39m Starting service [Tomcat]
+book-app        | [2m2025-09-30T07:11:44.461Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.apache.catalina.core.StandardEngine   [0;39m [2m:[0;39m Starting Servlet engine: [Apache Tomcat/10.1.20]
+book-app        | [2m2025-09-30T07:11:44.733Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.a.c.c.C.[Tomcat].[localhost].[/]      [0;39m [2m:[0;39m Initializing Spring embedded WebApplicationContext
+book-app        | [2m2025-09-30T07:11:44.741Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mw.s.c.ServletWebServerApplicationContext[0;39m [2m:[0;39m Root WebApplicationContext: initialization completed in 7426 ms
+book-app        | [2m2025-09-30T07:11:45.683Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.zaxxer.hikari.HikariDataSource      [0;39m [2m:[0;39m HikariPool-1 - Starting...
+book-app        | [2m2025-09-30T07:11:46.152Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5f233b26
+book-app        | [2m2025-09-30T07:11:46.169Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mcom.zaxxer.hikari.HikariDataSource      [0;39m [2m:[0;39m HikariPool-1 - Start completed.
+book-app        | [2m2025-09-30T07:11:46.618Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.hibernate.jpa.internal.util.LogHelper [0;39m [2m:[0;39m HHH000204: Processing PersistenceUnitInfo [name: default]
+book-app        | [2m2025-09-30T07:11:46.809Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36morg.hibernate.Version                   [0;39m [2m:[0;39m HHH000412: Hibernate ORM core version 6.2.24.Final
+book-app        | [2m2025-09-30T07:11:46.815Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36morg.hibernate.cfg.Environment           [0;39m [2m:[0;39m HHH000406: Using bytecode reflection optimizer
+book-app        | [2m2025-09-30T07:11:47.671Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.o.j.p.SpringPersistenceUnitInfo     [0;39m [2m:[0;39m No LoadTimeWeaver setup: ignoring JPA class transformer
+book-app        | [2m2025-09-30T07:11:49.911Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.h.e.t.j.p.i.JtaPlatformInitiator      [0;39m [2m:[0;39m HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+book-app        | [2m2025-09-30T07:11:49.926Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mj.LocalContainerEntityManagerFactoryBean[0;39m [2m:[0;39m Initialized JPA EntityManagerFactory for persistence unit 'default'
+book-app        | [2m2025-09-30T07:11:51.726Z[0;39m [33m WARN[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mJpaBaseConfiguration$JpaWebConfiguration[0;39m [2m:[0;39m spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+book-app        | [2m2025-09-30T07:11:52.228Z[0;39m [33m WARN[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36m.s.s.UserDetailsServiceAutoConfiguration[0;39m [2m:[0;39m 
 book-app        | 
-book-app        | Using generated security password: df615728-2d97-4fda-b06b-7bcd5c16a60f
+book-app        | Using generated security password: 31c59145-76af-4e71-bfe7-c6724c73d085
 book-app        | 
 book-app        | This generated password is for development use only. Your security configuration must be updated before running your application in production.
 book-app        | 
-book-app        | [2m2025-09-29T16:52:40.099Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port(s): 8081 (http) with context path ''
-book-app        | [2m2025-09-29T16:52:40.104Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.booksManagement.BooksManagement     [0;39m [2m:[0;39m =================== BooksManagement started on URL : http://localhost:8081
-book-app        | [2m2025-09-29T16:52:40.126Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.booksManagement.BooksManagement     [0;39m [2m:[0;39m Started BooksManagement in 18.121 seconds (process running for 19.735)
-book-app        | [2m2025-09-29T16:52:41.057Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Database is empty. Starting data initialization...
-book-app        | [2m2025-09-29T16:52:41.058Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Processing 15 predefined categories.
-book-app        | [2m2025-09-29T16:52:41.241Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Fantasy'
-book-app        | [2m2025-09-29T16:52:42.738Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Philosophy'
-book-app        | [2m2025-09-29T16:52:43.433Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Thriller'
-book-app        | [2m2025-09-29T16:52:43.886Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Business'
-book-app        | [2m2025-09-29T16:52:44.482Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Travel'
-book-app        | [2m2025-09-29T16:52:45.023Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Mystery'
-book-app        | [2m2025-09-29T16:52:45.959Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Technology'
-book-app        | [2m2025-09-29T16:52:46.592Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'History'
-book-app        | [2m2025-09-29T16:52:47.325Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Science'
-book-app        | [2m2025-09-29T16:52:47.960Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Cooking'
-book-app        | [2m2025-09-29T16:52:48.523Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Art'
-book-app        | [2m2025-09-29T16:52:48.991Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Fiction'
-book-app        | [2m2025-09-29T16:52:49.547Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Biography'
-book-app        | [2m2025-09-29T16:52:50.005Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Romance'
-book-app        | [2m2025-09-29T16:52:50.653Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Music'
-book-app        | [2m2025-09-29T16:52:51.538Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Data initialization finished. Total books in database: 150
+book-app        | [2m2025-09-30T07:11:56.979Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port(s): 8081 (http) with context path ''
+book-app        | [2m2025-09-30T07:11:56.986Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.booksManagement.BooksManagement     [0;39m [2m:[0;39m =================== BooksManagement started on URL : http://localhost:8081
+book-app        | [2m2025-09-30T07:11:57.032Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.booksManagement.BooksManagement     [0;39m [2m:[0;39m Started BooksManagement in 21.521 seconds (process running for 23.668)
+book-app        | [2m2025-09-30T07:11:57.858Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Database is empty. Starting data initialization...
+book-app        | [2m2025-09-30T07:11:57.863Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Processing 15 predefined categories.
+book-app        | [2m2025-09-30T07:11:58.090Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Fantasy'
+book-app        | [2m2025-09-30T07:11:59.818Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Philosophy'
+book-app        | [2m2025-09-30T07:12:00.388Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Thriller'
+book-app        | [2m2025-09-30T07:12:00.855Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Business'
+book-app        | [2m2025-09-30T07:12:01.513Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Travel'
+book-app        | [2m2025-09-30T07:12:02.002Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Mystery'
+book-app        | [2m2025-09-30T07:12:02.469Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Technology'
+book-app        | [2m2025-09-30T07:12:02.998Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'History'
+book-app        | [2m2025-09-30T07:12:03.530Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Science'
+book-app        | [2m2025-09-30T07:12:03.956Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Cooking'
+book-app        | [2m2025-09-30T07:12:04.442Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Art'
+book-app        | [2m2025-09-30T07:12:04.922Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Fiction'
+book-app        | [2m2025-09-30T07:12:05.552Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Biography'
+book-app        | [2m2025-09-30T07:12:05.979Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Romance'
+book-app        | [2m2025-09-30T07:12:06.587Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Fetching up to 10 books for category: 'Music'
+book-app        | [2m2025-09-30T07:12:07.213Z[0;39m [32m INFO[0;39m [35m1[0;39m [2m---[0;39m [2m[           main][0;39m [36mc.e.b.init.DataInitializer              [0;39m [2m:[0;39m Data initialization finished. Total books in database: 150
