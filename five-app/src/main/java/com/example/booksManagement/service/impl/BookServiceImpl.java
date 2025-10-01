@@ -1,6 +1,6 @@
 package com.example.booksManagement.service.impl;
 
-import com.example.booksManagement.exception.DuplicateResourceException; // <- ДОБАВЛЕН ИМПОРТ
+import com.example.booksManagement.exception.DuplicateResourceException;
 import com.example.booksManagement.exception.EntityNotFoundException;
 import com.example.booksManagement.model.Book;
 import com.example.booksManagement.model.Category;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional; // <- ДОБАВЛЕН ИМПОРТ
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +34,10 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public Book save(Book book) {
-        // V-- ИЗМЕНЕНИЕ ЗДЕСЬ: Проверка на дубликат
-        Optional<Book> existingBook = bookRepository.findByTitleAndAuthor(book.getTitle(), book.getAuthor());
+        // V-- ИЗМЕНЕНИЕ ЗДЕСЬ: Проверка на дубликат только по названию
+        Optional<Book> existingBook = bookRepository.findByTitle(book.getTitle());
         if (existingBook.isPresent()) {
-            throw new DuplicateResourceException("Book with title '" + book.getTitle() + "' and author '" + book.getAuthor() + "' already exists.");
+            throw new DuplicateResourceException("Book with title '" + book.getTitle() + "' already exists.");
         }
 
         Category category = book.getCategory();
@@ -82,6 +82,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> findAllByCategoryName(String categoryName) {
+        // V-- ИЗМЕНЕНИЕ ЗДЕСЬ: Добавлена проверка на существование категории
+        categoryRepository.findByName(categoryName)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with name: " + categoryName));
+
         return bookRepository.findAllByCategoryName(categoryName);
     }
 }

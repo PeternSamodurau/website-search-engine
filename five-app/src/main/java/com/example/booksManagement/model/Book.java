@@ -1,20 +1,20 @@
 package com.example.booksManagement.model;
 
 import jakarta.persistence.*;
-import lombok.*; // <- ИЗМЕНЕН ИМПОРТ
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "books")
+@Table(name = "books") // Убрано составное ограничение
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", nullable = false, unique = true)
     private String title;
 
     @Column(name = "author", nullable = false)
