@@ -3,6 +3,7 @@ package com.example.booksManagement.init;
 import com.example.booksManagement.client.GoogleBooksClient;
 import com.example.booksManagement.client.googlebooks.GoogleBooksSearchResponse;
 import com.example.booksManagement.client.googlebooks.VolumeItem;
+import com.example.booksManagement.exception.DuplicateResourceException; // <- ИМПОРТ
 import com.example.booksManagement.model.Book;
 import com.example.booksManagement.model.Category;
 import com.example.booksManagement.repository.BookRepository;
@@ -28,7 +29,6 @@ public class DataInitializer implements CommandLineRunner {
     private final BookService bookService;
     private final GoogleBooksClient googleBooksClient;
 
-    // Конструктор теперь не требует CategoryService
     public DataInitializer(BookRepository bookRepository, CategoryRepository categoryRepository, BookService bookService, GoogleBooksClient googleBooksClient) {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
@@ -37,7 +37,6 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     @Override
-    @Transactional
     public void run(String... args) {
         if (bookRepository.count() > 0) {
             logger.info("Database is not empty. Skipping data initialization.");
@@ -61,31 +60,37 @@ public class DataInitializer implements CommandLineRunner {
                 }
 
                 for (VolumeItem item : response.getItems()) {
-                    if (item.getVolumeInfo() == null || item.getVolumeInfo().getTitle() == null) {
-                        continue;
+                    // V-- НАЧАЛО БЛОКА ИЗМЕНЕНИЙ
+                    try {
+                        if (item.getVolumeInfo() == null || item.getVolumeInfo().getTitle() == null) {
+                            continue;
+                        }
+
+                        List<String> bookCategories = item.getVolumeInfo().getCategories();
+                        if (bookCategories == null || bookCategories.isEmpty() || bookCategories.get(0) == null || bookCategories.get(0).isBlank()) {
+                            continue;
+                        }
+                        String categoryName = bookCategories.get(0).trim();
+
+                        Category transientCategory = new Category();
+                        transientCategory.setName(categoryName);
+
+                        Book book = new Book();
+                        book.setTitle(item.getVolumeInfo().getTitle());
+                        book.setAuthor(item.getVolumeInfo().getAuthors() != null ? String.join(", ", item.getVolumeInfo().getAuthors()) : "Unknown Author");
+                        book.setCategory(transientCategory);
+
+                        bookService.save(book);
+
+                    } catch (DuplicateResourceException e) {
+                        // Это ожидаемое исключение. Логируем как INFO, а не ERROR.
+                        logger.info("Skipping duplicate book: {}", e.getMessage());
                     }
-
-                    List<String> bookCategories = item.getVolumeInfo().getCategories();
-                    if (bookCategories == null || bookCategories.isEmpty() || bookCategories.get(0) == null || bookCategories.get(0).isBlank()) {
-                        continue;
-                    }
-                    String categoryName = bookCategories.get(0).trim();
-
-                    // 1. Создаем временный объект Category только с именем.
-                    Category transientCategory = new Category();
-                    transientCategory.setName(categoryName);
-
-                    // 2. Создаем книгу и передаем в нее временную категорию.
-                    Book book = new Book();
-                    book.setTitle(item.getVolumeInfo().getTitle());
-                    book.setAuthor(item.getVolumeInfo().getAuthors() != null ? String.join(", ", item.getVolumeInfo().getAuthors()) : "Unknown Author");
-                    book.setCategory(transientCategory);
-
-                    // 3. Доверяем BookService всю работу по поиску или созданию реальной категории в БД.
-                    bookService.save(book);
+                    // V-- КОНЕЦ БЛОКА ИЗМЕНЕНИЙ
                 }
             } catch (Exception e) {
-                logger.error("An error occurred during batch {}. Error: {}. Skipping batch.", i + 1, e.getMessage(), e);
+                // Этот блок теперь будет ловить только настоящие ошибки (например, сетевые)
+                logger.error("An unexpected error occurred during batch {}. Error: {}. Skipping batch.", i + 1, e.getMessage());
             }
         }
 

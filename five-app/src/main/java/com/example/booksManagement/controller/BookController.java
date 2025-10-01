@@ -1,13 +1,15 @@
 package com.example.booksManagement.controller;
 
 import com.example.booksManagement.dto.request.UserBookRequest;
+import com.example.booksManagement.dto.response.ApiResponse; // <- ИМПОРТ
 import com.example.booksManagement.dto.response.BookResponse;
 import com.example.booksManagement.mappers.BookMapper;
 import com.example.booksManagement.model.Book;
 import com.example.booksManagement.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag; // Убедитесь, что этот импорт есть
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/books")
 @RequiredArgsConstructor
 @Tag(name = "API по работе с книгами", description = "Контроллер для выполнения CRUD-операций с книгами и их поиска")
+@Slf4j
 public class BookController {
 
     private final BookService bookService;
@@ -26,56 +29,101 @@ public class BookController {
 
     @GetMapping
     @Operation(summary = "Получить список всех книг")
-    public ResponseEntity<List<BookResponse>> getAllBooks() {
+    public ResponseEntity<ApiResponse<List<BookResponse>>> getAllBooks() {
+        log.info("Request to get all books");
         List<Book> books = bookService.findAll();
-        return ResponseEntity.ok(books.stream()
+        List<BookResponse> bookResponses = books.stream()
                 .map(bookMapper::toResponse)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+
+        ApiResponse<List<BookResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Successfully retrieved all books",
+                bookResponses
+        );
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить книгу по ID")
-    public ResponseEntity<BookResponse> getBookById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<BookResponse>> getBookById(@PathVariable Long id) {
+        log.info("Request to get book by id: {}", id);
         Book book = bookService.findById(id);
-        return ResponseEntity.ok(bookMapper.toResponse(book));
+        ApiResponse<BookResponse> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Book successfully retrieved",
+                bookMapper.toResponse(book)
+        );
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
     @Operation(summary = "Создать новую книгу")
-    public ResponseEntity<BookResponse> createBook(@RequestBody UserBookRequest request) {
+    public ResponseEntity<ApiResponse<BookResponse>> createBook(@RequestBody UserBookRequest request) {
+        log.info("Request to create new book: {}", request);
         Book newBook = bookService.save(bookMapper.toEntity(request));
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookMapper.toResponse(newBook));
+        ApiResponse<BookResponse> response = new ApiResponse<>(
+                HttpStatus.CREATED.value(),
+                "Book successfully created",
+                bookMapper.toResponse(newBook)
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Обновить существующую книгу по ID")
-    public ResponseEntity<BookResponse> updateBook(@PathVariable Long id, @RequestBody UserBookRequest request) {
+    public ResponseEntity<ApiResponse<BookResponse>> updateBook(@PathVariable Long id, @RequestBody UserBookRequest request) {
+        log.info("Request to update book with id: {}. New data: {}", id, request);
         Book bookToUpdate = bookMapper.toEntity(request);
-        bookToUpdate.setId(id); // Устанавливаем ID из пути
+        bookToUpdate.setId(id);
         Book updatedBook = bookService.update(bookToUpdate);
-        return ResponseEntity.ok(bookMapper.toResponse(updatedBook));
+        ApiResponse<BookResponse> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Book successfully updated",
+                bookMapper.toResponse(updatedBook)
+        );
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Удалить книгу по ID")
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+    @Operation(summary = "Удалить книгу по ID, категория не удалится")
+    public ResponseEntity<ApiResponse<Void>> deleteBook(@PathVariable Long id) {
+        log.info("Request to delete book with id: {}", id);
         bookService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.NO_CONTENT.value(),
+                "Book successfully deleted"
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
 
     @GetMapping("/search")
     @Operation(summary = "Найти книгу по названию и автору")
-    public ResponseEntity<BookResponse> getBookByTitleAndAuthor(@RequestParam String title, @RequestParam String author) {
+    public ResponseEntity<ApiResponse<BookResponse>> getBookByTitleAndAuthor(@RequestParam String title, @RequestParam String author) {
+        log.info("Request to search book by title: '{}' and author: '{}'", title, author);
         Book book = bookService.findByTitleAndAuthor(title, author);
-        return ResponseEntity.ok(bookMapper.toResponse(book));
+        ApiResponse<BookResponse> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Book successfully found by title and author",
+                bookMapper.toResponse(book)
+        );
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/category/{categoryName}")
     @Operation(summary = "Найти все книги по названию категории")
-    public ResponseEntity<List<BookResponse>> getBooksByCategoryName(@PathVariable String categoryName) {
+    public ResponseEntity<ApiResponse<List<BookResponse>>> getBooksByCategoryName(@PathVariable String categoryName) {
+        log.info("Request to get books by category: '{}'", categoryName);
         List<Book> books = bookService.findAllByCategoryName(categoryName);
-        return ResponseEntity.ok(books.stream()
+        List<BookResponse> bookResponses = books.stream()
                 .map(bookMapper::toResponse)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+
+        ApiResponse<List<BookResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Successfully retrieved books by category",
+                bookResponses
+        );
+        return ResponseEntity.ok(response);
     }
 }

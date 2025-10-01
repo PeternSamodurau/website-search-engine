@@ -1,5 +1,7 @@
 package com.example.booksManagement.service.impl;
 
+import com.example.booksManagement.exception.DuplicateResourceException; // <- ДОБАВЛЕН ИМПОРТ
+import com.example.booksManagement.exception.EntityNotFoundException;
 import com.example.booksManagement.model.Book;
 import com.example.booksManagement.model.Category;
 import com.example.booksManagement.repository.BookRepository;
@@ -10,13 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional; // <- ДОБАВЛЕН ИМПОРТ
 
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
-    private final CategoryRepository categoryRepository; // Добавляем репозиторий категорий
+    private final CategoryRepository categoryRepository;
 
     @Override
     public List<Book> findAll() {
@@ -25,37 +28,34 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book findById(Long id) {
-        return bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found with ID: " + id));
+        return bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book not found with ID: " + id));
     }
 
     @Override
     @Transactional
     public Book save(Book book) {
-        // --- Начало логики "Найти или создать категорию" ---
+        // V-- ИЗМЕНЕНИЕ ЗДЕСЬ: Проверка на дубликат
+        Optional<Book> existingBook = bookRepository.findByTitleAndAuthor(book.getTitle(), book.getAuthor());
+        if (existingBook.isPresent()) {
+            throw new DuplicateResourceException("Book with title '" + book.getTitle() + "' and author '" + book.getAuthor() + "' already exists.");
+        }
+
         Category category = book.getCategory();
-        // Проверяем, что у книги есть категория с названием
         if (category != null && category.getName() != null && !category.getName().isBlank()) {
-            // Ищем категорию в БД по имени
             Category categoryFromDb = categoryRepository.findByName(category.getName())
                     .orElseGet(() -> {
-                        // Если не нашли - создаем новую, сохраняем ее и возвращаем
                         return categoryRepository.save(Category.builder().name(category.getName()).build());
                     });
-            // Устанавливаем в книгу категорию из БД (новую или уже существующую)
             book.setCategory(categoryFromDb);
         }
-        // --- Конец логики ---
-
         return bookRepository.save(book);
     }
 
     @Override
     @Transactional
     public Book update(Book book) {
-        // Убедимся, что книга для обновления существует, чтобы не создать новую
         findById(book.getId());
 
-        // Логика "Найти или создать категорию" - абсолютно такая же, как в методе save
         Category category = book.getCategory();
         if (category != null && category.getName() != null && !category.getName().isBlank()) {
             Category categoryFromDb = categoryRepository.findByName(category.getName())
@@ -70,7 +70,6 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteById(Long id) {
-        // Проверяем, что книга существует, перед удалением для более понятной ошибки
         findById(id);
         bookRepository.deleteById(id);
     }
@@ -78,7 +77,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public Book findByTitleAndAuthor(String title, String author) {
         return bookRepository.findByTitleAndAuthor(title, author)
-                .orElseThrow(() -> new RuntimeException("Book not found with title: '" + title + "' and author: '" + author + "'"));
+                .orElseThrow(() -> new EntityNotFoundException("Book not found with title: '" + title + "' and author: '" + author + "'"));
     }
 
     @Override

@@ -1,10 +1,7 @@
 package com.example.booksManagement.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*; // <- ИЗМЕНЕН ИМПОРТ
 
 @Data
 @AllArgsConstructor
@@ -25,5 +22,6 @@ public class Book {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @ToString.Exclude
     private Category category;
 }
