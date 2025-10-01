@@ -1,12 +1,13 @@
 package com.example.booksManagement.service.impl;
 
 import com.example.booksManagement.model.Book;
+import com.example.booksManagement.model.Category;
 import com.example.booksManagement.repository.BookRepository;
+import com.example.booksManagement.repository.CategoryRepository;
 import com.example.booksManagement.service.BookService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+    private final CategoryRepository categoryRepository; // Добавляем репозиторий категорий
 
     @Override
     public List<Book> findAll() {
@@ -23,29 +25,64 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book findById(Long id) {
-        // ИЗМЕНЕНО: Логика проверки теперь здесь
-        return bookRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found with id: " + id));
+        return bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found with ID: " + id));
     }
 
     @Override
+    @Transactional
     public Book save(Book book) {
+        // --- Начало логики "Найти или создать категорию" ---
+        Category category = book.getCategory();
+        // Проверяем, что у книги есть категория с названием
+        if (category != null && category.getName() != null && !category.getName().isBlank()) {
+            // Ищем категорию в БД по имени
+            Category categoryFromDb = categoryRepository.findByName(category.getName())
+                    .orElseGet(() -> {
+                        // Если не нашли - создаем новую, сохраняем ее и возвращаем
+                        return categoryRepository.save(Category.builder().name(category.getName()).build());
+                    });
+            // Устанавливаем в книгу категорию из БД (новую или уже существующую)
+            book.setCategory(categoryFromDb);
+        }
+        // --- Конец логики ---
+
         return bookRepository.save(book);
     }
 
     @Override
+    @Transactional
     public Book update(Book book) {
-        // Для update мы тоже должны сначала найти сущность.
-        // Метод save() в Spring Data JPA работает как "upsert", если ID существует,
-        // но хорошей практикой является явная проверка.
-        findById(book.getId()); // Проверяем, что книга существует, перед обновлением
+        // Убедимся, что книга для обновления существует, чтобы не создать новую
+        findById(book.getId());
+
+        // Логика "Найти или создать категорию" - абсолютно такая же, как в методе save
+        Category category = book.getCategory();
+        if (category != null && category.getName() != null && !category.getName().isBlank()) {
+            Category categoryFromDb = categoryRepository.findByName(category.getName())
+                    .orElseGet(() -> {
+                        return categoryRepository.save(Category.builder().name(category.getName()).build());
+                    });
+            book.setCategory(categoryFromDb);
+        }
+
         return bookRepository.save(book);
     }
 
     @Override
     public void deleteById(Long id) {
-        // ИЗМЕНЕНО: Логика проверки теперь здесь
-        findById(id); // Проверяем, что книга существует, перед удалением
+        // Проверяем, что книга существует, перед удалением для более понятной ошибки
+        findById(id);
         bookRepository.deleteById(id);
+    }
+
+    @Override
+    public Book findByTitleAndAuthor(String title, String author) {
+        return bookRepository.findByTitleAndAuthor(title, author)
+                .orElseThrow(() -> new RuntimeException("Book not found with title: '" + title + "' and author: '" + author + "'"));
+    }
+
+    @Override
+    public List<Book> findAllByCategoryName(String categoryName) {
+        return bookRepository.findAllByCategoryName(categoryName);
     }
 }

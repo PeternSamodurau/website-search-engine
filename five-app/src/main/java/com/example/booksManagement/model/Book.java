@@ -23,7 +23,7 @@ public class Book {
     @Column(name = "author", nullable = false)
     private String author;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 }

@@ -8,7 +8,6 @@ import com.example.booksManagement.model.Category;
 import com.example.booksManagement.repository.BookRepository;
 import com.example.booksManagement.repository.CategoryRepository;
 import com.example.booksManagement.service.BookService;
-import com.example.booksManagement.service.CategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @Profile("init")
@@ -28,14 +26,13 @@ public class DataInitializer implements CommandLineRunner {
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
     private final BookService bookService;
-    private final CategoryService categoryService;
     private final GoogleBooksClient googleBooksClient;
 
-    public DataInitializer(BookRepository bookRepository, CategoryRepository categoryRepository, BookService bookService, CategoryService categoryService, GoogleBooksClient googleBooksClient) {
+    // Конструктор теперь не требует CategoryService
+    public DataInitializer(BookRepository bookRepository, CategoryRepository categoryRepository, BookService bookService, GoogleBooksClient googleBooksClient) {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.bookService = bookService;
-        this.categoryService = categoryService;
         this.googleBooksClient = googleBooksClient;
     }
 
@@ -50,14 +47,12 @@ public class DataInitializer implements CommandLineRunner {
         logger.info("Database is empty. Initializing data by fetching books from Google Books API...");
 
         final int booksPerQuery = 40;
-        final int numberOfQueries = 13; // 13 * 40 = ~520 books
+        final int numberOfQueries = 13;
 
         logger.info("Attempting to fetch books in {} batches...", numberOfQueries);
 
         for (int i = 0; i < numberOfQueries; i++) {
             try {
-                // ИСПРАВЛЕНО: Используем простой и рабочий поисковый запрос "a".
-                // Это даст нам гарантированный и разнообразный результат.
                 GoogleBooksSearchResponse response = googleBooksClient.searchBooks("a", booksPerQuery);
 
                 if (response == null || response.getItems() == null) {
@@ -70,37 +65,23 @@ public class DataInitializer implements CommandLineRunner {
                         continue;
                     }
 
-                    // Проверяем, есть ли у книги категория. Если нет - пропускаем.
                     List<String> bookCategories = item.getVolumeInfo().getCategories();
-                    if (bookCategories == null || bookCategories.isEmpty()) {
+                    if (bookCategories == null || bookCategories.isEmpty() || bookCategories.get(0) == null || bookCategories.get(0).isBlank()) {
                         continue;
                     }
-                    String categoryName = bookCategories.get(0);
-                    if (categoryName == null || categoryName.trim().isEmpty()) {
-                        continue;
-                    }
-                    String trimmedCategoryName = categoryName.trim();
+                    String categoryName = bookCategories.get(0).trim();
 
-                    // Ищем категорию в базе данных.
-                    Optional<Category> existingCategory = categoryRepository.findByName(trimmedCategoryName);
+                    // 1. Создаем временный объект Category только с именем.
+                    Category transientCategory = new Category();
+                    transientCategory.setName(categoryName);
 
-                    Category categoryToSave;
-                    if (existingCategory.isPresent()) {
-                        // Если нашли - используем ее.
-                        categoryToSave = existingCategory.get();
-                    } else {
-                        // Если не нашли - создаем новую и сохраняем ее.
-                        logger.info("Discovered and creating new category: '{}'", trimmedCategoryName);
-                        Category newCategory = new Category();
-                        newCategory.setName(trimmedCategoryName);
-                        categoryToSave = categoryService.save(newCategory);
-                    }
-
-                    // Сохраняем книгу в базу.
+                    // 2. Создаем книгу и передаем в нее временную категорию.
                     Book book = new Book();
                     book.setTitle(item.getVolumeInfo().getTitle());
                     book.setAuthor(item.getVolumeInfo().getAuthors() != null ? String.join(", ", item.getVolumeInfo().getAuthors()) : "Unknown Author");
-                    book.setCategory(categoryToSave);
+                    book.setCategory(transientCategory);
+
+                    // 3. Доверяем BookService всю работу по поиску или созданию реальной категории в БД.
                     bookService.save(book);
                 }
             } catch (Exception e) {
