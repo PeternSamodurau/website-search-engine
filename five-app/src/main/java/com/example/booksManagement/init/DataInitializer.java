@@ -1,100 +1,79 @@
 package com.example.booksManagement.init;
 
-import com.example.booksManagement.client.GoogleBooksClient;
-import com.example.booksManagement.client.googlebooks.GoogleBooksSearchResponse;
-import com.example.booksManagement.client.googlebooks.VolumeItem;
-import com.example.booksManagement.exception.DuplicateResourceException; // <- ИМПОРТ
+import com.example.booksManagement.client.OpenLibraryClient;
+import com.example.booksManagement.client.openlibrary.OpenLibraryBookDoc;
+import com.example.booksManagement.client.openlibrary.OpenLibrarySearchResponse;
 import com.example.booksManagement.model.Book;
 import com.example.booksManagement.model.Category;
 import com.example.booksManagement.repository.BookRepository;
 import com.example.booksManagement.repository.CategoryRepository;
-import com.example.booksManagement.service.BookService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Profile("init")
+@RequiredArgsConstructor
+@Slf4j
 public class DataInitializer implements CommandLineRunner {
-
-    private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
-    private final BookService bookService;
-    private final GoogleBooksClient googleBooksClient;
-
-    public DataInitializer(BookRepository bookRepository, CategoryRepository categoryRepository, BookService bookService, GoogleBooksClient googleBooksClient) {
-        this.bookRepository = bookRepository;
-        this.categoryRepository = categoryRepository;
-        this.bookService = bookService;
-        this.googleBooksClient = googleBooksClient;
-    }
+    private final OpenLibraryClient openLibraryClient;
 
     @Override
+    @Transactional
     public void run(String... args) {
         if (bookRepository.count() > 0) {
-            logger.info("Database is not empty. Skipping data initialization.");
+            log.info("Database is not empty. Skipping data initialization.");
             return;
         }
 
-        logger.info("Database is empty. Initializing data by fetching books from Google Books API...");
+        log.info("Database is empty. Initializing data by fetching books from Open Library API...");
+        try {
+            // --- НОВАЯ ЛОГИКА: ЗАПРОСЫ ДЛЯ РАЗНЫХ КАТЕГОРИЙ ---
+            List<String> subjects = List.of("History", "Science", "Fantasy", "Biography", "Cooking");
+            Set<Book> booksToSave = new HashSet<>();
+            int booksPerSubject = 10;
 
-        final int booksPerQuery = 40;
-        final int numberOfQueries = 13;
+            for (String subject : subjects) {
+                log.info("Fetching {} books for subject: {}", booksPerSubject, subject);
+                OpenLibrarySearchResponse response = openLibraryClient.searchBooks("subject:" + subject.toLowerCase(), booksPerSubject);
 
-        logger.info("Attempting to fetch books in {} batches...", numberOfQueries);
-
-        for (int i = 0; i < numberOfQueries; i++) {
-            try {
-                GoogleBooksSearchResponse response = googleBooksClient.searchBooks("a", booksPerQuery);
-
-                if (response == null || response.getItems() == null) {
-                    logger.warn("Received no books on attempt {}. Skipping batch.", i + 1);
-                    continue;
-                }
-
-                for (VolumeItem item : response.getItems()) {
-                    // V-- НАЧАЛО БЛОКА ИЗМЕНЕНИЙ
-                    try {
-                        if (item.getVolumeInfo() == null || item.getVolumeInfo().getTitle() == null) {
-                            continue;
-                        }
-
-                        List<String> bookCategories = item.getVolumeInfo().getCategories();
-                        if (bookCategories == null || bookCategories.isEmpty() || bookCategories.get(0) == null || bookCategories.get(0).isBlank()) {
-                            continue;
-                        }
-                        String categoryName = bookCategories.get(0).trim();
-
-                        Category transientCategory = new Category();
-                        transientCategory.setName(categoryName);
-
-                        Book book = new Book();
-                        book.setTitle(item.getVolumeInfo().getTitle());
-                        book.setAuthor(item.getVolumeInfo().getAuthors() != null ? String.join(", ", item.getVolumeInfo().getAuthors()) : "Unknown Author");
-                        book.setCategory(transientCategory);
-
-                        bookService.save(book);
-
-                    } catch (DuplicateResourceException e) {
-                        // Это ожидаемое исключение. Логируем как INFO, а не ERROR.
-                        logger.info("Skipping duplicate book: {}", e.getMessage());
+                for (OpenLibraryBookDoc doc : response.getDocs()) {
+                    if (doc.getTitle() == null || doc.getAuthorName() == null || doc.getAuthorName().isEmpty()) {
+                        continue;
                     }
-                    // V-- КОНЕЦ БЛОКА ИЗМЕНЕНИЙ
-                }
-            } catch (Exception e) {
-                // Этот блок теперь будет ловить только настоящие ошибки (например, сетевые)
-                logger.error("An unexpected error occurred during batch {}. Error: {}. Skipping batch.", i + 1, e.getMessage());
-            }
-        }
 
-        logger.info("Data initialization finished. Total books in database: {}. Total categories: {}",
-                bookRepository.count(), categoryRepository.count());
+                    // Используем название темы, по которой искали, как имя категории
+                    // Это гарантирует правильное распределение
+                    Category category = categoryRepository.findByName(subject)
+                            .orElseGet(() -> categoryRepository.save(Category.builder().name(subject).build()));
+
+                    Book book = Book.builder()
+                            .title(doc.getTitle())
+                            .author(doc.getAuthorName().get(0))
+                            .category(category)
+                            .build();
+
+                    booksToSave.add(book);
+                }
+            }
+            // --- КОНЕЦ НОВОЙ ЛОГИКИ ---
+
+            bookRepository.saveAll(booksToSave);
+            log.info("Data initialization finished. Total books in database: {}. Total categories: {}",
+                    bookRepository.count(), categoryRepository.count());
+
+        } catch (Exception e) {
+            log.error("Failed to initialize data from Open Library API.", e);
+        }
     }
 }
