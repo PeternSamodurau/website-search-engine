@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit; // <-- ДОБАВЛЕН ИМПОРТ
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,7 +39,12 @@ public class BookController {
     })
     public ResponseEntity<ApiResponse<List<BookResponse>>> getAllBooks() {
         log.info("Request to get all books");
+
+        long startTime = System.nanoTime();
         List<Book> books = bookService.findAll();
+        long durationInNanos = System.nanoTime() - startTime;
+        log.info("bookService.findAll() executed in {} ms", TimeUnit.NANOSECONDS.toMillis(durationInNanos));
+
         List<BookResponse> bookResponses = books.stream()
                 .map(bookMapper::toResponse)
                 .collect(Collectors.toList());
@@ -60,7 +66,12 @@ public class BookController {
     public ResponseEntity<ApiResponse<BookResponse>> getBookById(
             @Parameter(description = "Уникальный идентификатор книги", required = true) @PathVariable Long id) {
         log.info("Request to get book by id: {}", id);
+
+        long startTime = System.nanoTime();
         Book book = bookService.findById(id);
+        long durationInNanos = System.nanoTime() - startTime;
+        log.info("bookService.findById() for id {} executed in {} ms", id, TimeUnit.NANOSECONDS.toMillis(durationInNanos));
+
         ApiResponse<BookResponse> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
                 "Book successfully retrieved",
@@ -77,7 +88,12 @@ public class BookController {
     })
     public ResponseEntity<ApiResponse<BookResponse>> createBook(@RequestBody UserBookRequest request) {
         log.info("Request to create new book: {}", request);
+
+        long startTime = System.nanoTime();
         Book newBook = bookService.save(bookMapper.toEntity(request));
+        long durationInNanos = System.nanoTime() - startTime;
+        log.info("bookService.save() executed in {} ms", TimeUnit.NANOSECONDS.toMillis(durationInNanos));
+
         ApiResponse<BookResponse> response = new ApiResponse<>(
                 HttpStatus.CREATED.value(),
                 "Book successfully created",
@@ -99,7 +115,12 @@ public class BookController {
         log.info("Request to update book with id: {}. New data: {}", id, request);
         Book bookToUpdate = bookMapper.toEntity(request);
         bookToUpdate.setId(id);
+
+        long startTime = System.nanoTime();
         Book updatedBook = bookService.update(bookToUpdate);
+        long durationInNanos = System.nanoTime() - startTime;
+        log.info("bookService.update() for id {} executed in {} ms", id, TimeUnit.NANOSECONDS.toMillis(durationInNanos));
+
         ApiResponse<BookResponse> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
                 "Book successfully updated",
@@ -117,7 +138,12 @@ public class BookController {
     public ResponseEntity<ApiResponse<Void>> deleteBook(
             @Parameter(description = "ID книги, которую нужно удалить", required = true) @PathVariable Long id) {
         log.info("Request to delete book with id: {}", id);
+
+        long startTime = System.nanoTime();
         bookService.deleteById(id);
+        long durationInNanos = System.nanoTime() - startTime;
+        log.info("bookService.deleteById() for id {} executed in {} ms", id, TimeUnit.NANOSECONDS.toMillis(durationInNanos));
+
         ApiResponse<Void> response = new ApiResponse<>(
                 HttpStatus.NO_CONTENT.value(),
                 "Book successfully deleted"
@@ -135,7 +161,12 @@ public class BookController {
             @Parameter(description = "Название книги для поиска", required = true, in = ParameterIn.QUERY) @RequestParam String title,
             @Parameter(description = "Автор книги для поиска", required = true, in = ParameterIn.QUERY) @RequestParam String author) {
         log.info("Request to search book by title: '{}' and author: '{}'", title, author);
+
+        long startTime = System.nanoTime();
         Book book = bookService.findByTitleAndAuthor(title, author);
+        long durationInNanos = System.nanoTime() - startTime;
+        log.info("bookService.findByTitleAndAuthor() executed in {} ms", TimeUnit.NANOSECONDS.toMillis(durationInNanos));
+
         ApiResponse<BookResponse> response = new ApiResponse<>(
                 HttpStatus.OK.value(),
                 "Book successfully found by title and author",
@@ -153,7 +184,12 @@ public class BookController {
     public ResponseEntity<ApiResponse<List<BookResponse>>> getBooksByCategoryName(
             @Parameter(description = "Название категории для поиска книг", required = true) @PathVariable String categoryName) {
         log.info("Request to get books by category: '{}'", categoryName);
+
+        long startTime = System.nanoTime();
         List<Book> books = bookService.findAllByCategoryName(categoryName);
+        long durationInNanos = System.nanoTime() - startTime;
+        log.info("bookService.findAllByCategoryName() for category '{}' executed in {} ms", categoryName, TimeUnit.NANOSECONDS.toMillis(durationInNanos));
+
         List<BookResponse> bookResponses = books.stream()
                 .map(bookMapper::toResponse)
                 .collect(Collectors.toList());

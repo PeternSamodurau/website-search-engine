@@ -41,7 +41,7 @@ public class DataInitializer implements CommandLineRunner {
             // --- НОВАЯ ЛОГИКА: ЗАПРОСЫ ДЛЯ РАЗНЫХ КАТЕГОРИЙ ---
             List<String> subjects = List.of("History", "Science", "Fantasy", "Biography", "Cooking");
             Set<Book> booksToSave = new HashSet<>();
-            int booksPerSubject = 10;
+            int booksPerSubject = 100;
 
             for (String subject : subjects) {
                 log.info("Fetching {} books for subject: {}", booksPerSubject, subject);

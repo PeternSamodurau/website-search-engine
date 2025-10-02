@@ -8,6 +8,9 @@ import com.example.booksManagement.repository.BookRepository;
 import com.example.booksManagement.repository.CategoryRepository;
 import com.example.booksManagement.service.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,70 +25,89 @@ public class BookServiceImpl implements BookService {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<Book> findAll() {
         return bookRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Book findById(Long id) {
-        return bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book not found with ID: " + id));
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book with id " + id + " not found"));
     }
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "bookByTitleAndAuthor", allEntries = true),
+            @CacheEvict(value = "booksByCategory", allEntries = true)
+    })
     public Book save(Book book) {
-        // V-- ИЗМЕНЕНИЕ ЗДЕСЬ: Проверка на дубликат только по названию
-        Optional<Book> existingBook = bookRepository.findByTitle(book.getTitle());
-        if (existingBook.isPresent()) {
-            throw new DuplicateResourceException("Book with title '" + book.getTitle() + "' already exists.");
+        if (bookRepository.existsByTitleAndAuthor(book.getTitle(), book.getAuthor())) {
+            throw new DuplicateResourceException("Book with title " + book.getTitle() + " and author " + book.getAuthor() + " already exists");
         }
-
-        Category category = book.getCategory();
-        if (category != null && category.getName() != null && !category.getName().isBlank()) {
-            Category categoryFromDb = categoryRepository.findByName(category.getName())
-                    .orElseGet(() -> {
-                        return categoryRepository.save(Category.builder().name(category.getName()).build());
-                    });
-            book.setCategory(categoryFromDb);
-        }
-        return bookRepository.save(book);
+        return saveBookWithCategory(book);
     }
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "bookByTitleAndAuthor", allEntries = true),
+            @CacheEvict(value = "booksByCategory", allEntries = true)
+    })
     public Book update(Book book) {
-        findById(book.getId());
+        // Для update предполагаем, что id уже установлен в объекте book
+        Book existingBook = bookRepository.findById(book.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Book with id " + book.getId() + " not found"));
 
-        Category category = book.getCategory();
-        if (category != null && category.getName() != null && !category.getName().isBlank()) {
-            Category categoryFromDb = categoryRepository.findByName(category.getName())
-                    .orElseGet(() -> {
-                        return categoryRepository.save(Category.builder().name(category.getName()).build());
-                    });
-            book.setCategory(categoryFromDb);
-        }
+        existingBook.setTitle(book.getTitle());
+        existingBook.setAuthor(book.getAuthor());
+        existingBook.setCategory(book.getCategory()); // Обновляем и категорию
 
-        return bookRepository.save(book);
+        return saveBookWithCategory(existingBook);
     }
 
     @Override
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "bookByTitleAndAuthor", allEntries = true),
+            @CacheEvict(value = "booksByCategory", allEntries = true)
+    })
     public void deleteById(Long id) {
-        findById(id);
+        if (!bookRepository.existsById(id)) {
+            throw new EntityNotFoundException("Book with id " + id + " not found");
+        }
         bookRepository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "bookByTitleAndAuthor", key = "#title + #author")
     public Book findByTitleAndAuthor(String title, String author) {
         return bookRepository.findByTitleAndAuthor(title, author)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found with title: '" + title + "' and author: '" + author + "'"));
+                .orElseThrow(() -> new EntityNotFoundException("Book with title " + title + " and author " + author + " not found"));
     }
 
     @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "booksByCategory", key = "#categoryName")
     public List<Book> findAllByCategoryName(String categoryName) {
-        // V-- ИЗМЕНЕНИЕ ЗДЕСЬ: Добавлена проверка на существование категории
-        categoryRepository.findByName(categoryName)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with name: " + categoryName));
-
         return bookRepository.findAllByCategoryName(categoryName);
+    }
+
+    private Book saveBookWithCategory(Book book) {
+        Category category = book.getCategory();
+        if (category != null && category.getName() != null) {
+            Optional<Category> existingCategory = categoryRepository.findByName(category.getName());
+            if (existingCategory.isPresent()) {
+                book.setCategory(existingCategory.get());
+            } else {
+                // Если категория новая, ее нужно сначала сохранить
+                Category newCategory = categoryRepository.save(category);
+                book.setCategory(newCategory);
+            }
+        }
+        return bookRepository.save(book);
     }
 }

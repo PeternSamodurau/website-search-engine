@@ -1,27 +1,33 @@
 package com.example.booksManagement.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "books") // Убрано составное ограничение
-public class Book {
+@Table(name = "book")
+public class Book implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = false, unique = true)
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "author", nullable = false)
+    @Column(name = "author")
     private String author;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
-    @ToString.Exclude
     private Category category;
+
 }

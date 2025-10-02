@@ -1,27 +1,25 @@
 package com.example.booksManagement.model;
 
 import jakarta.persistence.*;
-import lombok.*; // <- ИЗМЕНЕН ИМПОРТ
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "category")
+public class Category implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name")
     private String name;
-
-    @OneToMany(mappedBy = "category")
-    @ToString.Exclude
-    @Builder.Default
-    private List<Book> books = new ArrayList<>();
 }
