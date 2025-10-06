@@ -1,0 +1,26 @@
+plugins {
+    id 'org.springframework.boot'
+}
+
+description = 'Service for processing orders from Kafka and sending status updates'
+archivesBaseName = 'order-status-service'
+
+dependencies {
+    // Базовая зависимость для любого Spring Boot приложения
+    implementation 'org.springframework.boot:spring-boot-starter'
+
+    // Для интеграции с Kafka (слушатель и отправитель)
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    // Подключаем наш модуль с общими классами
+ //   implementation project(':common-dto')
+}
+
+// Настройка для создания исполняемого JAR-файла
+tasks.named('bootJar') {
+    enabled = true
+}
+
+tasks.named('jar') {
+    enabled = false
+}
