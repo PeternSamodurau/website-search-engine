@@ -1,5 +1,5 @@
 rootProject.name = 'six-app'
 
-//include 'common-dto'
+include 'common-dto'
 include 'order-service'
 include 'order-status-service'

@@ -17,18 +17,21 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
 
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:3.1.11"
+        }
+    }
+
     java {
         sourceCompatibility = '17'
     }
 
-    // Общие зависимости для всех модулей
     dependencies {
-        // --- LOMBOK ---
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
         testCompileOnly 'org.projectlombok:lombok'
         testAnnotationProcessor 'org.projectlombok:lombok'
-        // --- КОНЕЦ LOMBOK ---
 
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
     }

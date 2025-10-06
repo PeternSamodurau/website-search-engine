@@ -13,7 +13,7 @@ dependencies {
     implementation 'org.springframework.kafka:spring-kafka'
 
     // Подключаем наш модуль с общими классами
- //   implementation project(':common-dto')
+    implementation project(':common-dto')
 }
 
 // Настройка для создания исполняемого JAR-файла
