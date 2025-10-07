@@ -1,4 +1,3 @@
-version: '3'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:6.2.0
@@ -21,3 +20,21 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+
+  # --- НАШ НОВЫЙ СЕРВИС ---
+  order-service:
+    # Указываем Docker собрать образ из папки ../order-service, используя Dockerfile внутри нее
+    build: ../order-service
+    # Указываем, что этот сервис должен стартовать только ПОСЛЕ того, как запустится kafka
+    depends_on:
+      - kafka
+    # Пробрасываем порт 8080 изнутри контейнера наружу, на порт 8080 вашего компьютера
+    ports:
+      - "8081:8081"
+    # Передаем переменные окружения внутрь контейнера
+    environment:
+      # ЭТО САМОЕ ВАЖНОЕ:
+      # Мы переопределяем настройку из application.properties.
+      # Вместо 'localhost:9092', сервис будет подключаться к 'kafka:9092'.
+      # 'kafka' - это имя сервиса kafka, которое Docker сам превратит в правильный IP-адрес.
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092

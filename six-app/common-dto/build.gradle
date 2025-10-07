@@ -3,7 +3,12 @@ plugins {
 }
 
 description = 'Common DTOs for Kafka events'
-archivesBaseName = 'common-dto'
+
+jar {
+	archiveBaseName = 'common-dto'
+}
 
 dependencies {
+	
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
