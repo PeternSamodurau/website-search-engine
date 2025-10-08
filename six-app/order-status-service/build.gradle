@@ -5,21 +5,16 @@ plugins {
 description = 'Service for processing orders from Kafka and sending status updates'
 
 dependencies {
-    // Базовая зависимость для любого Spring Boot приложения
-    implementation 'org.springframework.boot:spring-boot-starter'
 
-    // Для интеграции с Kafka (слушатель и отправитель)
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.springframework.kafka:spring-kafka'
 
-    // Подключаем наш модуль с общими классами
     implementation project(':common-dto')
 
-    // --- НОВОЕ ИСПРАВЛЕНИЕ ---
-    // Явно указываем зависимость для тестового фреймворка, чтобы убрать предупреждение
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
-// Настройка для создания исполняемого JAR-файла
 tasks.named('bootJar') {
     archiveBaseName = 'order-status-service'
     enabled = true
@@ -29,7 +24,6 @@ tasks.named('jar') {
     enabled = false
 }
 
-// Явно указываем платформу для тестов
 tasks.named('test') {
     useJUnitPlatform()
 }

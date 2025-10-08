@@ -8,16 +8,16 @@ import org.springframework.context.event.EventListener;
 
 @Slf4j
 @SpringBootApplication
-public class SkillboxSixAppApplication {
+public class OrderServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SkillboxSixAppApplication.class, args);
+        SpringApplication.run(OrderServiceApplication.class, args);
     }
     @EventListener
     public void onApplicationEvent(WebServerInitializedEvent event) {
         int port = event.getWebServer().getPort();
         String url = "http://localhost:" + port;
-        log.info("=================== SkillboxSixAppApplication started on URL : {}", url);
+        log.info("=================== OrderServiceApplication started on URL : {}", url);
     }
 
 }
