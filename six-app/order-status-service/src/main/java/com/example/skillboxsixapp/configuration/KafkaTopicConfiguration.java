@@ -9,17 +9,9 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaTopicConfiguration {
 
     @Bean
-    public NewTopic orderTopic() {
-        return TopicBuilder.name("order-topic")
-                .partitions(3)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
     public NewTopic orderStatusTopic() {
         return TopicBuilder.name("order-status-topic")
-                .partitions(3)
+                .partitions(1) // Для многопоточной обработки, 3 партиции.
                 .replicas(1)
                 .build();
     }

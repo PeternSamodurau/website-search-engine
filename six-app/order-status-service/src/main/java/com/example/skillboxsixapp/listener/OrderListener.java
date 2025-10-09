@@ -17,13 +17,12 @@ public class OrderListener {
 
     private final KafkaTemplate<String, OrderStatusEvent> kafkaTemplate;
 
-    @KafkaListener(topics = "order-topic", groupId = "order-status-group",concurrency = "3")
+    @KafkaListener(topics = "order-topic", groupId = "order-status-group",concurrency = "1") // поменять на 3 для многопоточности
     public void handleOrder(ConsumerRecord<String, OrderStatusEvent> record) {
 
         log.info("Received message from topic '{}': {}", record.topic(), record.value());
         log.info("Key: {}; Partition: {}; Topic: {}, Timestamp: {}", record.key(), record.partition(), record.topic(), record.timestamp());
 
-        // Создаем и отправляем ответное событие
         OrderStatusEvent event = record.value();
         event.setStatus(Status.COMPLETED);
         event.setEventDate(LocalDateTime.now());
