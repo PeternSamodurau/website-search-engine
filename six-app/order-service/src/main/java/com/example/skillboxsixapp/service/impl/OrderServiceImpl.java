@@ -40,11 +40,10 @@ public class OrderServiceImpl implements OrderService {
         log.info("Created OrderStatusEvent: {}", event);
 
         // 3. Отправляем событие в топик 'order-topic'
-        // В качестве ключа сообщения используем ID заказа для правильного распределения по партициям
         kafkaTemplate.send("order-topic", order.getOrderId().toString(), event);
         log.info("Sent event to Kafka topic 'order-topic' with key: {}", order.getOrderId());
 
-        // 4. Возвращаем созданный DTO контроллеру, как и требует интерфейс
+        // 4. Возвращаем созданный DTO контроллеру
         return order;
     }
 }

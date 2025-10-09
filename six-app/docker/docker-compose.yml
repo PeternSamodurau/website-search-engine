@@ -19,6 +19,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://$DOCKERHOST:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    #  KAFKA_NUM_PARTITIONS: 3
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
 
   order-service:
@@ -33,6 +34,8 @@ services:
       - "8081:8081"
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    volumes:
+      - ../logs:/app/logs
 
   order-status-service:
     build:
@@ -42,7 +45,7 @@ services:
         SERVICE_NAME: order-status-service
     depends_on:
       - kafka
-    ports:
-      - "8082:8081"
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    volumes:
+      - ../logs:/app/logs

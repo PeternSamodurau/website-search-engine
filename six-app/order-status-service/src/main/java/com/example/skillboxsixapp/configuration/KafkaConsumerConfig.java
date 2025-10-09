@@ -1,4 +1,4 @@
-package com.example.skillboxsixapp.config;
+package com.example.skillboxsixapp.configuration;
 
 import com.example.skillboxsixapp.OrderStatusEvent; // <-- Я обновил импорт здесь для точности
 import org.apache.kafka.clients.consumer.ConsumerConfig;

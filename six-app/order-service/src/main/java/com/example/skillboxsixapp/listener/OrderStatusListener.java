@@ -23,7 +23,7 @@ public class OrderStatusListener {
             @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
             @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long timestamp) {
 
-        log.info("Received status update message: {}", message);
+        log.info("Received message from topic '{}': {}", topic, message);
         log.info("Key: {}; Partition: {}; Topic: {}, Timestamp: {}", key, partition, topic, timestamp);
     }
 }

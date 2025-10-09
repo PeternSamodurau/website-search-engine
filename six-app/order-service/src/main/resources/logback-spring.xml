@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
+    <property name="LOG_FILE" value="/app/logs/application.log"/>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_FILE}</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } --- [%t] [%-22.22(${springAppName:-})] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="FILE" />
+    </root>
+
+    <!-- 2. Повышаем порог для "шумных" библиотек, чтобы скрыть их лишние сообщения. -->
+    <logger name="org.apache.kafka" level="ERROR"/>
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.apache.zookeeper" level="WARN"/>
+
+
+    <logger name="com.example.skillboxsixapp" level="DEBUG"/>
+
+</configuration>
