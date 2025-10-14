@@ -1,15 +1,16 @@
 package com.example.seven_app.mapper;
 
-import com.example.seven_app.dto.UserDto;
+import com.example.seven_app.dto.response.UserResponseDto;
+import com.example.seven_app.dto.request.UserRequestDto;
 import com.example.seven_app.model.User;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring") // Говорим, что это маппер для Spring
+@Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    // "Чертеж" для перевода из User в UserDto
-    UserDto toDto(User user);
+    UserResponseDto toDto(User user);
 
-    // "Чертеж" для перевода из UserDto обратно в User
-    User toUser(UserDto userDto);
+    User toUser(UserResponseDto userDto);
+
+    User toUser(UserRequestDto userRequestDto);
 }

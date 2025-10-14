@@ -1,4 +1,4 @@
-package com.example.seven_app.dto;
+package com.example.seven_app.dto.response;
 
 import com.example.seven_app.model.TaskStatus;
 import lombok.Data;
@@ -7,14 +7,14 @@ import java.time.Instant;
 import java.util.Set;
 
 @Data
-public class TaskDto {
+public class TaskResponseDto {
     private String id;
     private String name;
     private String description;
     private Instant createdAt;
     private Instant updatedAt;
     private TaskStatus status;
-    private UserDto author;
-    private UserDto assignee;
-    private Set<UserDto> observers;
+    private UserResponseDto author;
+    private UserResponseDto assignee;
+    private Set<UserResponseDto> observers;
 }

@@ -1,9 +1,8 @@
 package com.example.seven_app.exception;
 
-import com.example.seven_app.dto.ErrorResponseDto;
+import com.example.seven_app.dto.response.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

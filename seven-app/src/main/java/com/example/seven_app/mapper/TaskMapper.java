@@ -1,7 +1,7 @@
 package com.example.seven_app.mapper;
 
-import com.example.seven_app.dto.TaskDto;
-import com.example.seven_app.dto.TaskRequestDto;
+import com.example.seven_app.dto.response.TaskResponseDto;
+import com.example.seven_app.dto.request.TaskRequestDto;
 import com.example.seven_app.model.Task;
 import com.example.seven_app.model.User;
 import org.mapstruct.Mapper;
@@ -17,7 +17,7 @@ public interface TaskMapper {
     @Mapping(target = "author", source = "author")
     @Mapping(target = "assignee", source = "assignee")
     @Mapping(target = "observers", source = "observers")
-    TaskDto toDto(Task task, User author, User assignee, Set<User> observers);
+    TaskResponseDto toDto(Task task, User author, User assignee, Set<User> observers);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "authorId", ignore = true)

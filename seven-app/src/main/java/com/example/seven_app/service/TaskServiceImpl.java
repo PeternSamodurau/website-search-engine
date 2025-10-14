@@ -1,7 +1,7 @@
 package com.example.seven_app.service;
 
-import com.example.seven_app.dto.TaskDto;
-import com.example.seven_app.dto.TaskRequestDto;
+import com.example.seven_app.dto.response.TaskResponseDto;
+import com.example.seven_app.dto.request.TaskRequestDto;
 import com.example.seven_app.mapper.TaskMapper;
 import com.example.seven_app.model.Task;
 import com.example.seven_app.model.TaskStatus;
@@ -28,19 +28,19 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
 
     @Override
-    public Flux<TaskDto> findAll() {
+    public Flux<TaskResponseDto> findAll() {
         return taskRepository.findAll()
                 .flatMap(this::enrichAndMapToDto);
     }
 
     @Override
-    public Mono<TaskDto> findById(String id) {
+    public Mono<TaskResponseDto> findById(String id) {
         return taskRepository.findById(id)
                 .flatMap(this::enrichAndMapToDto);
     }
 
     @Override
-    public Mono<TaskDto> save(TaskRequestDto taskDto) {
+    public Mono<TaskResponseDto> save(TaskRequestDto taskDto) {
         // NOTE: The authorId should be set from the security context of the currently logged-in user.
         // This functionality is not implemented here as it requires Spring Security setup.
         Task task = taskMapper.toEntity(taskDto);
@@ -55,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Mono<TaskDto> update(String id, TaskRequestDto taskDto) {
+    public Mono<TaskResponseDto> update(String id, TaskRequestDto taskDto) {
         return taskRepository.findById(id)
                 .flatMap(existingTask -> {
                     taskMapper.updateTaskFromDto(taskDto, existingTask);
@@ -66,7 +66,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Mono<TaskDto> addObserver(String taskId, String observerId) {
+    public Mono<TaskResponseDto> addObserver(String taskId, String observerId) {
         return taskRepository.findById(taskId)
                 .flatMap(task -> userRepository.existsById(observerId)
                         .flatMap(exists -> {
@@ -88,7 +88,7 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.deleteById(id);
     }
 
-    private Mono<TaskDto> enrichAndMapToDto(Task task) {
+    private Mono<TaskResponseDto> enrichAndMapToDto(Task task) {
         Mono<User> authorMono = userRepository.findById(task.getAuthorId())
                 .defaultIfEmpty(new User()); // Should not be empty in a consistent DB
 

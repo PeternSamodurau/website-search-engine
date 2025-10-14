@@ -1,18 +1,18 @@
 package com.example.seven_app.service;
 
-import com.example.seven_app.dto.UserDto;
-import com.example.seven_app.model.User;
+import com.example.seven_app.dto.response.UserResponseDto;
+import com.example.seven_app.dto.request.UserRequestDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface UserService {
-    Flux<UserDto> findAll();
+    Flux<UserResponseDto> findAll();
 
-    Mono<UserDto> findById(String id);
+    Mono<UserResponseDto> findById(String id);
 
-    Mono<UserDto> save(UserDto userDto);
+    Mono<UserResponseDto> save(UserRequestDto userRequestDto);
 
-    Mono<UserDto> update(String id, UserDto userDto);
+    Mono<UserResponseDto> update(String id, UserRequestDto userRequestDto);
 
     Mono<Void> deleteById(String id);
 }

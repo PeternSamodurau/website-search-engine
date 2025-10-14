@@ -1,4 +1,4 @@
-package com.example.seven_app.dto;
+package com.example.seven_app.dto.request;
 
 import com.example.seven_app.model.TaskStatus;
 import lombok.AllArgsConstructor;
