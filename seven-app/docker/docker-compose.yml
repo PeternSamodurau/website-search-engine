@@ -12,6 +12,7 @@ services:
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://db:27017/task_tracker
     volumes:
+      # Связываем папку logs на хосте с папкой /app/logs в контейнере
       - ../logs:/app/logs
 
   db:

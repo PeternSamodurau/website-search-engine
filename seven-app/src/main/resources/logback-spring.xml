@@ -1,33 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <springProperty scope="context" name="LOG_FILE" source="logging.file.name"
-                    defaultValue="C:/Users/user/IdeaProjects/SpringFramework/seven-app/logs/app.log"/>
-    <springProperty scope="context" name="LOG_LEVEL" source="logging.level.root"
-                    defaultValue="INFO"/>
+    <property name="LOG_FILE" value="/app/logs/application.log"/>
 
-    <!-- Аппендер для вывода в консоль -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-15.15thread] [%-30.30logger{29}] : %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-15.15thread] [%-40.40logger{39}] : %msg%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}</pattern>
         </encoder>
     </appender>
 
-    <!-- Ваш аппендер для вывода в файл -->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>${LOG_FILE}</file>
         <append>false</append>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-15.15thread] [%-30.30logger{29}] : %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-15.15thread] [%-40.40logger{39}] : %msg%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}</pattern>
         </encoder>
     </appender>
 
-    <!-- Подключаем оба аппендера -->
-    <root level="${LOG_LEVEL}">
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="FILE" />
     </root>
+
+    <logger name="com.example.seven_app" level="INFO"/>
 
 </configuration>

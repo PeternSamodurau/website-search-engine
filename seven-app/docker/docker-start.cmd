@@ -1,16 +1,17 @@
 @echo off
 echo "========================================="
-echo "  Building Spring Boot application...    "
+echo "  Building and starting containers...    "
+echo "  (This output will go to docker-log.txt)"
 echo "========================================="
-call .\gradlew clean build
 
-if %errorlevel% neq 0 (
-    echo "ERROR: Gradle build failed! Aborting."
-    exit /b %errorlevel%
-)
+REM Указываем путь к файлу docker-compose.yml и отправляем вывод в файл
+docker-compose -f docker\docker-compose.yml up --build -d > "docker\docker-log.txt" 2>&1
 
 echo.
 echo "========================================="
-echo "  Starting Docker Compose...             "
+echo "  Displaying application logs (app-1)... "
+echo "  (Press Ctrl+C to stop)                 "
 echo "========================================="
-docker-compose -f docker/docker-compose.yml up --build
+
+REM Указываем путь к файлу и выводим в консоль только логи сервиса "app"
+docker-compose -f docker\docker-compose.yml logs -f app
