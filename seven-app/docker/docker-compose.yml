@@ -1,11 +1,26 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  mongodb:
-    image: mongo:6.0.8
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://db:27017/task_tracker
+    volumes:
+      - ../logs:/app/logs
+
+  db:
+    image: mongo:4.4
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-      MONGO_INITDB_DATABASE: appdatabase
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+
+volumes:
+  mongo-data:

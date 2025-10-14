@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+
+    <springProperty scope="context" name="LOG_FILE" source="logging.file.name"
+                    defaultValue="C:/Users/user/IdeaProjects/SpringFramework/seven-app/logs/app.log"/>
+    <springProperty scope="context" name="LOG_LEVEL" source="logging.level.root"
+                    defaultValue="INFO"/>
+
+    <!-- Аппендер для вывода в консоль -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-15.15thread] [%-30.30logger{29}] : %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Ваш аппендер для вывода в файл -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_FILE}</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-15.15thread] [%-30.30logger{29}] : %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Подключаем оба аппендера -->
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>
