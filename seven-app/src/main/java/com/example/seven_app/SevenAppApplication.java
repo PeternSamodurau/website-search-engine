@@ -1,6 +1,5 @@
 package com.example.seven_app;
 
-import io.mongock.runner.springboot.EnableMongock;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
