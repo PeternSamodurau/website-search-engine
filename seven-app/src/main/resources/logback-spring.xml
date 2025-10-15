@@ -2,28 +2,40 @@
 <configuration>
 
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
 
-    <property name="LOG_FILE" value="/app/logs/application.log"/>
+
+    <property name="ENCODER_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } --- [%15.15t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-15.15thread] [%-40.40logger{39}] : %msg%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}</pattern>
+            <pattern>${ENCODER_PATTERN}</pattern>
         </encoder>
     </appender>
 
+
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>${LOG_FILE}</file>
+        <file>/app/logs/application.log</file>
         <append>false</append>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%-15.15thread] [%-40.40logger{39}] : %msg%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}</pattern>
+            <pattern>${ENCODER_PATTERN}</pattern>
         </encoder>
     </appender>
+
+    <logger name="org.springframework.web" level="INFO"/>
+
+
+    <logger name="org.hibernate" level="WARN"/>
+
+
+    <logger name="com.example.seven_app" level="DEBUG"/>
+
+
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE" />
+        <appender-ref ref="FILE"/>
     </root>
-
-    <logger name="com.example.seven_app" level="INFO"/>
 
 </configuration>
