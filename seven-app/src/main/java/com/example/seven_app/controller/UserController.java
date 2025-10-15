@@ -21,14 +21,14 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "User Controller", description = "Operations with users")
+@Tag(name = "User Controller", description = "Операции с пользователями")
 public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "Get all users", description = "Returns a list of all users")
+    @Operation(summary = "Получить всех пользователей", description = "Возвращает список всех пользователей")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved users",
+            @ApiResponse(responseCode = "200", description = "Пользователи успешно получены",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = UserResponseDto.class)))
     })
@@ -38,12 +38,12 @@ public class UserController {
         return userService.findAll();
     }
 
-    @Operation(summary = "Get user by ID", description = "Returns a single user by ID")
+    @Operation(summary = "Получить пользователя по ID", description = "Возвращает одного пользователя по ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved user",
+            @ApiResponse(responseCode = "200", description = "Пользователь успешно получен",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = UserResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content)
     })
     @GetMapping("/{id}")
     public Mono<UserResponseDto> getUserById(@PathVariable String id) {
@@ -51,12 +51,12 @@ public class UserController {
         return userService.findById(id);
     }
 
-    @Operation(summary = "Create a new user", description = "Creates a new user")
+    @Operation(summary = "Создать нового пользователя", description = "Создает нового пользователя")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User created successfully",
+            @ApiResponse(responseCode = "201", description = "Пользователь успешно создан",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = UserResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Некорректное тело запроса", content = @Content)
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -65,13 +65,13 @@ public class UserController {
         return userService.save(request);
     }
 
-    @Operation(summary = "Update an existing user", description = "Updates an existing user by ID")
+    @Operation(summary = "Обновить существующего пользователя", description = "Обновляет существующего пользователя по ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User updated successfully",
+            @ApiResponse(responseCode = "200", description = "Пользователь успешно обновлен",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = UserResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Некорректное тело запроса", content = @Content)
     })
     @PutMapping("/{id}")
     public Mono<UserResponseDto> updateUser(@PathVariable String id, @Valid @RequestBody UserRequestDto request) {
@@ -79,10 +79,10 @@ public class UserController {
         return userService.update(id, request);
     }
 
-    @Operation(summary = "Delete a user", description = "Deletes a user by ID")
+    @Operation(summary = "Удалить пользователя", description = "Удаляет пользователя по ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "User deleted successfully", content = @Content),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
+            @ApiResponse(responseCode = "204", description = "Пользователь успешно удален", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content)
     })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -35,8 +35,7 @@ public class TaskController {
     @GetMapping
     public Flux<TaskResponseDto> findAll() {
         log.info("Request to find all tasks");
-        return taskService.findAll()
-                .doOnError(error -> log.error("Error finding all tasks", error));
+        return taskService.findAll();
     }
 
     @Operation(summary = "Получить задачу по ID", description = "Возвращает задачу по ее уникальному идентификатору.")
@@ -48,22 +47,21 @@ public class TaskController {
     @GetMapping("/{id}")
     public Mono<TaskResponseDto> findById(@PathVariable String id) {
         log.info("Request to find task by id: {}", id);
-        return taskService.findById(id)
-                .doOnError(error -> log.error("Error finding task by id: {}", id, error));
+        return taskService.findById(id);
     }
 
     @Operation(summary = "Создать новую задачу", description = "Создает новую задачу.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Задача успешно создана",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = TaskResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "Некорректный запрос", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Некорректный запрос", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Задача с таким именем и описанием уже существует", content = @Content)
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<TaskResponseDto> save(@RequestBody TaskRequestDto taskRequestDto) {
         log.info("Request to save task: {}", taskRequestDto);
-        return taskService.save(taskRequestDto)
-                .doOnError(error -> log.error("Error saving task: {}", taskRequestDto, error));
+        return taskService.save(taskRequestDto);
     }
 
     @Operation(summary = "Обновить существующую задачу", description = "Обновляет существующую задачу по ее ID.")
@@ -76,8 +74,7 @@ public class TaskController {
     @PutMapping("/{id}")
     public Mono<TaskResponseDto> update(@PathVariable String id, @RequestBody TaskRequestDto taskRequestDto) {
         log.info("Request to update task by id: {} with data: {}", id, taskRequestDto);
-        return taskService.update(id, taskRequestDto)
-                .doOnError(error -> log.error("Error updating task by id: {}", id, error));
+        return taskService.update(id, taskRequestDto);
     }
 
     @Operation(summary = "Удалить задачу", description = "Удаляет задачу по ее ID.")
@@ -89,8 +86,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> deleteById(@PathVariable String id) {
         log.info("Request to delete task by id: {}", id);
-        return taskService.deleteById(id)
-                .doOnError(error -> log.error("Error deleting task by id: {}", id, error));
+        return taskService.deleteById(id);
     }
 
     @Operation(summary = "Добавить наблюдателя к задаче", description = "Добавляет пользователя в качестве наблюдателя к существующей задаче.")
@@ -103,7 +99,19 @@ public class TaskController {
     @PostMapping("/{id}/observers")
     public Mono<TaskResponseDto> addObserver(@PathVariable String id, @RequestBody String observerId) {
         log.info("Request to add observer with id: {} to task with id: {}", observerId, id);
-        return taskService.addObserver(id, observerId)
-                .doOnError(error -> log.error("Error adding observer to task with id: {}", id, error));
+        return taskService.addObserver(id, observerId);
+    }
+
+    @Operation(summary = "Назначить исполнителя задачи", description = "Назначает пользователя в качестве исполнителя для существующей задачи.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Исполнитель успешно назначен",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TaskResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Задача или пользователь с таким ID не найден", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Некорректный запрос", content = @Content)
+    })
+    @PutMapping("/{id}/assignee/{assigneeId}")
+    public Mono<TaskResponseDto> assignAssignee(@PathVariable String id, @PathVariable String assigneeId) {
+        log.info("Request to assign assignee with id: {} to task with id: {}", assigneeId, id);
+        return taskService.assignAssignee(id, assigneeId);
     }
 }

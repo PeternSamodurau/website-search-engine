@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.stream.Collectors;
-import com.example.seven_app.exception.UserNotFoundException;
-import com.example.seven_app.exception.TaskNotFoundException;
 
 @RestControllerAdvice
 @Slf4j
@@ -35,10 +33,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    // Обработчик ошибок уникальности (дубликат username/email)
+    // Обработчик ошибок уникальности и других статусов
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponseDto> handleResponseStatusException(ResponseStatusException ex) {
-        log.error("Service Error: Status={}, Reason='{}'", ex.getStatusCode(), ex.getReason());
+        // НЕ ЛОГИРУЕМ ожидаемую ошибку о дубликате, чтобы не засорять логи
+        if (ex.getStatusCode() != HttpStatus.CONFLICT) {
+            log.error("Service Error: Status={}, Reason='{}'", ex.getStatusCode(), ex.getReason());
+        }
         ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getReason());
         return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
     }

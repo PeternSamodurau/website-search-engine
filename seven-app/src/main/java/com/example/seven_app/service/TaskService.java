@@ -17,4 +17,6 @@ public interface TaskService {
     Mono<TaskResponseDto> addObserver(String taskId, String observerId);
 
     Mono<Void> deleteById(String id);
+
+    Mono<TaskResponseDto> assignAssignee(String taskId, String assigneeId);
 }
