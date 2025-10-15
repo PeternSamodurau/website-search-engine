@@ -5,7 +5,7 @@ chcp 65001 > nul
 echo "========================================================"
 echo "  1. Stopping and removing old containers and networks..."
 echo "========================================================"
-docker-compose -f docker\docker-compose.yml down
+docker-compose -f docker\docker-compose.yml down -v
 
 echo.
 echo "========================================================"

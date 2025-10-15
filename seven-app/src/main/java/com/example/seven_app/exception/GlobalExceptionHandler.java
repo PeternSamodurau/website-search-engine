@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     // Обработчик ошибок уникальности (дубликат username/email)
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponseDto> handleResponseStatusException(ResponseStatusException ex) {
-        log.error("Service Error: Status={}, Reason='{}'", ex.getStatusCode(), ex.getReason()); // Логируем ошибку
+        log.error("Service Error: Status={}, Reason='{}'", ex.getStatusCode(), ex.getReason());
         ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getReason());
         return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
     }

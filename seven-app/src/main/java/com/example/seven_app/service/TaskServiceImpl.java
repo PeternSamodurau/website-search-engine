@@ -9,13 +9,16 @@ import com.example.seven_app.model.User;
 import com.example.seven_app.repository.TaskRepository;
 import com.example.seven_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Mono<TaskResponseDto> findById(String id) {
         return taskRepository.findById(id)
+                .filter(Objects::nonNull)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + id + " not found")))
                 .flatMap(this::enrichAndMapToDto);
     }
 
