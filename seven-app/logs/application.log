@@ -23,3 +23,6 @@
 2025-10-16 12:40:42.926  INFO 1 --- [ntLoopGroup-3-6] c.e.s.config.SwaggerCacheInitializer     : Successfully cached 3 task IDs for Swagger.
 2025-10-16 12:40:42.927  INFO 1 --- [           main] c.e.s.config.SwaggerCacheInitializer     : >>>>>> SwaggerCacheInitializer: FINISHED. <<<<<<<
 2025-10-16 12:40:52.722  INFO 1 --- [or-http-epoll-2] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 1365 ms
+2025-10-16 12:46:00.845  INFO 1 --- [or-http-epoll-3] c.e.seven_app.controller.TaskController  : Request to find all tasks
+2025-10-16 12:46:00.847  INFO 1 --- [or-http-epoll-3] c.e.seven_app.service.TaskServiceImpl    : Request to find all tasks
+2025-10-16 12:46:00.917  INFO 1 --- [ntLoopGroup-3-7] c.e.seven_app.service.TaskServiceImpl    : Successfully found all tasks
