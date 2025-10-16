@@ -1,9 +1,12 @@
 package com.example.seven_app.config;
 
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
-import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.HandlerMethod;
 
 import java.util.List;
 
@@ -11,28 +14,24 @@ import java.util.List;
 public class OpenApiConfig {
 
     @Bean
-    public OpenApiCustomizer userDropdownCustomiser(SwaggerUserCache userCache) {
-        return openApi -> {
+    public OperationCustomizer userDropdownCustomizer(SwaggerUserCache userCache) {
+        return (Operation operation, HandlerMethod handlerMethod) -> {
             List<String> userIds = userCache.getUserIds();
 
-            if (userIds.isEmpty()) {
-                return; // No users to add to the dropdown
+            if (userIds == null || userIds.isEmpty()) {
+                return operation;
             }
 
-            // Iterate through all paths and operations to find the relevant parameters
-            openApi.getPaths().values().forEach(pathItem -> pathItem.readOperations().forEach(operation -> {
-                if (operation.getParameters() != null) {
-                    operation.getParameters().forEach(parameter -> {
-                        // Check for parameters used for assigning users
-                        if ("assigneeId".equals(parameter.getName()) || "observerId".equals(parameter.getName())) {
-                            if (parameter.getSchema() != null) {
-                                // Set the list of user IDs as an enum, which Swagger UI renders as a dropdown
-                                parameter.getSchema().setEnum(userIds);
-                            }
-                        }
-                    });
+            if (operation.getParameters() != null) {
+                for (Parameter parameter : operation.getParameters()) {
+                    if ("assigneeId".equals(parameter.getName()) || "observerId".equals(parameter.getName())) {
+                        StringSchema newSchema = new StringSchema();
+                        newSchema.setEnum(userIds);
+                        parameter.setSchema(newSchema);
+                    }
                 }
-            }));
+            }
+            return operation;
         };
     }
 }

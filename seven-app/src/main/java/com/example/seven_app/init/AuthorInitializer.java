@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Profile("init")
 @Slf4j
+@Order(2) // Second priority
 public class AuthorInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -34,6 +36,8 @@ public class AuthorInitializer implements CommandLineRunner {
                     defaultAuthor.setEmail(defaultAuthorUsermail);
                     return userRepository.save(defaultAuthor);
                 }))
-                .subscribe(user -> log.info("Default author user '{}' is present in the database with ID: {}", user.getUsername(), user.getId()));
+                .doOnSuccess(user -> log.info("Default author user '{}' is present in the database with ID: {}", user.getUsername(), user.getId()))
+                .block(); // This is safe and necessary on startup
+        log.info(">>>>>>>>> AuthorInitializer FINISHED. <<<<<<<<<");
     }
 }

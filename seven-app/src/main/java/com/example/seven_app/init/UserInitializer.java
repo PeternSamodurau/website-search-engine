@@ -6,15 +6,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 @Profile("init")
 @Slf4j
+@Order(1) // Highest priority
 public class UserInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -24,7 +24,7 @@ public class UserInitializer implements CommandLineRunner {
         userRepository.count()
                 .flatMap(count -> {
                     if (count == 0) {
-                        log.info("No users found in the database. Creating 5 test users...");
+                        log.info(">>>>>>>>> EXECUTING NEW CODE! Creating 5 test users... <<<<<<<<<");
                         return Flux.range(1, 5)
                                 .flatMap(i -> {
                                     User user = new User();
@@ -32,16 +32,14 @@ public class UserInitializer implements CommandLineRunner {
                                     user.setEmail("testuser" + i + "@example.com");
                                     return userRepository.save(user);
                                 })
-                                .collectList();
+                                .collectList()
+                                .doOnSuccess(users -> log.info("Successfully created {} test users.", users.size()));
                     } else {
                         log.info("{} users already present in the database. Skipping creation.", count);
-                        return Flux.<User>empty().collectList();
+                        return Flux.empty().collectList(); // Return an empty list publisher
                     }
                 })
-                .subscribe(users -> {
-                    if (!users.isEmpty()) {
-                        log.info("Successfully created {} test users.", users.size());
-                    }
-                });
+                .block(); // This is safe and necessary on startup
+        log.info(">>>>>>>>> UserInitializer FINISHED. <<<<<<<<<");
     }
 }
