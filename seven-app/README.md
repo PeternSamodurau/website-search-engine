@@ -21,6 +21,7 @@
  **.\docker\docker-start.cmd**
 
 2. Выполняется инициализация:
+
    * AuthorInitializer.java из app.default-author-username=userAuthor и  app.default-author-usermail=userAuthor@mail.ru
    * UserInitializer.java 
    * TaskInitializer.java
