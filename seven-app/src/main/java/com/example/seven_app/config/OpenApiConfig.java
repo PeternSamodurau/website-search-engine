@@ -14,20 +14,29 @@ import java.util.List;
 public class OpenApiConfig {
 
     @Bean
-    public OperationCustomizer userDropdownCustomizer(SwaggerUserCache userCache) {
+    public OperationCustomizer userDropdownCustomizer(SwaggerUserCache userCache, SwaggerTaskCache taskCache) {
         return (Operation operation, HandlerMethod handlerMethod) -> {
             List<String> userIds = userCache.getUserIds();
-
-            if (userIds == null || userIds.isEmpty()) {
-                return operation;
-            }
+            List<String> taskIds = taskCache.getTaskIds();
 
             if (operation.getParameters() != null) {
                 for (Parameter parameter : operation.getParameters()) {
-                    if ("assigneeId".equals(parameter.getName()) || "observerId".equals(parameter.getName())) {
-                        StringSchema newSchema = new StringSchema();
-                        newSchema.setEnum(userIds);
-                        parameter.setSchema(newSchema);
+                    // Dropdown for User IDs
+                    if (userIds != null && !userIds.isEmpty()) {
+                        if ("assigneeId".equals(parameter.getName()) || "observerId".equals(parameter.getName())) {
+                            StringSchema newSchema = new StringSchema();
+                            newSchema.setEnum(userIds);
+                            parameter.setSchema(newSchema);
+                        }
+                    }
+
+                    // Dropdown for Task IDs
+                    if (taskIds != null && !taskIds.isEmpty()) {
+                        if ("taskId".equals(parameter.getName())) {
+                            StringSchema newSchema = new StringSchema();
+                            newSchema.setEnum(taskIds);
+                            parameter.setSchema(newSchema);
+                        }
                     }
                 }
             }
