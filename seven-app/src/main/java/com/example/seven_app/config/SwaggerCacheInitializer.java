@@ -1,46 +1,51 @@
 package com.example.seven_app.config;
 
-import com.example.seven_app.model.User;
+import com.example.seven_app.repository.TaskRepository; // Добавили репозиторий задач
 import com.example.seven_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.Order;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-@Profile("init")
 @Slf4j
-@Order(3) // Lowest priority
-public class SwaggerCacheInitializer implements CommandLineRunner {
+@Profile("init")
+public class SwaggerCacheInitializer {
 
     private final UserRepository userRepository;
-    private final SwaggerUserCache swaggerUserCache;
+    private final TaskRepository taskRepository; // Добавили репозиторий задач
+    private final SwaggerCache swaggerCache; // Используем новый единый кэш
 
-    @Override
-    public void run(String... args) {
-        log.info(">>>>>>>>> Caching user IDs for Swagger... <<<<<<<<<");
-        try {
-            List<String> userIds = userRepository.findAll()
-                    .map(User::getId)
-                    .collectList()
-                    .block(); // This is safe and necessary on startup
+    @EventListener(ApplicationReadyEvent.class)
+    public void cacheSwaggerIds() {
+        // --- Кэширование пользователей (логика без изменений) ---
+        log.info(">>>>>> Caching user IDs for Swagger... <<<<<<<");
+        userRepository.findAll()
+                .map(user -> user.getId())
+                .collectList()
+                .doOnSuccess(userIds -> {
+                    swaggerCache.setUserIds(userIds);
+                    log.info("Successfully cached {} user IDs for Swagger.", userIds.size());
+                })
+                .block();
 
-            if (userIds == null) {
-                userIds = Collections.emptyList();
-            }
+        // --- Кэширование задач (новая логика) ---
+        log.info(">>>>>> Caching task IDs for Swagger... <<<<<<<");
+        taskRepository.findAll()
+                .map(task -> task.getId())
+                .collectList()
+                .doOnSuccess(taskIds -> {
+                    swaggerCache.setTaskIds(taskIds);
+                    log.info("Successfully cached {} task IDs for Swagger.", taskIds.size());
+                })
+                .block();
 
-            swaggerUserCache.setUserIds(userIds);
-            log.info("Successfully cached {} user IDs for Swagger.", userIds.size());
-        } catch (Exception e) {
-            log.error("Failed to cache user IDs for Swagger", e);
-            swaggerUserCache.setUserIds(Collections.emptyList());
-        }
-        log.info(">>>>>>>>> SwaggerCacheInitializer FINISHED. <<<<<<<<<");
+        log.info(">>>>>> SwaggerCacheInitializer: FINISHED. <<<<<<<");
     }
 }

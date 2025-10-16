@@ -1,12 +1,10 @@
 package com.example.seven_app.config;
 
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.method.HandlerMethod;
 
 import java.util.List;
 
@@ -14,30 +12,38 @@ import java.util.List;
 public class OpenApiConfig {
 
     @Bean
-    public OperationCustomizer userDropdownCustomizer(SwaggerUserCache userCache, SwaggerTaskCache taskCache) {
-        return (Operation operation, HandlerMethod handlerMethod) -> {
-            List<String> userIds = userCache.getUserIds();
-            List<String> taskIds = taskCache.getTaskIds();
+    // Используем новый единый SwaggerCache
+    public OperationCustomizer customize(SwaggerCache swaggerCache) {
+        return (operation, handlerMethod) -> {
+            // Получаем оба списка из единого кэша
+            List<String> userIds = swaggerCache.getUserIds();
+            List<String> taskIds = swaggerCache.getTaskIds();
 
-            if (operation.getParameters() != null) {
-                for (Parameter parameter : operation.getParameters()) {
-                    // Dropdown for User IDs
-                    if (userIds != null && !userIds.isEmpty()) {
-                        if ("assigneeId".equals(parameter.getName()) || "observerId".equals(parameter.getName())) {
-                            StringSchema newSchema = new StringSchema();
-                            newSchema.setEnum(userIds);
-                            parameter.setSchema(newSchema);
-                        }
-                    }
+            if (operation.getParameters() == null) {
+                return operation;
+            }
 
-                    // Dropdown for Task IDs
-                    if (taskIds != null && !taskIds.isEmpty()) {
-                        if ("taskId".equals(parameter.getName())) {
-                            StringSchema newSchema = new StringSchema();
-                            newSchema.setEnum(taskIds);
-                            parameter.setSchema(newSchema);
-                        }
-                    }
+            // ЕДИНЫЙ ЦИКЛ ДЛЯ ВСЕХ ПАРАМЕТРОВ (логика без изменений)
+            for (Parameter parameter : operation.getParameters()) {
+
+                // Логика для ID пользователей
+                if (!userIds.isEmpty() && (
+                        parameter.getName().equals("assigneeId") ||
+                                parameter.getName().equals("observerId") ||
+                                parameter.getName().equals("userId")
+                )) {
+                    Schema<String> schema = new Schema<>();
+                    schema.setType("string");
+                    schema.setEnum(userIds);
+                    parameter.setSchema(schema);
+                }
+
+                // Логика для ID задач
+                if (!taskIds.isEmpty() && parameter.getName().equals("taskId")) {
+                    Schema<String> schema = new Schema<>();
+                    schema.setType("string");
+                    schema.setEnum(taskIds);
+                    parameter.setSchema(schema);
                 }
             }
             return operation;
