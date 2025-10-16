@@ -53,7 +53,6 @@ public class TaskServiceImpl implements TaskService {
     public Mono<TaskResponseDto> findById(String id) {
         log.info("Request to find task by id: {}", id);
         return taskRepository.findById(id)
-                .filter(Objects::nonNull)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + id + " not found")))
                 .flatMap(this::enrichAndMapToDto)
                 .doOnSuccess(task -> log.info("Successfully found task: {}", task))
@@ -75,7 +74,7 @@ public class TaskServiceImpl implements TaskService {
                                 task.setAuthorId(author.getId());
                                 task.setName(taskRequestDto.getName());
                                 task.setDescription(taskRequestDto.getDescription());
-                                task.setStatus(TaskStatus.TODO); // Always set to TODO on creation
+                                task.setStatus(TaskStatus.TODO);
                                 task.setAssigneeId(taskRequestDto.getAssigneeId());
 
                                 if (taskRequestDto.getObserverIds() != null) {
@@ -113,15 +112,21 @@ public class TaskServiceImpl implements TaskService {
     public Mono<TaskResponseDto> addObserver(String taskId, String observerId) {
         log.info("Request to add observer {} to task {}", observerId, taskId);
         return taskRepository.findById(taskId)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + taskId + " not found")))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Задача с ID " + taskId + " не найдена")))
                 .flatMap(task -> userRepository.existsById(observerId)
-                        .flatMap(exists -> {
-                            if (!exists) {
-                                return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Observer with id " + observerId + " not found"));
+                        .flatMap(userExists -> {
+                            if (!userExists) {
+                                return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с ID " + observerId + " не найден"));
                             }
+
                             if (task.getObserverIds() == null) {
                                 task.setObserverIds(new HashSet<>());
                             }
+
+                            if (task.getObserverIds().contains(observerId)) {
+                                return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь уже является наблюдателем"));
+                            }
+
                             task.getObserverIds().add(observerId);
                             task.setUpdatedAt(Instant.now());
                             return taskRepository.save(task);
@@ -144,26 +149,24 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Mono<TaskResponseDto> assignAssignee(String taskId, String assigneeId) {
         log.info("Request to assign assignee {} to task {}", assigneeId, taskId);
-        return userRepository.existsById(assigneeId)
-                .flatMap(userExists -> {
-                    if (!userExists) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Assignee with id " + assigneeId + " not found"));
-                    }
-                    return taskRepository.findById(taskId)
-                            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + taskId + " not found")))
-                            .flatMap(task -> {
-                                task.setAssigneeId(assigneeId);
-                                task.setUpdatedAt(Instant.now());
-                                return taskRepository.save(task);
-                            });
-                })
+        return taskRepository.findById(taskId)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Задача с ID " + taskId + " не найдена")))
+                .flatMap(task -> userRepository.existsById(assigneeId)
+                        .flatMap(userExists -> {
+                            if (!userExists) {
+                                return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с ID " + assigneeId + " не найден"));
+                            }
+                            task.setAssigneeId(assigneeId);
+                            task.setUpdatedAt(Instant.now());
+                            return taskRepository.save(task);
+                        }))
                 .flatMap(this::enrichAndMapToDto)
-                .doOnSuccess(task -> log.info("Successfully assigned assignee {} to task {}", assigneeId, taskId))
+                .doOnSuccess(task -> log.info("Successfully assigned assignee to task: {}", task))
                 .doOnError(error -> log.error("Error while assigning assignee {} to task {}: {}", assigneeId, taskId, error.getMessage()));
     }
 
     private Mono<TaskResponseDto> enrichAndMapToDto(Task task) {
-        Mono<User> authorMono = Mono.justOrEmpty(task.getAuthorId()) // Fixed: prevent error if authorId is null
+        Mono<User> authorMono = Mono.justOrEmpty(task.getAuthorId())
                 .flatMap(userRepository::findById)
                 .defaultIfEmpty(new User());
 

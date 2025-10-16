@@ -96,8 +96,8 @@ public class TaskController {
             @ApiResponse(responseCode = "404", description = "Задача или пользователь с таким ID не найден", content = @Content),
             @ApiResponse(responseCode = "400", description = "Некорректный запрос (например, пользователь уже является наблюдателем)", content = @Content)
     })
-    @PostMapping("/{id}/observers")
-    public Mono<TaskResponseDto> addObserver(@PathVariable String id, @RequestBody String observerId) {
+    @PostMapping("/{id}/observers/{observerId}")
+    public Mono<TaskResponseDto> addObserver(@PathVariable String id, @PathVariable String observerId) {
         log.info("Request to add observer with id: {} to task with id: {}", observerId, id);
         return taskService.addObserver(id, observerId);
     }
