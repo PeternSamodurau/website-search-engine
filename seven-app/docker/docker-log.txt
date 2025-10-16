@@ -1,4 +1,4 @@
-time="2025-10-16T15:22:57+03:00" level=warning msg="C:\\Users\\user\\IdeaProjects\\SpringFramework\\seven-app\\docker\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2025-10-16T15:40:20+03:00" level=warning msg="C:\\Users\\user\\IdeaProjects\\SpringFramework\\seven-app\\docker\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
 #1 [internal] load local bake definitions
 #1 reading from stdin 562B 0.0s done
 #1 DONE 0.0s
@@ -7,14 +7,11 @@ time="2025-10-16T15:22:57+03:00" level=warning msg="C:\\Users\\user\\IdeaProject
 #2 transferring dockerfile: 143B 0.0s done
 #2 DONE 0.0s
 
-#3 [internal] load metadata for docker.io/library/openjdk:17-oracle
-#3 ...
+#3 [auth] library/openjdk:pull token for registry-1.docker.io
+#3 DONE 0.0s
 
-#4 [auth] library/openjdk:pull token for registry-1.docker.io
-#4 DONE 0.0s
-
-#3 [internal] load metadata for docker.io/library/openjdk:17-oracle
-#3 DONE 1.7s
+#4 [internal] load metadata for docker.io/library/openjdk:17-oracle
+#4 DONE 1.5s
 
 #5 [internal] load .dockerignore
 #5 transferring context: 2B done
@@ -25,30 +22,24 @@ time="2025-10-16T15:22:57+03:00" level=warning msg="C:\\Users\\user\\IdeaProject
 #6 DONE 0.1s
 
 #7 [internal] load build context
-#7 ...
-
-#6 [1/3] FROM docker.io/library/openjdk:17-oracle@sha256:83ffa182a7cfc8313583fe1cc42172a48a021f368a1ff11fe0d957c3b3b8a620
-#6 DONE 0.1s
-
-#7 [internal] load build context
-#7 transferring context: 36.50MB 3.5s done
+#7 transferring context: 36.51MB 3.5s done
 #7 DONE 3.5s
 
 #8 [2/3] WORKDIR /app
 #8 CACHED
 
 #9 [3/3] COPY build/libs/*.jar app.jar
-#9 DONE 0.5s
+#9 DONE 0.4s
 
 #10 exporting to image
 #10 exporting layers
 #10 exporting layers 2.3s done
-#10 exporting manifest sha256:78f618992ea24450abc731e9415c6cbcba64e9d445b182508a910810e0bea78d 0.0s done
-#10 exporting config sha256:a2e0d70931c29384c3f77722b724b515a1e2fa0269cae4702f3545929e894de3 0.0s done
-#10 exporting attestation manifest sha256:98ce867ad2ebec4befc9380e2a4199addd06c1c6231c130dcbd477ed14ce5550 0.0s done
-#10 exporting manifest list sha256:6dc370fac18336a7142de81b46b8b17fad2733ed4bce13c8021b44123dbd1064 0.0s done
+#10 exporting manifest sha256:11823d1365525fc4ace8a2eda2cd8e3daefe5119831b5a13b5285606612104de 0.0s done
+#10 exporting config sha256:983dca07687f86db5f8eb589450d9b808a9a34c671a2cffacd1f35b1ab4d3eff 0.0s done
+#10 exporting attestation manifest sha256:6ba900f046bb6ed8b55e89126801a649bdf71d7c796ba4e3d86e9f4a6458f623 0.0s done
+#10 exporting manifest list sha256:71e0cbc3f144cf186e6ec81109d9e257bc8b721373e125016f935fe48634ca4d 0.0s done
 #10 naming to docker.io/library/docker-app:latest
-#10 naming to docker.io/library/docker-app:latest done
+#10 naming to docker.io/library/docker-app:latest 0.0s done
 #10 unpacking to docker.io/library/docker-app:latest
 #10 unpacking to docker.io/library/docker-app:latest 0.2s done
 #10 DONE 2.7s

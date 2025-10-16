@@ -1,8 +1,9 @@
 package com.example.seven_app.config;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
-import org.springdoc.core.customizers.OperationCustomizer;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,41 +13,52 @@ import java.util.List;
 public class OpenApiConfig {
 
     @Bean
-    // Используем новый единый SwaggerCache
-    public OperationCustomizer customize(SwaggerCache swaggerCache) {
-        return (operation, handlerMethod) -> {
-            // Получаем оба списка из единого кэша
-            List<String> userIds = swaggerCache.getUserIds();
-            List<String> taskIds = swaggerCache.getTaskIds();
+    public OpenApiCustomizer customize(SwaggerCache swaggerCache) {
+        return openApi -> {
+            final List<String> userIds = swaggerCache.getUserIds();
+            final List<String> taskIds = swaggerCache.getTaskIds();
 
-            if (operation.getParameters() == null) {
-                return operation;
-            }
+            openApi.getPaths().values().forEach(pathItem -> {
+                pathItem.readOperations().forEach(operation -> {
+                    // Получаем тэги операции, чтобы понять ее контекст (Task или User)
+                    List<String> tags = operation.getTags();
+                    boolean isTaskOperation = tags != null && tags.stream().anyMatch(tag -> tag.contains("Task"));
 
-            // ЕДИНЫЙ ЦИКЛ ДЛЯ ВСЕХ ПАРАМЕТРОВ (логика без изменений)
-            for (Parameter parameter : operation.getParameters()) {
+                    if (operation.getParameters() == null) {
+                        return;
+                    }
 
-                // Логика для ID пользователей
-                if (!userIds.isEmpty() && (
-                        parameter.getName().equals("assigneeId") ||
-                                parameter.getName().equals("observerId") ||
-                                parameter.getName().equals("userId")
-                )) {
-                    Schema<String> schema = new Schema<>();
-                    schema.setType("string");
-                    schema.setEnum(userIds);
-                    parameter.setSchema(schema);
-                }
+                    for (Parameter parameter : operation.getParameters()) {
+                        // --- НОВАЯ, УМНАЯ ЛОГИКА ---
+                        if (parameter.getName().equals("id")) {
+                            if (isTaskOperation && !taskIds.isEmpty()) {
+                                // Если это операция с задачей, применяем taskIds
+                                Schema<String> schema = new Schema<>();
+                                schema.setType("string");
+                                schema.setEnum(taskIds);
+                                parameter.setSchema(schema);
+                            } else if (!isTaskOperation && !userIds.isEmpty()) {
+                                // Если это операция с пользователем, применяем userIds
+                                Schema<String> schema = new Schema<>();
+                                schema.setType("string");
+                                schema.setEnum(userIds);
+                                parameter.setSchema(schema);
+                            }
+                        }
 
-                // Логика для ID задач
-                if (!taskIds.isEmpty() && parameter.getName().equals("taskId")) {
-                    Schema<String> schema = new Schema<>();
-                    schema.setType("string");
-                    schema.setEnum(taskIds);
-                    parameter.setSchema(schema);
-                }
-            }
-            return operation;
+                        // --- СТАРАЯ ЛОГИКА ДЛЯ assigneeId и observerId (остается без изменений) ---
+                        if (!userIds.isEmpty() && (
+                                parameter.getName().equals("assigneeId") ||
+                                        parameter.getName().equals("observerId")
+                        )) {
+                            Schema<String> schema = new Schema<>();
+                            schema.setType("string");
+                            schema.setEnum(userIds);
+                            parameter.setSchema(schema);
+                        }
+                    }
+                });
+            });
         };
     }
 }
