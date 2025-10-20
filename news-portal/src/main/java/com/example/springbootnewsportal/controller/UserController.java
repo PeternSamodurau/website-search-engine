@@ -1,5 +1,6 @@
 package com.example.springbootnewsportal.controller;
 
+import com.example.springbootnewsportal.aop.annotation.CheckPermission;
 import com.example.springbootnewsportal.dto.request.UserRequest;
 import com.example.springbootnewsportal.dto.response.UserResponse;
 import com.example.springbootnewsportal.service.UserService;
@@ -34,6 +35,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Список пользователей успешно получен")
     })
     @GetMapping
+    @CheckPermission("ROLE_ADMIN")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         log.info("Request to get all users");
 

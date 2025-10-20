@@ -69,7 +69,10 @@ public class DataInitializer implements CommandLineRunner {
 
         users.forEach(user -> {
             // Хешируем пароль
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            String rawPassword = user.getPassword();
+            String encodedPassword = passwordEncoder.encode(rawPassword);
+            log.info("Initializing user: '{}', password: '{}', ENCODED: '{}'", user.getUsername(), rawPassword, encodedPassword);
+            user.setPassword(encodedPassword);
 
             // Назначаем роли
             if ("admin".equals(user.getUsername())) {
