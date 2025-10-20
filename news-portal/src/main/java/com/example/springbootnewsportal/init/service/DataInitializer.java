@@ -2,6 +2,7 @@ package com.example.springbootnewsportal.init.service;
 
 import com.example.springbootnewsportal.model.Category;
 import com.example.springbootnewsportal.model.News;
+import com.example.springbootnewsportal.model.RoleType;
 import com.example.springbootnewsportal.model.User;
 import com.example.springbootnewsportal.repository.CategoryRepository;
 import com.example.springbootnewsportal.repository.NewsRepository;
@@ -16,6 +17,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,9 +73,10 @@ public class DataInitializer implements CommandLineRunner {
 
             // Назначаем роли
             if ("admin".equals(user.getUsername())) {
-                user.setRoles("ROLE_ADMIN,ROLE_USER");
+                user.getRoles().add(RoleType.ROLE_ADMIN);
+                user.getRoles().add(RoleType.ROLE_USER);
             } else {
-                user.setRoles("ROLE_USER");
+                user.getRoles().add(RoleType.ROLE_USER);
             }
         });
 
