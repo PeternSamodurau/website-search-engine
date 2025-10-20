@@ -65,8 +65,20 @@ public class DataInitializer implements CommandLineRunner {
         InputStream inputStream = new ClassPathResource("data/users.json").getInputStream();
         List<User> users = objectMapper.readValue(inputStream, new TypeReference<>() {});
 
-        users.forEach(user -> user.setPassword(passwordEncoder.encode(user.getPassword())));
+        users.forEach(user -> {
+            // Хешируем пароль
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            // Назначаем роли
+            if ("admin".equals(user.getUsername())) {
+                user.setRoles("ROLE_ADMIN,ROLE_USER");
+            } else {
+                user.setRoles("ROLE_USER");
+            }
+        });
+
         userRepository.saveAll(users);
+        log.info("Users initialized with roles.");
     }
 
     private void initializeCategories() throws Exception {
