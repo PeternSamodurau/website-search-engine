@@ -2,7 +2,6 @@ package com.example.springbootnewsportal.security;
 
 import com.example.springbootnewsportal.model.User;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,46 +9,58 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Getter
 public class SecurityUser implements UserDetails {
 
-    private final User user;
+    private final Long id;
+    private final String username;
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
+    private final boolean isActive;
+
+    public SecurityUser(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .collect(Collectors.toSet());
+        this.isActive = true; // Assuming all users from DB are active
+    }
+
 
     @Override
-    public String getUsername() {
-        return user.getUsername();
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.name()))
-                .collect(Collectors.toList());
+    public String getUsername() {
+        return username;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return isActive;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return isActive;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return isActive;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isActive;
     }
 }

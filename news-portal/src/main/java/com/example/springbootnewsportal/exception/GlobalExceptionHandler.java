@@ -1,5 +1,7 @@
 package com.example.springbootnewsportal.exception;
 
+import com.example.springbootnewsportal.dto.response.ErrorResponseDTO;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mapping.PropertyReferenceException;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.access.AccessDeniedException; // ДОБАВЛЕНО
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -57,19 +60,18 @@ public class GlobalExceptionHandler {
         return new ErrorResponseDTO(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
 
-    // === БЛОК ИЗМЕНЕНИЙ НАЧАЛО ===
     @ExceptionHandler(DuplicateCommentException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponseDTO handleDuplicateCommentException(DuplicateCommentException ex) {
         log.warn("Attempt to create duplicate comment: {}", ex.getMessage());
         return new ErrorResponseDTO(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
-    // === БЛОК ИЗМЕНЕНИЙ КОНЕЦ ===
 
+    // ДОБАВЛЕНО: Обработчик для org.springframework.security.access.AccessDeniedException
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponseDTO handleAccessDeniedException(AccessDeniedException ex) {
-        log.error("Access denied: {}", ex.getMessage());
+    public ErrorResponseDTO handleSpringSecurityAccessDeniedException(AccessDeniedException ex) {
+        log.error("Access denied (403): {}", ex.getMessage());
         return new ErrorResponseDTO(HttpStatus.FORBIDDEN.value(), ex.getMessage());
     }
 
@@ -92,7 +94,6 @@ public class GlobalExceptionHandler {
         String causeMessage = ex.getMostSpecificCause().getMessage();
 
         if (causeMessage != null && causeMessage.contains("violates unique constraint")) {
-            
             Pattern pattern = Pattern.compile("Key \\(([^)]+)\\)=\\(([^)]+)\\) already exists");
             Matcher matcher = pattern.matcher(causeMessage);
 

@@ -1,7 +1,9 @@
 package com.example.springbootnewsportal.config;
 
 import com.example.springbootnewsportal.repository.UserRepository;
+import com.example.springbootnewsportal.security.CustomAuthenticationEntryPoint;
 import com.example.springbootnewsportal.security.SecurityUser;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -19,13 +21,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final UserRepository userRepository;
-
-    public SecurityConfig(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    // УБРАНА зависимость от CustomAccessDeniedHandler
 
     private static final String[] SWAGGER_WHITELIST = {
             "/v3/api-docs/**",
@@ -42,7 +43,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/**").authenticated()
                         .anyRequest().denyAll()
                 )
-                .httpBasic(withDefaults());
+                .httpBasic(withDefaults())
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)); // УБРАН accessDeniedHandler
         return http.build();
     }
 

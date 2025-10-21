@@ -78,6 +78,9 @@ public class DataInitializer implements CommandLineRunner {
             if ("admin".equals(user.getUsername())) {
                 user.getRoles().add(RoleType.ROLE_ADMIN);
                 user.getRoles().add(RoleType.ROLE_USER);
+            } else if ("moderator".equals(user.getUsername())) {
+                user.getRoles().add(RoleType.ROLE_MODERATOR);
+                user.getRoles().add(RoleType.ROLE_USER);
             } else {
                 user.getRoles().add(RoleType.ROLE_USER);
             }

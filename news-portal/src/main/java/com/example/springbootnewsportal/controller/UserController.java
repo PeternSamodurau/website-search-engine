@@ -51,6 +51,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Пользователь с таким ID не найден", content = @Content)
     })
     @GetMapping("/{id}")
+    @CheckPermission({"ROLE_ADMIN", "ROLE_MODERATOR", "ROLE_USER"})
     public ResponseEntity<UserResponse> getUserById(
             @Parameter(description = "Уникальный идентификатор пользователя") @PathVariable Long id
     ) {
@@ -69,6 +70,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Некорректные данные в запросе", content = @Content)
     })
     @PostMapping
+    @CheckPermission({"ROLE_ADMIN", "ROLE_MODERATOR"}) // <-- THIS IS THE ADDED LINE
     public ResponseEntity<UserResponse> createUser(
             @RequestBody(description = "Данные для создания нового пользователя") @Valid @org.springframework.web.bind.annotation.RequestBody UserRequest request
     ) {
@@ -88,6 +90,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Пользователь с таким ID не найден", content = @Content)
     })
     @PutMapping("/{id}")
+    @CheckPermission({"ROLE_ADMIN", "ROLE_MODERATOR", "ROLE_USER"})
     public ResponseEntity<UserResponse> updateUser(
             @Parameter(description = "ID пользователя, которого нужно обновить") @PathVariable Long id,
             @RequestBody(description = "Новые данные для пользователя") @Valid @org.springframework.web.bind.annotation.RequestBody UserRequest request
@@ -106,6 +109,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Пользователь с таким ID не найден", content = @Content)
     })
     @DeleteMapping("/{id}")
+    @CheckPermission({"ROLE_ADMIN", "ROLE_MODERATOR", "ROLE_USER"})
     public ResponseEntity<Void> deleteUser(
             @Parameter(description = "ID пользователя, которого нужно удалить") @PathVariable Long id
     ) {

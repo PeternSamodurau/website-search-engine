@@ -2,16 +2,21 @@
   {
     "username": "user1",
     "email": "user1@example.com",
-    "password": "password123"
+    "password": "password1"
   },
   {
     "username": "user2",
     "email": "user2@example.com",
-    "password": "password123"
+    "password": "password2"
+  },
+  {
+    "username": "moderator",
+    "email": "moderator@example.com",
+    "password": "moderator"
   },
   {
     "username": "admin",
     "email": "admin@example.com",
-    "password": "adminpassword"
+    "password": "admin"
   }
 ]
