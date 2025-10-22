@@ -17,8 +17,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Tag(name = "Комментарии", description = "Операции для управления комментариями")
@@ -32,24 +34,25 @@ public class CommentController {
 
     @Operation(
             summary = "Создать новый комментарий",
-            description = "Добавляет новый комментарий к новости, принимая текст и ID автора как отдельные поля."
+            description = "Добавляет новый комментарий к новости. ID автора определяется по токену аутентификации."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Комментарий успешно создан",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommentResponse.class))),
             @ApiResponse(responseCode = "400", description = "Некорректные данные в запросе", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Новость или автор с таким ID не найдены", content = @Content)
+            @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Новость с таким ID не найдена", content = @Content)
     })
     @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ResponseEntity<CommentResponse> createComment(
             @Parameter(description = "ID новости, к которой добавляется комментарий", required = true) @PathVariable Long newsId,
-            @Parameter(description = "Текст комментария", required = true) @RequestParam String text,
-            @Parameter(description = "ID автора комментария", required = true) @RequestParam Long authorId
+            @Valid @RequestBody CommentRequest request,
+            Principal principal
     ) {
-        log.info("Request to create a new comment for news with id: {} by author: {}", newsId, authorId);
+        log.info("Request to create a new comment for news with id: {} by user: {}", newsId, principal.getName());
 
-        CommentRequest request = new CommentRequest(text, authorId, newsId);
-        CommentResponse createdComment = commentService.create(request);
+        CommentResponse createdComment = commentService.create(newsId, request, principal);
 
         log.info("Successfully created a new comment with id: {} for news with id: {}. Response code: 201", createdComment.getId(), newsId);
 
@@ -63,9 +66,11 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комментарии успешно получены",
                     content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CommentResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован", content = @Content),
             @ApiResponse(responseCode = "404", description = "Новость с таким ID не найдена", content = @Content)
     })
     @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ResponseEntity<List<CommentResponse>> getCommentsByNewsId(
             @Parameter(description = "ID новости, для которой нужно получить комментарии") @PathVariable Long newsId
     ) {
@@ -79,15 +84,18 @@ public class CommentController {
 
     @Operation(
             summary = "Обновить комментарий",
-            description = "Обновляет существующий комментарий."
+            description = "Обновляет существующий комментарий. Доступно только автору комментария."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комментарий успешно обновлен",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommentResponse.class))),
             @ApiResponse(responseCode = "400", description = "Некорректные данные в запросе", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен (не автор)", content = @Content),
             @ApiResponse(responseCode = "404", description = "Комментарий не найден", content = @Content)
     })
     @PutMapping("/{commentId}")
+    @PreAuthorize("@commentServiceImpl.isCommentAuthor(#commentId, principal.name)")
     public ResponseEntity<CommentResponse> updateComment(
             @Parameter(description = "ID новости") @PathVariable Long newsId,
             @Parameter(description = "ID комментария") @PathVariable Long commentId,
@@ -103,13 +111,16 @@ public class CommentController {
 
     @Operation(
             summary = "Удалить комментарий",
-            description = "Удаляет комментарий по его ID."
+            description = "Удаляет комментарий по его ID. Доступно автору, администратору или модератору."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Комментарий успешно удален", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен", content = @Content),
             @ApiResponse(responseCode = "404", description = "Комментарий не найден", content = @Content)
     })
     @DeleteMapping("/{commentId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR') or @commentServiceImpl.isCommentAuthor(#commentId, principal.name)")
     public ResponseEntity<Void> deleteComment(
             @Parameter(description = "ID новости") @PathVariable Long newsId,
             @Parameter(description = "ID комментария") @PathVariable Long commentId

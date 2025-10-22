@@ -1,10 +1,10 @@
 package com.example.springbootnewsportal.service;
 
-import com.example.springbootnewsportal.aop.annotation.CheckOwnership;
 import com.example.springbootnewsportal.dto.request.CommentRequest;
 import com.example.springbootnewsportal.dto.request.CommentUpdateRequest;
 import com.example.springbootnewsportal.dto.response.CommentResponse;
 
+import java.security.Principal;
 import java.util.List;
 
 public interface CommentService {
@@ -13,11 +13,11 @@ public interface CommentService {
 
     List<CommentResponse> findAllByNewsId(Long newsId);
 
-    CommentResponse create(CommentRequest request);
+    CommentResponse create(Long newsId, CommentRequest request, Principal principal);
 
-    @CheckOwnership(entityType = "comment")
     CommentResponse update(Long id, CommentUpdateRequest request);
 
-    @CheckOwnership(entityType = "comment")
     void deleteById(Long id);
+
+    boolean isCommentAuthor(Long commentId, String username);
 }
