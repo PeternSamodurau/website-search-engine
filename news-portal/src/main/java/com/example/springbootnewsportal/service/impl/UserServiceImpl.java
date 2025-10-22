@@ -68,12 +68,17 @@ public class UserServiceImpl implements UserService {
                     return new ResourceNotFoundException("User not found with ID: " + id);
                 });
 
+        // Маппер обновит все поля, КРОМЕ пароля.
         userMapper.updateUserFromRequest(request, existingUser);
 
+        // Теперь мы безопасно и явно обрабатываем логику пароля.
         if (StringUtils.hasText(request.getPassword())) {
+            // Если в запросе есть новый пароль - хешируем и устанавливаем его.
             log.info("Updating password for user with ID: {}", id);
             existingUser.setPassword(passwordEncoder.encode(request.getPassword()));
         }
+        // Если в запросе нет пароля, мы ничего не делаем.
+        // Пароль existingUser (старый хеш) остается нетронутым.
 
         User updatedUser = userRepository.save(existingUser);
         log.info("Successfully updated user with ID: {}", updatedUser.getId());

@@ -18,5 +18,6 @@ public interface UserMapper {
     User toUser(UserRequest request);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "password", ignore = true) // ИГНОРИРУЕМ ПАРОЛЬ ПРИ ОБНОВЛЕНИИ
     void updateUserFromRequest(UserRequest request, @MappingTarget User user);
 }
