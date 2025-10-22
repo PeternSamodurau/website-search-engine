@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class CategoryController {
                             array = @ArraySchema(schema = @Schema(implementation = CategoryResponse.class))))
     })
     @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         log.info("Request to get all categories");
 
@@ -51,6 +53,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Категория с таким ID не найдена", content = @Content)
     })
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
         log.info("Request to get category with id: {}", id);
 
@@ -67,6 +70,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "400", description = "Некорректный запрос (например, дубликат имени)", content = @Content)
     })
     @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
         log.info("Request to create a new category with name: {}", request.getCategoryName());
 
@@ -84,6 +88,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "400", description = "Некорректный запрос (например, дубликат имени)", content = @Content)
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ResponseEntity<CategoryResponse> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequest request) {
         log.info("Request to update category with id: {}", id);
 
@@ -99,6 +104,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Категория с таким ID не найдена", content = @Content)
     })
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         log.info("Request to delete category with id: {}", id);
 
