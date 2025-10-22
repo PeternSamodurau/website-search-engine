@@ -95,7 +95,7 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден", content = @Content)
     })
     @PutMapping("/{commentId}")
-    @PreAuthorize("@commentServiceImpl.isCommentAuthor(#commentId, principal.name)")
+    @PreAuthorize("@commentServiceImpl.isCommentAuthor(#commentId, principal.username)")
     public ResponseEntity<CommentResponse> updateComment(
             @Parameter(description = "ID новости") @PathVariable Long newsId,
             @Parameter(description = "ID комментария") @PathVariable Long commentId,
@@ -120,7 +120,7 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден", content = @Content)
     })
     @DeleteMapping("/{commentId}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR') or @commentServiceImpl.isCommentAuthor(#commentId, principal.name)")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR') or @commentServiceImpl.isCommentAuthor(#commentId, principal.username)")
     public ResponseEntity<Void> deleteComment(
             @Parameter(description = "ID новости") @PathVariable Long newsId,
             @Parameter(description = "ID комментария") @PathVariable Long commentId
