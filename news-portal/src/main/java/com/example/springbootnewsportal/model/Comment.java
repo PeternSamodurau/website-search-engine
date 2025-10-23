@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
-@Data // Добавлена аннотация @Data
-@Builder // Добавлена аннотация @Builder
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment {

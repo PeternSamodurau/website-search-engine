@@ -66,7 +66,7 @@ public class CheckPermissionAspect {
         }
         log.info("Шаг 4: У пользователя есть необходимая роль. Продолжаем проверку.");
 
-        // Получаем ID из аргументов метода, он понадобится в нескольких проверках
+        // Получаем ID из аргументов метода
         Long requestedId = getRequestedId(joinPoint);
 
         // Шаг 5: Специальная проверка для ROLE_USER (может получить/изменить/удалить только себя)
@@ -94,9 +94,7 @@ public class CheckPermissionAspect {
 
                 log.info("Шаг 6.2: Роли целевого пользователя (ID: {}): {}", requestedId, targetUser.getRoles());
 
-                // --- ИСПРАВЛЕННАЯ ЛОГИКА ПРОВЕРКИ ---
                 boolean isTargetAdmin = targetUser.getRoles().contains(RoleType.ROLE_ADMIN);
-                // ------------------------------------
 
                 log.info("Шаг 6.3: Является ли цель администратором? -> {}", isTargetAdmin);
 

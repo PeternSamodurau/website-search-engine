@@ -25,7 +25,7 @@ public class SecurityUser implements UserDetails {
         this.authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.name()))
                 .collect(Collectors.toSet());
-        this.isActive = true; // Assuming all users from DB are active
+        this.isActive = true;
     }
 
 

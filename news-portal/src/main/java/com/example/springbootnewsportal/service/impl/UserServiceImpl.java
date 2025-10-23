@@ -71,7 +71,6 @@ public class UserServiceImpl implements UserService {
         // Маппер обновит все поля, КРОМЕ пароля.
         userMapper.updateUserFromRequest(request, existingUser);
 
-        // Теперь мы безопасно и явно обрабатываем логику пароля.
         if (StringUtils.hasText(request.getPassword())) {
             // Если в запросе есть новый пароль - хешируем и устанавливаем его.
             log.info("Updating password for user with ID: {}", id);

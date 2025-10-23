@@ -2,7 +2,7 @@
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS news;
 DROP TABLE IF EXISTS categories;
-DROP TABLE IF EXISTS user_roles; -- Drop roles table first due to dependencies
+DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS users;
 
 -- Create users table (without the old 'roles' column)
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS user_roles (
     user_id BIGINT NOT NULL,
     role VARCHAR(255) NOT NULL,
-    PRIMARY KEY (user_id, role), -- A user can't have the same role twice
+    PRIMARY KEY (user_id, role),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
