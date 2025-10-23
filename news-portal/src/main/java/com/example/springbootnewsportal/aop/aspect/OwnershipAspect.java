@@ -2,7 +2,7 @@
 package com.example.springbootnewsportal.aop.aspect;
 
 import com.example.springbootnewsportal.aop.annotation.CheckOwnership;
-import com.example.springbootnewsportal.exception.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import com.example.springbootnewsportal.exception.ResourceNotFoundException;
 import com.example.springbootnewsportal.model.Comment;
 import com.example.springbootnewsportal.model.News;
