@@ -1,6 +1,6 @@
 package com.example.seven_app.config;
 
-import com.example.seven_app.repository.TaskRepository; // Добавили репозиторий задач
+import com.example.seven_app.repository.TaskRepository;
 import com.example.seven_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -19,12 +17,12 @@ import java.util.stream.Collectors;
 public class SwaggerCacheInitializer {
 
     private final UserRepository userRepository;
-    private final TaskRepository taskRepository; // Добавили репозиторий задач
-    private final SwaggerCache swaggerCache; // Используем новый единый кэш
+    private final TaskRepository taskRepository;
+    private final SwaggerCache swaggerCache;
 
     @EventListener(ApplicationReadyEvent.class)
     public void cacheSwaggerIds() {
-        // --- Кэширование пользователей (логика без изменений) ---
+
         log.info(">>>>>> Caching user IDs for Swagger... <<<<<<<");
         userRepository.findAll()
                 .map(user -> user.getId())

@@ -2,18 +2,6 @@
 
 Приложение для отслеживания задач, разработанное на Spring WebFlux.
 
-## Технологии
-
-*   **Java 17**
-*   **Spring Boot 3** (с использованием WebFlux для реактивного программирования)
-*   **MongoDB** (в качестве базы данных)
-*   **Docker** и **Docker Compose** (для контейнеризации и запуска)
-*   **Springdoc OpenAPI** (для документации API)
-
-## Предварительные требования
-
-*   Установленный [Docker Desktop](https://www.docker.com/products/docker-desktop/).
-
 ## Запуск приложения
 
 1. Выполните команду:
@@ -28,5 +16,18 @@
 
 3. Откройте Swagger в браузере http://localhost:8080/swagger-ui.html
 
-4. <strong><font color="red">ВНИМАНИЕ!!!</font></strong> тестируйте andpoints DELETE во всех контроллерах последними.
-   Иначе Swagger UI продолжит показывать в выпадающих списках ID, которых уже не будет существовать в базе данных.
+# Тестирование API через Swagger UI
+
+Для тестирования необходимо авторизоваться в Swagger UI, нажав на кнопку "Authorize" и введя логин и пароль одного из тестовых пользователей.
+
+### Тестовые пользователи
+
+| Логин | Пароль | Роли |
+|:---|:---|:---|
+| `user1@example.com` | `password1` | `ROLE_USER`, `ROLE_MANAGER` |
+| `user2@example.com` | `password2` | `ROLE_USER` |
+| `user3@example.com` | `password3` | `ROLE_USER` |
+| `user4@example.com` | `password4` | `ROLE_USER` |
+| `user5@example.com` | `password5` | `ROLE_USER` |
+
+---

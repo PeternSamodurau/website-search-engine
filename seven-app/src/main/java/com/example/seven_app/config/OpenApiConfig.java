@@ -1,6 +1,9 @@
 package com.example.seven_app.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import org.springdoc.core.customizers.OpenApiCustomizer;
@@ -13,6 +16,17 @@ import java.util.List;
 public class OpenApiConfig {
 
     @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .components(new Components()
+                        .addSecuritySchemes("basicAuth", new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("basic")
+                                .description("Basic Authentication for API access")))
+                .addSecurityItem(new SecurityRequirement().addList("basicAuth"));
+    }
+
+    @Bean
     public OpenApiCustomizer customize(SwaggerCache swaggerCache) {
         return openApi -> {
             final List<String> userIds = swaggerCache.getUserIds();
@@ -20,7 +34,7 @@ public class OpenApiConfig {
 
             openApi.getPaths().values().forEach(pathItem -> {
                 pathItem.readOperations().forEach(operation -> {
-                    // Получаем тэги операции, чтобы понять ее контекст (Task или User)
+
                     List<String> tags = operation.getTags();
                     boolean isTaskOperation = tags != null && tags.stream().anyMatch(tag -> tag.contains("Task"));
 
@@ -29,16 +43,16 @@ public class OpenApiConfig {
                     }
 
                     for (Parameter parameter : operation.getParameters()) {
-                        // --- НОВАЯ, УМНАЯ ЛОГИКА ---
+
                         if (parameter.getName().equals("id")) {
                             if (isTaskOperation && !taskIds.isEmpty()) {
-                                // Если это операция с задачей, применяем taskIds
+
                                 Schema<String> schema = new Schema<>();
                                 schema.setType("string");
                                 schema.setEnum(taskIds);
                                 parameter.setSchema(schema);
                             } else if (!isTaskOperation && !userIds.isEmpty()) {
-                                // Если это операция с пользователем, применяем userIds
+
                                 Schema<String> schema = new Schema<>();
                                 schema.setType("string");
                                 schema.setEnum(userIds);

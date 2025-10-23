@@ -10,9 +10,8 @@ import java.util.List;
 public class SwaggerCache {
 
     private final List<String> userIds = new ArrayList<>();
-    private final List<String> taskIds = new ArrayList<>(); // Добавили кэш для задач
+    private final List<String> taskIds = new ArrayList<>();
 
-    // --- Методы для пользователей (без изменений) ---
     public void setUserIds(List<String> userIds) {
         this.userIds.clear();
         this.userIds.addAll(userIds);
@@ -22,7 +21,6 @@ public class SwaggerCache {
         return Collections.unmodifiableList(this.userIds);
     }
 
-    // --- Методы для задач (новые) ---
     public void setTaskIds(List<String> taskIds) {
         this.taskIds.clear();
         this.taskIds.addAll(taskIds);
