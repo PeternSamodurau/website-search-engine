@@ -11,11 +11,8 @@ public class NewsRequest {
     private String title;
 
     @NotBlank(message = "News content cannot be empty")
-    private String text; // <--- ПОЛЕ ПЕРЕИМЕНОВАНО
+    private String text;
 
     @NotNull(message = "Category ID cannot be null")
     private Long categoryId;
-
-    @NotNull(message = "Author ID cannot be null")
-    private Long authorId;
 }

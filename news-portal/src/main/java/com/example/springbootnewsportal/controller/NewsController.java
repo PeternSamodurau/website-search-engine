@@ -20,7 +20,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @Tag(name = "Новости", description = "Операции с новостями")
 @RestController
@@ -32,23 +35,22 @@ public class NewsController {
     private final NewsService newsService;
 
     @Operation(summary = "Получить все новости с пагинацией и фильтрацией",
-            description = "Возвращает страницу с новостями. Можно фильтровать по автору и/или категории.")
+            description = "Возвращает страницу с новостями. Можно фильтровать по категории.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Новости успешно получены")
     })
     @Parameter(name = "page", description = "Номер страницы (начиная с 0)", in = ParameterIn.QUERY, schema = @Schema(type = "integer"))
     @Parameter(name = "size", description = "Количество элементов на странице", in = ParameterIn.QUERY, schema = @Schema(type = "integer"))
     @Parameter(name = "sort", description = "Популярные сортировки: 'createAt,desc' (новые сверху), 'commentsCount,desc' (самые обсуждаемые), 'title,asc' (по алфавиту). Формат: поле,asc|desc", in = ParameterIn.QUERY, schema = @Schema(type = "string"))
-
     @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ResponseEntity<Page<NewsResponse>> getAllNews(
-            @RequestParam(required = false) Long authorId,
             @RequestParam(required = false) Long categoryId,
             @Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable) {
 
-        log.info("Request to get all news with filters: authorId={}, categoryId={}, pageable={}", authorId, categoryId, pageable);
+        log.info("Request to get all news with filters: categoryId={}, pageable={}", categoryId, pageable);
 
-        Page<NewsResponse> newsPage = newsService.findAll(authorId, categoryId, pageable);
+        Page<NewsResponse> newsPage = newsService.findAll(categoryId, pageable);
 
         log.info("Successfully retrieved news. Total elements: {}. Response code: 200", newsPage.getTotalElements());
         return ResponseEntity.ok(newsPage);
@@ -60,8 +62,8 @@ public class NewsController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = NewsResponse.class))),
             @ApiResponse(responseCode = "404", description = "Новость с таким ID не найдена", content = @Content)
     })
-
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
     public ResponseEntity<NewsResponse> getNewsById(@PathVariable Long id) {
         log.info("Request to get news with id: {}", id);
 
@@ -78,10 +80,11 @@ public class NewsController {
             @ApiResponse(responseCode = "400", description = "Некорректный запрос", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<NewsResponse> createNews(@Valid @RequestBody NewsRequest request) {
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_MODERATOR')")
+    public ResponseEntity<NewsResponse> createNews(@Valid @RequestBody NewsRequest request, Principal principal) {
         log.info("Request to create a new news with title: {}", request.getTitle());
 
-        NewsResponse createdNews = newsService.create(request);
+        NewsResponse createdNews = newsService.create(request, principal);
 
         log.info("Successfully created a new news with id: {}. Response code: 201", createdNews.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdNews);
@@ -92,9 +95,11 @@ public class NewsController {
             @ApiResponse(responseCode = "200", description = "Новость успешно обновлена",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = NewsResponse.class))),
             @ApiResponse(responseCode = "404", description = "Новость с таким ID не найдена", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Некорректный запрос", content = @Content)
+            @ApiResponse(responseCode = "400", description = "Некорректный запрос", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен", content = @Content)
     })
     @PutMapping("/{id}")
+    @PreAuthorize("@newsServiceImpl.isNewsAuthor(#id, principal.username)")
     public ResponseEntity<NewsResponse> updateNews(@PathVariable Long id, @Valid @RequestBody NewsUpdateRequest request) {
         log.info("Request to update news with id: {}", id);
 
@@ -107,9 +112,11 @@ public class NewsController {
     @Operation(summary = "Удалить новость", description = "Удаляет новость по ее ID.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Новость успешно удалена", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Новость с таким ID не найдена", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Новость с таким ID не найдена", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен", content = @Content)
     })
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR') or @newsServiceImpl.isNewsAuthor(#id, principal.username)")
     public ResponseEntity<Void> deleteNews(@PathVariable Long id) {
         log.info("Request to delete news with id: {}", id);
 

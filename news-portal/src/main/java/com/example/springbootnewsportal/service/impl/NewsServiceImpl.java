@@ -23,6 +23,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,9 +37,9 @@ public class NewsServiceImpl implements NewsService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public Page<NewsResponse> findAll(Long authorId, Long categoryId, Pageable pageable) {
-        log.info("Finding all news with authorId: {}, categoryId: {}, pageable: {}", authorId, categoryId, pageable);
-        Specification<News> spec = NewsSpecification.filterBy(authorId, categoryId);
+    public Page<NewsResponse> findAll(Long categoryId, Pageable pageable) {
+        log.info("Finding all news with categoryId: {}, pageable: {}", categoryId, pageable);
+        Specification<News> spec = NewsSpecification.filterBy(null, categoryId);
         Page<News> newsPage = newsRepository.findAll(spec, pageable);
         return newsPage.map(newsMapper::toNewsResponseForList);
     }
@@ -52,9 +54,10 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public NewsResponse create(NewsRequest request) {
-        log.info("Creating new news with title: '{}', authorId: {}, categoryId: {}",
-                request.getTitle(), request.getAuthorId(), request.getCategoryId());
+    public NewsResponse create(NewsRequest request, Principal principal) {
+        String username = principal.getName();
+        log.info("Creating new news with title: '{}', author: {}, categoryId: {}",
+                request.getTitle(), username, request.getCategoryId());
 
         if (newsRepository.existsByTitle(request.getTitle())) {
             log.warn("Attempted to create a news with a duplicate title: '{}'", request.getTitle());
@@ -66,8 +69,8 @@ public class NewsServiceImpl implements NewsService {
             throw new DuplicateNewsException("A news item with the same text already exists.");
         }
 
-        User author = userRepository.findById(request.getAuthorId())
-                .orElseThrow(() -> new EntityNotFoundException("Author with ID " + request.getAuthorId() + " not found"));
+        User author = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User with username " + username + " not found."));
 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException("Category with ID " + request.getCategoryId() + " not found"));
@@ -101,5 +104,14 @@ public class NewsServiceImpl implements NewsService {
             throw new ResourceNotFoundException("News not found with id: " + id);
         }
         newsRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isNewsAuthor(Long newsId, String username) {
+        log.debug("Checking ownership for news ID: {} by user: {}", newsId, username);
+        return newsRepository.findById(newsId)
+                .map(news -> news.getAuthor().getUsername().equals(username))
+                .orElse(false);
     }
 }
