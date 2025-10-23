@@ -1,7 +1,5 @@
 # Spring Boot News Portal with Spring Security
 
-Проект новостного портала, разработанный на Spring Boot.
-
 ## Технологии
 
 *   **Java 17**
