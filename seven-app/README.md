@@ -22,12 +22,12 @@
 
 ### Тестовые пользователи
 
-| Логин | Пароль | Роли |
-|:---|:---|:---|
+| Логин               | Пароль      | Роли                        |
+|:--------------------|:------------|:----------------------------|
 | `user1@example.com` | `password1` | `ROLE_USER`, `ROLE_MANAGER` |
-| `user2@example.com` | `password2` | `ROLE_USER` |
-| `user3@example.com` | `password3` | `ROLE_USER` |
-| `user4@example.com` | `password4` | `ROLE_USER` |
-| `user5@example.com` | `password5` | `ROLE_USER` |
+| `user2@example.com` | `password2` | `ROLE_USER`                 |
+| `user3@example.com` | `password3` | `ROLE_USER`                 |
+| `user4@example.com` | `password4` | `ROLE_USER`                 |
+| `user5@example.com` | `password5` | `ROLE_USER`                 |
 
 ---
