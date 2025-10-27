@@ -10,8 +10,8 @@ import com.example.seven_app.repository.TaskRepository;
 import com.example.seven_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -20,7 +20,6 @@ import reactor.core.publisher.Mono;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,13 +31,6 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final TaskMapper taskMapper;
-
-    @Value("${app.default-author-username}")
-    private String defaultAuthorUsername;
-
-    @Value("${app.default-author-usermail}")
-    private String defaultAuthorUsermail;
-
 
     @Override
     public Flux<TaskResponseDto> findAll() {
@@ -60,15 +52,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Mono<TaskResponseDto> save(TaskRequestDto taskRequestDto) {
+    public Mono<TaskResponseDto> save(TaskRequestDto taskRequestDto, UserDetails userDetails) {
         log.info("Request to save task: {}", taskRequestDto);
         return taskRepository.existsByNameAndDescription(taskRequestDto.getName(), taskRequestDto.getDescription())
                 .flatMap(exists -> {
                     if (exists) {
                         return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Task with the same name and description already exists"));
                     }
-                    return userRepository.findByUsernameOrEmail(defaultAuthorUsername, defaultAuthorUsermail)
-                            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Default author user not found")))
+                    return userRepository.findByUsername(userDetails.getUsername())
+                            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Author user not found")))
                             .flatMap(author -> {
                                 Task task = new Task();
                                 task.setAuthorId(author.getId());
