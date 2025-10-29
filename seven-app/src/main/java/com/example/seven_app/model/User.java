@@ -33,6 +33,7 @@ public class User implements UserDetails {
     private String password;
 
     @Field("roles")
+    @Builder.Default
     private Set<RoleType> roles = new HashSet<>();
 
     @Override

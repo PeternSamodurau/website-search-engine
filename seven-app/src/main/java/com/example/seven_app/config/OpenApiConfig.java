@@ -60,7 +60,7 @@ public class OpenApiConfig {
                             }
                         }
 
-                        // --- СТАРАЯ ЛОГИКА ДЛЯ assigneeId и observerId (остается без изменений) ---
+
                         if (!userIds.isEmpty() && (
                                 parameter.getName().equals("assigneeId") ||
                                         parameter.getName().equals("observerId")

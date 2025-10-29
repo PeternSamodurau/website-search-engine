@@ -14,6 +14,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        log.error("Conflict Error: {}", ex.getMessage());
+        ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
     @ExceptionHandler({UserNotFoundException.class, TaskNotFoundException.class})
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(RuntimeException ex) {
         log.error("Not Found Error: {}", ex.getMessage());
@@ -33,13 +40,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    // Обработчик ошибок уникальности и других статусов
+    // Обработчик остальных ошибок
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponseDto> handleResponseStatusException(ResponseStatusException ex) {
-        // НЕ ЛОГИРУЕМ ожидаемую ошибку о дубликате, чтобы не засорять логи
-        if (ex.getStatusCode() != HttpStatus.CONFLICT) {
-            log.error("Service Error: Status={}, Reason='{}'", ex.getStatusCode(), ex.getReason());
-        }
+        log.error("Service Error: Status={}, Reason='{}'", ex.getStatusCode(), ex.getReason());
         ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getReason());
         return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
     }

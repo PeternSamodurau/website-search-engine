@@ -2,6 +2,7 @@ package com.example.seven_app.service;
 
 import com.example.seven_app.dto.request.UserRequestDto;
 import com.example.seven_app.dto.response.UserResponseDto;
+import com.example.seven_app.exception.UserAlreadyExistsException;
 import com.example.seven_app.model.User;
 import com.example.seven_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,19 +43,41 @@ public class UserServiceImpl implements UserService, ReactiveUserDetailsService 
 
     @Override
     public Mono<UserResponseDto> save(UserRequestDto userRequestDto) {
-        User user = new User();
-        user.setUsername(userRequestDto.getUsername());
-        user.setEmail(userRequestDto.getEmail());
-        user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
-        return userRepository.save(user).map(this::toDto);
+        return Mono.zip(
+                userRepository.existsByUsername(userRequestDto.getUsername()),
+                userRepository.existsByEmail(userRequestDto.getEmail())
+        ).flatMap(tuple -> {
+            boolean usernameExists = tuple.getT1();
+            boolean emailExists = tuple.getT2();
+
+            if (usernameExists) {
+                return Mono.error(new UserAlreadyExistsException("User with username '" + userRequestDto.getUsername() + "' already exists"));
+            }
+            if (emailExists) {
+                return Mono.error(new UserAlreadyExistsException("User with email '" + userRequestDto.getEmail() + "' already exists"));
+            }
+
+            User user = new User();
+            user.setUsername(userRequestDto.getUsername());
+            user.setEmail(userRequestDto.getEmail());
+            user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
+            return userRepository.save(user).map(this::toDto);
+        });
     }
 
     @Override
     public Mono<UserResponseDto> update(String id, UserRequestDto userRequestDto, UserDetails userDetails) {
-        User requester = (User) userDetails;
-        return userRepository.findById(id)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "User with ID " + id + " not found")))
-                .flatMap(userToUpdate -> {
+        Mono<User> requesterMono = userRepository.findByUsernameOrEmail(userDetails.getUsername(), userDetails.getUsername())
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Requester not found")));
+
+        Mono<User> userToUpdateMono = userRepository.findById(id)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "User with ID " + id + " not found")));
+
+        return Mono.zip(requesterMono, userToUpdateMono)
+                .flatMap(tuple -> {
+                    User requester = tuple.getT1();
+                    User userToUpdate = tuple.getT2();
+
                     boolean isManager = requester.getAuthorities().stream()
                             .anyMatch(auth -> auth.getAuthority().equals("ROLE_MANAGER"));
                     boolean isOwner = requester.getId().equals(userToUpdate.getId());
@@ -75,10 +98,17 @@ public class UserServiceImpl implements UserService, ReactiveUserDetailsService 
 
     @Override
     public Mono<Void> deleteById(String id, UserDetails userDetails) {
-        User requester = (User) userDetails;
-        return userRepository.findById(id)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "User with ID " + id + " not found")))
-                .flatMap(userToDelete -> {
+        Mono<User> requesterMono = userRepository.findByUsernameOrEmail(userDetails.getUsername(), userDetails.getUsername())
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Requester not found")));
+
+        Mono<User> userToDeleteMono = userRepository.findById(id)
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "User with ID " + id + " not found")));
+
+        return Mono.zip(requesterMono, userToDeleteMono)
+                .flatMap(tuple -> {
+                    User requester = tuple.getT1();
+                    User userToDelete = tuple.getT2();
+
                     boolean isManager = requester.getAuthorities().stream()
                             .anyMatch(auth -> auth.getAuthority().equals("ROLE_MANAGER"));
                     boolean isOwner = requester.getId().equals(userToDelete.getId());
