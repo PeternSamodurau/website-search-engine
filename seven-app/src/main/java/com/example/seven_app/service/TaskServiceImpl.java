@@ -53,7 +53,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Mono<TaskResponseDto> save(TaskRequestDto taskRequestDto, UserDetails userDetails) {
-        log.info("Request to save task: {}", taskRequestDto);
+        log.info("Request from user {} to save task: {}", userDetails.getUsername(), taskRequestDto);
         return taskRepository.existsByNameAndDescription(taskRequestDto.getName(), taskRequestDto.getDescription())
                 .flatMap(exists -> {
                     if (exists) {
@@ -81,13 +81,13 @@ public class TaskServiceImpl implements TaskService {
                             });
                 })
                 .flatMap(this::enrichAndMapToDto)
-                .doOnSuccess(task -> log.info("Successfully saved task: {}", task))
-                .doOnError(error -> log.error("Error while saving task {}: {}", taskRequestDto, error.getMessage()));
+                .doOnSuccess(task -> log.info("User {} successfully saved task: {}", userDetails.getUsername(), task))
+                .doOnError(error -> log.error("Error while user {} saving task {}: {}", userDetails.getUsername(), taskRequestDto, error.getMessage()));
     }
 
     @Override
-    public Mono<TaskResponseDto> update(String id, TaskRequestDto taskDto) {
-        log.info("Request to update task with id {}: {}", id, taskDto);
+    public Mono<TaskResponseDto> update(String id, TaskRequestDto taskDto, UserDetails userDetails) {
+        log.info("Request from user {} to update task with id {}: {}", userDetails.getUsername(), id, taskDto);
         return taskRepository.findById(id)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + id + " not found")))
                 .flatMap(existingTask -> {
@@ -96,13 +96,13 @@ public class TaskServiceImpl implements TaskService {
                     return taskRepository.save(existingTask);
                 })
                 .flatMap(this::enrichAndMapToDto)
-                .doOnSuccess(task -> log.info("Successfully updated task: {}", task))
-                .doOnError(error -> log.error("Error while updating task with id {}: {}", id, error.getMessage()));
+                .doOnSuccess(task -> log.info("User {} successfully updated task: {}", userDetails.getUsername(), task))
+                .doOnError(error -> log.error("Error while user {} updating task with id {}: {}", userDetails.getUsername(), id, error.getMessage()));
     }
 
     @Override
-    public Mono<TaskResponseDto> addObserver(String taskId, String observerId) {
-        log.info("Request to add observer {} to task {}", observerId, taskId);
+    public Mono<TaskResponseDto> addObserver(String taskId, String observerId, UserDetails userDetails) {
+        log.info("Request from user {} to add observer {} to task {}", userDetails.getUsername(), observerId, taskId);
         return taskRepository.findById(taskId)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Задача с ID " + taskId + " не найдена")))
                 .flatMap(task -> userRepository.existsById(observerId)
@@ -124,23 +124,23 @@ public class TaskServiceImpl implements TaskService {
                             return taskRepository.save(task);
                         }))
                 .flatMap(this::enrichAndMapToDto)
-                .doOnSuccess(task -> log.info("Successfully added observer to task: {}", task))
-                .doOnError(error -> log.error("Error while adding observer {} to task {}: {}", observerId, taskId, error.getMessage()));
+                .doOnSuccess(task -> log.info("User {} successfully added observer to task: {}", userDetails.getUsername(), task))
+                .doOnError(error -> log.error("Error while user {} adding observer {} to task {}: {}", userDetails.getUsername(), observerId, taskId, error.getMessage()));
     }
 
     @Override
-    public Mono<Void> deleteById(String id) {
-        log.info("Request to delete task by id: {}", id);
+    public Mono<Void> deleteById(String id, UserDetails userDetails) {
+        log.info("Request from user {} to delete task by id: {}", userDetails.getUsername(), id);
         return taskRepository.findById(id)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + id + " not found")))
                 .flatMap(taskRepository::delete)
-                .doOnSuccess(v -> log.info("Successfully deleted task with id: {}", id))
-                .doOnError(error -> log.error("Error while deleting task with id {}: {}", id, error.getMessage()));
+                .doOnSuccess(v -> log.info("User {} successfully deleted task with id: {}", userDetails.getUsername(), id))
+                .doOnError(error -> log.error("Error while user {} deleting task with id {}: {}", userDetails.getUsername(), id, error.getMessage()));
     }
 
     @Override
-    public Mono<TaskResponseDto> assignAssignee(String taskId, String assigneeId) {
-        log.info("Request to assign assignee {} to task {}", assigneeId, taskId);
+    public Mono<TaskResponseDto> assignAssignee(String taskId, String assigneeId, UserDetails userDetails) {
+        log.info("Request from user {} to assign assignee {} to task {}", userDetails.getUsername(), assigneeId, taskId);
         return taskRepository.findById(taskId)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Задача с ID " + taskId + " не найдена")))
                 .flatMap(task -> userRepository.existsById(assigneeId)
@@ -153,8 +153,8 @@ public class TaskServiceImpl implements TaskService {
                             return taskRepository.save(task);
                         }))
                 .flatMap(this::enrichAndMapToDto)
-                .doOnSuccess(task -> log.info("Successfully assigned assignee to task: {}", task))
-                .doOnError(error -> log.error("Error while assigning assignee {} to task {}: {}", assigneeId, taskId, error.getMessage()));
+                .doOnSuccess(task -> log.info("User {} successfully assigned assignee to task: {}", userDetails.getUsername(), task))
+                .doOnError(error -> log.error("Error while user {} assigning assignee {} to task {}: {}", userDetails.getUsername(), assigneeId, taskId, error.getMessage()));
     }
 
     private Mono<TaskResponseDto> enrichAndMapToDto(Task task) {

@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Profile("init")
 @Slf4j
-@Order(2) // Second priority
+@Order(2)
 public class AuthorInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;

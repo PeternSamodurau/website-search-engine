@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal; // <-- ИМПОРТ
-import org.springframework.security.core.userdetails.UserDetails; // <-- ИМПОРТ
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -45,33 +45,41 @@ public class TaskController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('MANAGER')")
-    public Mono<TaskResponseDto> createTask(@Valid @RequestBody TaskRequestDto request, @AuthenticationPrincipal UserDetails userDetails) { // <-- ИЗМЕНЕНО
-        log.info("Request to create task: {} by user {}", request, userDetails.getUsername()); // <-- УЛУЧШЕНО ЛОГИРОВАНИЕ
-        return taskService.save(request, userDetails); // <-- ИЗМЕНЕНО
+    public Mono<TaskResponseDto> createTask(@Valid @RequestBody TaskRequestDto request, @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("Request to create task: {} by user {}", request, userDetails.getUsername());
+        return taskService.save(request, userDetails);
     }
 
     @Operation(summary = "Обновить существующую задачу", description = "Обновляет существующую задачу по ID")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER')")
-    public Mono<TaskResponseDto> updateTask(@PathVariable String id, @Valid @RequestBody TaskRequestDto request) {
-        log.info("Request to update task with id: {}", id);
-        return taskService.update(id, request);
+    public Mono<TaskResponseDto> updateTask(@PathVariable String id, @Valid @RequestBody TaskRequestDto request, @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("Request to update task with id: {} by user {}", id, userDetails.getUsername());
+        return taskService.update(id, request, userDetails);
     }
 
     @Operation(summary = "Удалить задачу", description = "Удаляет задачу по ID")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('MANAGER')")
-    public Mono<Void> deleteTask(@PathVariable String id) {
-        log.info("Request to delete task with id: {}", id);
-        return taskService.deleteById(id);
+    public Mono<Void> deleteTask(@PathVariable String id, @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("Request to delete task with id: {} by user {}", id, userDetails.getUsername());
+        return taskService.deleteById(id, userDetails);
     }
 
     @Operation(summary = "Добавить наблюдателя к задаче", description = "Добавляет существующего пользователя в качестве наблюдателя к задаче")
     @PostMapping("/{id}/observer/{observerId}")
     @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
-    public Mono<TaskResponseDto> addObserverToTask(@PathVariable String id, @PathVariable String observerId) {
-        log.info("Request to add observer with id: {} to task with id: {}", observerId, id);
-        return taskService.addObserver(id, observerId);
+    public Mono<TaskResponseDto> addObserverToTask(@PathVariable String id, @PathVariable String observerId, @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("Request to add observer with id: {} to task with id: {} by user {}", observerId, id, userDetails.getUsername());
+        return taskService.addObserver(id, observerId, userDetails);
+    }
+
+    @Operation(summary = "Назначить исполнителя для задачи", description = "Назначает существующего пользователя в качестве исполнителя для задачи")
+    @PostMapping("/{id}/assignee/{assigneeId}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public Mono<TaskResponseDto> assignAssignee(@PathVariable String id, @PathVariable String assigneeId, @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("Request to assign assignee with id: {} to task with id: {} by user {}", assigneeId, id, userDetails.getUsername());
+        return taskService.assignAssignee(id, assigneeId, userDetails);
     }
 }

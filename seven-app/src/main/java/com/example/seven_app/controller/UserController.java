@@ -19,8 +19,8 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Tag(name = "UserController", description = "Контроллер для работы с пользователями")
 @Slf4j
-@Tag(name = "User Controller", description = "Операции с пользователями")
 public class UserController {
 
     private final UserService userService;
@@ -33,7 +33,7 @@ public class UserController {
         return userService.findAll();
     }
 
-    @Operation(summary = "Получить пользователя по ID", description = "Возвращает одного пользователя по ID")
+    @Operation(summary = "Получить пользователя по ID", description = "Возвращает пользователя по его ID")
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
     public Mono<UserResponseDto> getUserById(@PathVariable String id) {
@@ -41,19 +41,20 @@ public class UserController {
         return userService.findById(id);
     }
 
-    @Operation(summary = "Создать нового пользователя", description = "Создает нового пользователя")
+    @Operation(summary = "Создать нового пользователя", description = "Создает нового пользователя (только для ROLE_MANAGER)")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('MANAGER')")
     public Mono<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto request) {
         log.info("Request to save user: {}", request);
         return userService.save(request);
     }
 
-    @Operation(summary = "Обновить существующего пользователя", description = "Обновляет существующего пользователя по ID")
+    @Operation(summary = "Обновить пользователя", description = "Обновляет данные пользователя по ID")
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
     public Mono<UserResponseDto> updateUser(@PathVariable String id, @Valid @RequestBody UserRequestDto request, @AuthenticationPrincipal UserDetails userDetails) {
-        log.info("Request to update user with id: {} by user {}", id, userDetails.getUsername());
+        log.info("Request to update user by id: {}", id);
         return userService.update(id, request, userDetails);
     }
 
@@ -62,7 +63,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
     public Mono<Void> deleteUser(@PathVariable String id, @AuthenticationPrincipal UserDetails userDetails) {
-        log.info("Request to delete user with id: {} by user {}", id, userDetails.getUsername());
+        log.info("Request to delete user by id: {}", id);
         return userService.deleteById(id, userDetails);
     }
 }

@@ -1,5 +1,6 @@
-package com.example.seven_app.config;
+package com.example.seven_app.init;
 
+import com.example.seven_app.config.SwaggerCache;
 import com.example.seven_app.repository.TaskRepository;
 import com.example.seven_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 @Profile("init")
+@Order(4)
 public class SwaggerCacheInitializer {
 
     private final UserRepository userRepository;
