@@ -2,7 +2,8 @@ package com.example.seven_app.service;
 
 import com.example.seven_app.dto.request.TaskRequestDto;
 import com.example.seven_app.dto.response.TaskResponseDto;
-import com.example.seven_app.exception.ForbiddenActionException; // <--- ДОБАВЛЕНО
+import com.example.seven_app.exception.ForbiddenActionException;
+import com.example.seven_app.exception.ResourceNotFoundException; // <--- ДОБАВЛЕНО
 import com.example.seven_app.mapper.TaskMapper;
 import com.example.seven_app.model.Task;
 import com.example.seven_app.model.TaskStatus;
@@ -46,7 +47,7 @@ public class TaskServiceImpl implements TaskService {
     public Mono<TaskResponseDto> findById(String id) {
         log.info("Request to find task by id: {}", id);
         return taskRepository.findById(id)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + id + " not found")))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Task with id " + id + " not found")))
                 .flatMap(this::enrichAndMapToDto)
                 .doOnSuccess(task -> log.info("Successfully found task: {}", task))
                 .doOnError(error -> log.error("Error while finding task by id {}: {}", id, error.getMessage()));
@@ -93,7 +94,7 @@ public class TaskServiceImpl implements TaskService {
                         userRepository.findByUsername(userDetails.getUsername())
                                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Requester not found"))),
                         taskRepository.findById(id)
-                                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + id + " not found")))
+                                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Task with id " + id + " not found")))
                 )
                 .flatMap(tuple -> {
                     User requester = tuple.getT1();
@@ -122,11 +123,11 @@ public class TaskServiceImpl implements TaskService {
     public Mono<TaskResponseDto> addObserver(String taskId, String observerId, UserDetails userDetails) {
         log.info("Request from user {} to add observer {} to task {}", userDetails.getUsername(), observerId, taskId);
         return taskRepository.findById(taskId)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Задача с ID " + taskId + " не найдена")))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Задача с ID " + taskId + " не найдена"))) // <--- ИЗМЕНЕНО
                 .flatMap(task -> userRepository.existsById(observerId)
                         .flatMap(userExists -> {
                             if (!userExists) {
-                                return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с ID " + observerId + " не найден"));
+                                return Mono.error(new ResourceNotFoundException("Пользователь с ID " + observerId + " не найден")); // <--- ИЗМЕНЕНО
                             }
 
                             if (task.getObserverIds() == null) {
@@ -153,7 +154,7 @@ public class TaskServiceImpl implements TaskService {
                         userRepository.findByUsername(userDetails.getUsername())
                                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Requester not found"))),
                         taskRepository.findById(id)
-                                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + id + " not found")))
+                                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Task with id " + id + " not found")))
                 )
                 .flatMap(tuple -> {
                     User requester = tuple.getT1();
@@ -179,11 +180,11 @@ public class TaskServiceImpl implements TaskService {
     public Mono<TaskResponseDto> assignAssignee(String taskId, String assigneeId, UserDetails userDetails) {
         log.info("Request from user {} to assign assignee {} to task {}", userDetails.getUsername(), assigneeId, taskId);
         return taskRepository.findById(taskId)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Задача с ID " + taskId + " не найдена")))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Задача с ID " + taskId + " не найдена")))
                 .flatMap(task -> userRepository.existsById(assigneeId)
                         .flatMap(userExists -> {
                             if (!userExists) {
-                                return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с ID " + assigneeId + " не найден"));
+                                return Mono.error(new ResourceNotFoundException("Пользователь с ID " + assigneeId + " не найден"));
                             }
                             task.setAssigneeId(assigneeId);
                             task.setUpdatedAt(Instant.now());

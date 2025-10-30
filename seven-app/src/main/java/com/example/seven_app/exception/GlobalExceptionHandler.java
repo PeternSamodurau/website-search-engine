@@ -46,4 +46,10 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage());
         return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(ResourceNotFoundException.class) // <--- ДОБАВЛЕНО
+    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        log.error(ex.getMessage());
+        return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
 }
