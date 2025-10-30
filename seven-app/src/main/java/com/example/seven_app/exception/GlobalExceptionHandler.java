@@ -40,6 +40,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
+    // Новый обработчик для SelfDeletionException
+    @ExceptionHandler(SelfDeletionException.class)
+    public ResponseEntity<ErrorResponseDto> handleSelfDeletionException(SelfDeletionException ex) {
+        log.error("Self-deletion attempt: {}", ex.getMessage());
+        ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
+    // Новый обработчик для SelfModificationException
+    @ExceptionHandler(SelfModificationException.class)
+    public ResponseEntity<ErrorResponseDto> handleSelfModificationException(SelfModificationException ex) {
+        log.error("Self-modification attempt: {}", ex.getMessage());
+        ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
     // Обработчик остальных ошибок
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponseDto> handleResponseStatusException(ResponseStatusException ex) {
