@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/tasks")
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    @Operation(summary = "Получить все задачи", description = "Возвращает список всех задач")
+    @Operation(summary = "Получение списка всех задач (доступно для ROLE_USER и ROLE_MANAGER)")
     @GetMapping
     @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
     public Flux<TaskResponseDto> getAllTasks() {
@@ -33,7 +35,7 @@ public class TaskController {
         return taskService.findAll();
     }
 
-    @Operation(summary = "Получить задачу по ID", description = "Возвращает одну задачу по ID")
+    @Operation(summary = "Получение задачи по ID (доступно для ROLE_USER и ROLE_MANAGER)")
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
     public Mono<TaskResponseDto> getTaskById(@PathVariable String id) {
@@ -41,7 +43,7 @@ public class TaskController {
         return taskService.findById(id);
     }
 
-    @Operation(summary = "Создать новую задачу", description = "Создает новую задачу")
+    @Operation(summary = "Создание новой задачи (доступно только для ROLE_MANAGER)")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('MANAGER')")
@@ -50,7 +52,7 @@ public class TaskController {
         return taskService.save(request, userDetails);
     }
 
-    @Operation(summary = "Обновить существующую задачу", description = "Обновляет существующую задачу по ID")
+    @Operation(summary = "Обновление задачи по ID (доступно только для ROLE_MANAGER)")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER')")
     public Mono<TaskResponseDto> updateTask(@PathVariable String id, @Valid @RequestBody TaskRequestDto request, @AuthenticationPrincipal UserDetails userDetails) {
@@ -58,16 +60,16 @@ public class TaskController {
         return taskService.update(id, request, userDetails);
     }
 
-    @Operation(summary = "Удалить задачу", description = "Удаляет задачу по ID")
+    @Operation(summary = "Удаление задачи по ID (доступно только для ROLE_MANAGER)")
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('MANAGER')")
-    public Mono<Void> deleteTask(@PathVariable String id, @AuthenticationPrincipal UserDetails userDetails) {
+    public Mono<Map<String, String>> deleteTask(@PathVariable String id, @AuthenticationPrincipal UserDetails userDetails) {
         log.info("Request to delete task with id: {} by user {}", id, userDetails.getUsername());
-        return taskService.deleteById(id, userDetails);
+        return taskService.deleteById(id, userDetails)
+                .then(Mono.just(Map.of("message", "Задача с ID " + id + " успешно удалена")));
     }
 
-    @Operation(summary = "Добавить наблюдателя к задаче", description = "Добавляет существующего пользователя в качестве наблюдателя к задаче")
+    @Operation(summary = "Добавление наблюдателя к задаче (доступно для ROLE_USER и ROLE_MANAGER)")
     @PostMapping("/{id}/observer/{observerId}")
     @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
     public Mono<TaskResponseDto> addObserverToTask(@PathVariable String id, @PathVariable String observerId, @AuthenticationPrincipal UserDetails userDetails) {
@@ -75,7 +77,7 @@ public class TaskController {
         return taskService.addObserver(id, observerId, userDetails);
     }
 
-    @Operation(summary = "Назначить исполнителя для задачи", description = "Назначает существующего пользователя в качестве исполнителя для задачи")
+    @Operation(summary = "Назначение исполнителя для задачи (доступно только для ROLE_MANAGER)")
     @PostMapping("/{id}/assignee/{assigneeId}")
     @PreAuthorize("hasRole('MANAGER')")
     public Mono<TaskResponseDto> assignAssignee(@PathVariable String id, @PathVariable String assigneeId, @AuthenticationPrincipal UserDetails userDetails) {

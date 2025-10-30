@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "Получить всех пользователей", description = "Возвращает список всех пользователей")
+    @Operation(summary = "Получение списка всех пользователей (доступно для ROLE_USER и ROLE_MANAGER)")
     @GetMapping
     @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
     public Flux<UserResponseDto> getAllUsers() {
@@ -33,15 +35,16 @@ public class UserController {
         return userService.findAll();
     }
 
-    @Operation(summary = "Получить пользователя по ID", description = "Возвращает пользователя по его ID")
+    @Operation(summary = "Получение пользователя по ID (доступно для ROLE_USER и ROLE_MANAGER)")
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
     public Mono<UserResponseDto> getUserById(@PathVariable String id) {
         log.info("Request to get user by id: {}", id);
-        return userService.findById(id);
+        return userService.findById(id)
+                .doOnSuccess(user -> log.info("Successfully found user: {}", user));
     }
 
-    @Operation(summary = "Создать нового пользователя", description = "Создает нового пользователя (только для ROLE_MANAGER)")
+    @Operation(summary = "Создание нового пользователя (доступно только для ROLE_MANAGER)")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('MANAGER')")
@@ -50,7 +53,7 @@ public class UserController {
         return userService.save(request);
     }
 
-    @Operation(summary = "Обновить пользователя", description = "Обновляет данные пользователя по ID")
+    @Operation(summary = "Обновление пользователя по ID (доступно для ROLE_USER и ROLE_MANAGER. Смена имени и пароля, авторизуйтесь заново!)")
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
     public Mono<UserResponseDto> updateUser(@PathVariable String id, @Valid @RequestBody UserRequestDto request, @AuthenticationPrincipal UserDetails userDetails) {
@@ -58,12 +61,12 @@ public class UserController {
         return userService.update(id, request, userDetails);
     }
 
-    @Operation(summary = "Удалить пользователя", description = "Удаляет пользователя по ID")
+    @Operation(summary = "Удаление пользователя по ID (доступно для ROLE_USER и ROLE_MANAGER. Не удалите самого себя когда в системе!")
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('USER', 'MANAGER')")
-    public Mono<Void> deleteUser(@PathVariable String id, @AuthenticationPrincipal UserDetails userDetails) {
+    public Mono<Map<String, String>> deleteUser(@PathVariable String id, @AuthenticationPrincipal UserDetails userDetails) {
         log.info("Request to delete user by id: {}", id);
-        return userService.deleteById(id, userDetails);
+        return userService.deleteById(id, userDetails)
+                .then(Mono.just(Map.of("message", "Пользователь с ID " + id + " успешно удален")));
     }
 }

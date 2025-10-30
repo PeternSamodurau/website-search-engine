@@ -1,66 +1,49 @@
 package com.example.seven_app.exception;
 
-import com.example.seven_app.dto.response.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.bind.support.WebExchangeBindException;
-import org.springframework.web.server.ResponseStatusException;
-import java.util.stream.Collectors;
 
-@RestControllerAdvice
+import java.util.Map;
+
+@ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleUserNotFoundException(UserNotFoundException ex) {
+        // Логируем то же сообщение, что и в ответе
+        log.error("Пользователь с таким ID не найден: {}", ex.getMessage());
+        return new ResponseEntity<>(Map.of("message", "Пользователь с таким ID не найден"), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleTaskNotFoundException(TaskNotFoundException ex) {
+        // Логируем то же сообщение, что и в ответе
+        log.error("Задача с таким ID не найдена: {}", ex.getMessage());
+        return new ResponseEntity<>(Map.of("message", "Задача с таким ID не найдена"), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponseDto> handleUserAlreadyExists(UserAlreadyExistsException ex) {
-        log.error("Conflict Error: {}", ex.getMessage());
-        ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    public ResponseEntity<Map<String, String>> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+        // Логируем то же сообщение, что и в ответе
+        log.error("Пользователь с таким именем уже существует: {}", ex.getMessage());
+        return new ResponseEntity<>(Map.of("message", "Пользователь с таким именем уже существует"), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({UserNotFoundException.class, TaskNotFoundException.class})
-    public ResponseEntity<ErrorResponseDto> handleNotFoundException(RuntimeException ex) {
-        log.error("Not Found Error: {}", ex.getMessage());
-        ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex) {
+        // Логируем то же сообщение, что и в ответе
+        log.error("У вас нет прав доступа.");
+        return new ResponseEntity<>(Map.of("message", "У вас нет прав доступа."), HttpStatus.FORBIDDEN);
     }
 
-    // Обработчик ошибок валидации (неверный формат email)
-    @ExceptionHandler(WebExchangeBindException.class)
-    public ResponseEntity<ErrorResponseDto> handleValidationException(WebExchangeBindException ex) {
-        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-                .collect(Collectors.joining("; "));
-
-        log.error("Validation Error: {}", errorMessage);
-        ErrorResponseDto errorResponse = new ErrorResponseDto(errorMessage);
-        return ResponseEntity.badRequest().body(errorResponse);
-    }
-
-    // Новый обработчик для SelfDeletionException
-    @ExceptionHandler(SelfDeletionException.class)
-    public ResponseEntity<ErrorResponseDto> handleSelfDeletionException(SelfDeletionException ex) {
-        log.error("Self-deletion attempt: {}", ex.getMessage());
-        ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
-    }
-
-    // Новый обработчик для SelfModificationException
-    @ExceptionHandler(SelfModificationException.class)
-    public ResponseEntity<ErrorResponseDto> handleSelfModificationException(SelfModificationException ex) {
-        log.error("Self-modification attempt: {}", ex.getMessage());
-        ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
-    }
-
-    // Обработчик остальных ошибок
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ErrorResponseDto> handleResponseStatusException(ResponseStatusException ex) {
-        log.error("Service Error: Status={}, Reason='{}'", ex.getStatusCode(), ex.getReason());
-        ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getReason());
-        return ResponseEntity.status(ex.getStatusCode()).body(errorResponse);
+    @ExceptionHandler(ForbiddenActionException.class)
+    public ResponseEntity<Map<String, String>> handleForbiddenActionException(ForbiddenActionException ex) {
+        log.error(ex.getMessage());
+        return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.FORBIDDEN);
     }
 }

@@ -2,12 +2,12 @@ package com.example.seven_app.service;
 
 import com.example.seven_app.dto.request.UserRequestDto;
 import com.example.seven_app.dto.response.UserResponseDto;
-import com.example.seven_app.exception.SelfDeletionException;
-import com.example.seven_app.exception.SelfModificationException;
+import com.example.seven_app.exception.ForbiddenActionException;
 import com.example.seven_app.exception.UserAlreadyExistsException;
 import com.example.seven_app.model.User;
 import com.example.seven_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService, ReactiveUserDetailsService {
 
     private final UserRepository userRepository;
@@ -80,20 +81,14 @@ public class UserServiceImpl implements UserService, ReactiveUserDetailsService 
                     User requester = tuple.getT1();
                     User userToUpdate = tuple.getT2();
 
-                    // Проверка на попытку изменения самого себя
-                    if (requester.getId().equals(userToUpdate.getId())) {
-                        return Mono.error(new SelfModificationException("Невозможно обновить: вы в системе."));
-                    }
-
                     boolean isManager = requester.getAuthorities().stream()
                             .anyMatch(auth -> auth.getAuthority().equals("ROLE_MANAGER"));
                     boolean isOwner = requester.getId().equals(userToUpdate.getId());
 
                     if (!isManager && !isOwner) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied"));
+                        return Mono.error(new ForbiddenActionException("Вы не можете обновить чужие данные"));
                     }
 
-                    // --- ПРОВЕРКА НА УНИКАЛЬНОСТЬ ПЕРЕД ОБНОВЛЕНИЕМ ---
                     String newUsername = userRequestDto.getUsername();
                     String newEmail = userRequestDto.getEmail();
 
@@ -138,19 +133,14 @@ public class UserServiceImpl implements UserService, ReactiveUserDetailsService 
                     User requester = tuple.getT1();
                     User userToDelete = tuple.getT2();
 
-                    // Проверка на попытку удаления самого себя
-                    if (requester.getId().equals(userToDelete.getId())) {
-                        return Mono.error(new SelfDeletionException("Невозможно удалить: вы в системе."));
-                    }
-
                     boolean isManager = requester.getAuthorities().stream()
                             .anyMatch(auth -> auth.getAuthority().equals("ROLE_MANAGER"));
-                    boolean isOwner = requester.getId().equals(userToDelete.getId()); // Эта проверка теперь избыточна для самоудаления, но оставлена для других сценариев
+                    boolean isOwner = requester.getId().equals(userToDelete.getId());
 
                     if (isManager || isOwner) {
                         return userRepository.delete(userToDelete);
                     } else {
-                        return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied"));
+                        return Mono.error(new ForbiddenActionException("Невозможно удалить пользователя, нет прав доступа"));
                     }
                 });
     }

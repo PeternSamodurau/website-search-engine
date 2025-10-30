@@ -2,6 +2,7 @@ package com.example.seven_app.service;
 
 import com.example.seven_app.dto.request.TaskRequestDto;
 import com.example.seven_app.dto.response.TaskResponseDto;
+import com.example.seven_app.exception.ForbiddenActionException; // <--- ДОБАВЛЕНО
 import com.example.seven_app.mapper.TaskMapper;
 import com.example.seven_app.model.Task;
 import com.example.seven_app.model.TaskStatus;
@@ -70,7 +71,7 @@ public class TaskServiceImpl implements TaskService {
                                 task.setAssigneeId(taskRequestDto.getAssigneeId());
 
                                 if (taskRequestDto.getObserverIds() != null) {
-                                    task.setObserverIds(new HashSet<>(taskRequestDto.getObserverIds()));
+                                    task.setObserverIds(new HashSet<>());
                                 } else {
                                     task.setObserverIds(new HashSet<>());
                                 }
@@ -88,9 +89,26 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Mono<TaskResponseDto> update(String id, TaskRequestDto taskDto, UserDetails userDetails) {
         log.info("Request from user {} to update task with id {}: {}", userDetails.getUsername(), id, taskDto);
-        return taskRepository.findById(id)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + id + " not found")))
-                .flatMap(existingTask -> {
+        return Mono.zip(
+                        userRepository.findByUsername(userDetails.getUsername())
+                                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Requester not found"))),
+                        taskRepository.findById(id)
+                                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + id + " not found")))
+                )
+                .flatMap(tuple -> {
+                    User requester = tuple.getT1();
+                    Task existingTask = tuple.getT2();
+
+                    boolean isManager = requester.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_MANAGER"));
+                    boolean isAuthor = requester.getId().equals(existingTask.getAuthorId());
+
+                    if (!isManager && !isAuthor) {
+                        String errorMessage = "Вы не можете обновить чужую задачу";
+                        log.error(errorMessage + ". User '{}' attempted to update task '{}' by author '{}'", requester.getUsername(), existingTask.getName(), existingTask.getAuthorId());
+                        return Mono.error(new ForbiddenActionException(errorMessage));
+                    }
+
                     taskMapper.updateTaskFromDto(taskDto, existingTask);
                     existingTask.setUpdatedAt(Instant.now());
                     return taskRepository.save(existingTask);
@@ -131,9 +149,28 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Mono<Void> deleteById(String id, UserDetails userDetails) {
         log.info("Request from user {} to delete task by id: {}", userDetails.getUsername(), id);
-        return taskRepository.findById(id)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + id + " not found")))
-                .flatMap(taskRepository::delete)
+        return Mono.zip(
+                        userRepository.findByUsername(userDetails.getUsername())
+                                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Requester not found"))),
+                        taskRepository.findById(id)
+                                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Task with id " + id + " not found")))
+                )
+                .flatMap(tuple -> {
+                    User requester = tuple.getT1();
+                    Task taskToDelete = tuple.getT2();
+
+                    boolean isManager = requester.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_MANAGER"));
+                    boolean isAuthor = requester.getId().equals(taskToDelete.getAuthorId());
+
+                    if (!isManager && !isAuthor) {
+                        String errorMessage = "Вы не можете удалить чужую задачу";
+                        log.error(errorMessage + ". User '{}' attempted to delete task '{}' by author '{}'", requester.getUsername(), taskToDelete.getName(), taskToDelete.getAuthorId());
+                        return Mono.error(new ForbiddenActionException(errorMessage));
+                    }
+
+                    return taskRepository.delete(taskToDelete);
+                })
                 .doOnSuccess(v -> log.info("User {} successfully deleted task with id: {}", userDetails.getUsername(), id))
                 .doOnError(error -> log.error("Error while user {} deleting task with id {}: {}", userDetails.getUsername(), id, error.getMessage()));
     }
