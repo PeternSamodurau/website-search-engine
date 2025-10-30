@@ -45,7 +45,7 @@ public class TaskInitializer implements CommandLineRunner {
 
                 log.info("No tasks found. Creating 3 test tasks...");
 
-                // Ищем автора по имени и email из properties, как в AuthorInitializer
+
                 return userRepository.findByUsernameOrEmail(defaultAuthorUsername, defaultAuthorUsermail)
                     .switchIfEmpty(Mono.error(new IllegalStateException("Default author '" + defaultAuthorUsername + "' not found. TaskInitializer must run AFTER AuthorInitializer.")))
                     .flatMap(author -> {

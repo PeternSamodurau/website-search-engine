@@ -37,7 +37,7 @@ public class AuthorInitializer implements CommandLineRunner {
                     return userRepository.save(defaultAuthor);
                 }))
                 .doOnSuccess(user -> log.info("Default author user '{}' is present in the database with ID: {}", user.getUsername(), user.getId()))
-                .block(); // This is safe and necessary on startup
+                .block();
         log.info(">>>>>>>>> AuthorInitializer FINISHED. <<<<<<<<<");
     }
 }

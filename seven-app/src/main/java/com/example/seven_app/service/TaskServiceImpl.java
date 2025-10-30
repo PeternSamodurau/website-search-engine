@@ -3,7 +3,7 @@ package com.example.seven_app.service;
 import com.example.seven_app.dto.request.TaskRequestDto;
 import com.example.seven_app.dto.response.TaskResponseDto;
 import com.example.seven_app.exception.ForbiddenActionException;
-import com.example.seven_app.exception.ResourceNotFoundException; // <--- ДОБАВЛЕНО
+import com.example.seven_app.exception.ResourceNotFoundException;
 import com.example.seven_app.mapper.TaskMapper;
 import com.example.seven_app.model.Task;
 import com.example.seven_app.model.TaskStatus;
@@ -123,11 +123,11 @@ public class TaskServiceImpl implements TaskService {
     public Mono<TaskResponseDto> addObserver(String taskId, String observerId, UserDetails userDetails) {
         log.info("Request from user {} to add observer {} to task {}", userDetails.getUsername(), observerId, taskId);
         return taskRepository.findById(taskId)
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Задача с ID " + taskId + " не найдена"))) // <--- ИЗМЕНЕНО
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Задача с ID " + taskId + " не найдена")))
                 .flatMap(task -> userRepository.existsById(observerId)
                         .flatMap(userExists -> {
                             if (!userExists) {
-                                return Mono.error(new ResourceNotFoundException("Пользователь с ID " + observerId + " не найден")); // <--- ИЗМЕНЕНО
+                                return Mono.error(new ResourceNotFoundException("Пользователь с ID " + observerId + " не найден"));
                             }
 
                             if (task.getObserverIds() == null) {

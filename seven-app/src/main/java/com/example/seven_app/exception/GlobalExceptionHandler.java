@@ -15,28 +15,28 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleUserNotFoundException(UserNotFoundException ex) {
-        // Логируем то же сообщение, что и в ответе
+
         log.error("Пользователь с таким ID не найден: {}", ex.getMessage());
         return new ResponseEntity<>(Map.of("message", "Пользователь с таким ID не найден"), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleTaskNotFoundException(TaskNotFoundException ex) {
-        // Логируем то же сообщение, что и в ответе
+
         log.error("Задача с таким ID не найдена: {}", ex.getMessage());
         return new ResponseEntity<>(Map.of("message", "Задача с таким ID не найдена"), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        // Логируем то же сообщение, что и в ответе
+
         log.error("Пользователь с таким именем уже существует: {}", ex.getMessage());
         return new ResponseEntity<>(Map.of("message", "Пользователь с таким именем уже существует"), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex) {
-        // Логируем то же сообщение, что и в ответе
+
         log.error("У вас нет прав доступа.");
         return new ResponseEntity<>(Map.of("message", "У вас нет прав доступа."), HttpStatus.FORBIDDEN);
     }
