@@ -1,0 +1,71 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 566B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 145B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/openjdk:17-oracle
+#3 ...
+
+#4 [auth] library/openjdk:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/openjdk:17-oracle
+#3 DONE 1.9s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [1/3] FROM docker.io/library/openjdk:17-oracle@sha256:83ffa182a7cfc8313583fe1cc42172a48a021f368a1ff11fe0d957c3b3b8a620
+#6 resolve docker.io/library/openjdk:17-oracle@sha256:83ffa182a7cfc8313583fe1cc42172a48a021f368a1ff11fe0d957c3b3b8a620 0.1s done
+#6 DONE 0.1s
+
+#7 [internal] load build context
+#7 ...
+
+#6 [1/3] FROM docker.io/library/openjdk:17-oracle@sha256:83ffa182a7cfc8313583fe1cc42172a48a021f368a1ff11fe0d957c3b3b8a620
+#6 DONE 0.1s
+
+#7 [internal] load build context
+#7 transferring context: 55.34MB 5.0s
+#7 transferring context: 56.38MB 5.1s done
+#7 DONE 5.1s
+
+#8 [2/3] WORKDIR /app
+#8 CACHED
+
+#9 [3/3] COPY build/libs/*.jar app.jar
+#9 DONE 0.6s
+
+#10 exporting to image
+#10 exporting layers
+#10 exporting layers 3.4s done
+#10 exporting manifest sha256:62dcf4518b8c40d03883318f35e475ab16e7584955df6830e67ff9002e63d744 0.0s done
+#10 exporting config sha256:d80959351518fc95e3aa40ef4102a12449c48dccb9c9db4b2f64183ee85c46cc 0.0s done
+#10 exporting attestation manifest sha256:392a6b517f5b932a15e2f2e7c093e7fe6cc3f6fe479980e345f51c3da298fabb 0.0s done
+#10 exporting manifest list sha256:4a6dacd974def164cf991e24c6a8cb332e5200aadf69ff96fe552f448464c62d 0.0s done
+#10 naming to docker.io/library/docker-app:latest done
+#10 unpacking to docker.io/library/docker-app:latest
+#10 unpacking to docker.io/library/docker-app:latest 0.4s done
+#10 DONE 3.9s
+
+#11 resolving provenance for metadata file
+#11 DONE 0.0s
+ docker-app  Built
+ Network docker_default  Creating
+ Network docker_default  Created
+ Volume docker_news-portal-db-data  Creating
+ Volume docker_news-portal-db-data  Created
+ Container news-portal-db  Creating
+ Container news-portal-db  Created
+ Container news-portal-app  Creating
+ Container news-portal-app  Created
+ Container news-portal-db  Starting
+ Container news-portal-db  Started
+ Container news-portal-db  Waiting
+ Container news-portal-db  Healthy
+ Container news-portal-app  Starting
+ Container news-portal-app  Started

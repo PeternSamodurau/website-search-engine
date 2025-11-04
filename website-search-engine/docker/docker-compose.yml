@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:13
+    container_name: website-search-engine-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=website_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d website_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - website-search-engine-db-data:/var/lib/postgresql/data
+
+  app:
+    container_name: website-search-engine
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/website_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../logs:/app/logs
+
+volumes:
+  website-search-engine-db-data:
