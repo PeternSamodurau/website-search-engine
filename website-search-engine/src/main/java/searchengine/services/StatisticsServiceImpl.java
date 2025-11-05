@@ -2,63 +2,63 @@ package searchengine.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import searchengine.config.SiteConfig;
-import searchengine.config.SitesListConfig;
-import searchengine.dto.statistics.DetailedStatisticsItem;
-import searchengine.dto.statistics.StatisticsData;
-import searchengine.dto.statistics.StatisticsResponse;
-import searchengine.dto.statistics.TotalStatistics;
+import searchengine.dto.statistics.SiteStatisticsDTO;
+import searchengine.dto.statistics.StatisticsDataDTO;
+import searchengine.dto.statistics.StatisticsResponseDTO;
+import searchengine.dto.statistics.TotalStatisticsDTO;
+import searchengine.model.Site;
+import searchengine.repositories.LemmaRepository;
+import searchengine.repositories.PageRepository;
+import searchengine.repositories.SiteRepository;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class StatisticsServiceImpl implements StatisticsService {
 
-    private final Random random = new Random();
-    private final SitesListConfig sites;
+    private final SiteRepository siteRepository;
+    private final PageRepository pageRepository;
+    private final LemmaRepository lemmaRepository;
 
     @Override
-    public StatisticsResponse getStatistics() {
-        String[] statuses = { "INDEXED", "FAILED", "INDEXING" };
-        String[] errors = {
-                "Ошибка индексации: главная страница сайта не доступна",
-                "Ошибка индексации: сайт не доступен",
-                ""
-        };
+    public StatisticsResponseDTO getStatistics() {
 
-        TotalStatistics total = new TotalStatistics();
-        total.setSites(sites.getSites().size());
-        total.setIndexing(true);
+        TotalStatisticsDTO total = new TotalStatisticsDTO();
+        total.setSites((int) siteRepository.count());
+        total.setPages((int) pageRepository.count());
+        total.setLemmas((int) lemmaRepository.count());
+        total.setIndexing(true); // Временная логика, позже заменим на реальный статус
 
-        List<DetailedStatisticsItem> detailed = new ArrayList<>();
-        List<SiteConfig> sitesList = sites.getSites();
-        for(int i = 0; i < sitesList.size(); i++) {
-            SiteConfig site = sitesList.get(i);
-            DetailedStatisticsItem item = new DetailedStatisticsItem();
+        List<SiteStatisticsDTO> detailed = new ArrayList<>();
+        List<Site> sites = siteRepository.findAll();
+
+        for (Site site : sites) {
+            SiteStatisticsDTO item = new SiteStatisticsDTO();
             item.setName(site.getName());
             item.setUrl(site.getUrl());
-            int pages = random.nextInt(1_000);
-            int lemmas = pages * random.nextInt(1_000);
-            item.setPages(pages);
-            item.setLemmas(lemmas);
-            item.setStatus(statuses[i % 3]);
-            item.setError(errors[i % 3]);
-            item.setStatusTime(System.currentTimeMillis() -
-                    (random.nextInt(10_000)));
-            total.setPages(total.getPages() + pages);
-            total.setLemmas(total.getLemmas() + lemmas);
+            
+            // Используем новые методы для точного подсчета
+            item.setPages(pageRepository.countPageOnSite(site));
+            item.setLemmas(lemmaRepository.countLemmaOnSite(site));
+            
+            item.setStatus(site.getStatus().toString());
+            item.setError(site.getLastError());
+            item.setStatusTime(site.getStatusTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+            
             detailed.add(item);
         }
 
-        StatisticsResponse response = new StatisticsResponse();
-        StatisticsData data = new StatisticsData();
+        StatisticsDataDTO data = new StatisticsDataDTO();
         data.setTotal(total);
         data.setDetailed(detailed);
-        response.setStatistics(data);
+
+        StatisticsResponseDTO response = new StatisticsResponseDTO();
         response.setResult(true);
+        response.setStatistics(data);
+
         return response;
     }
 }
