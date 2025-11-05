@@ -1,4 +1,4 @@
-package ru.spvrent.config;
+package searchengine.config;
 
 import lombok.Getter;
 import lombok.Setter;

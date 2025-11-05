@@ -1,7 +1,4 @@
-FROM openjdk:17-oracle
-
+FROM eclipse-temurin:17-jdk-focal
 WORKDIR /app
-
 COPY build/libs/*.jar app.jar
-
-CMD ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]

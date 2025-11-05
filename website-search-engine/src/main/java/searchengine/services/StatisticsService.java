@@ -1,4 +1,4 @@
-package ru.spvrent.services;
+package searchengine.services;
 
 import searchengine.dto.statistics.StatisticsResponse;
 

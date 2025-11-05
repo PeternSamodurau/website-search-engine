@@ -1,4 +1,4 @@
-package ru.spvrent.controllers;
+package searchengine.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

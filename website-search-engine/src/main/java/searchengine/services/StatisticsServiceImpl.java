@@ -1,4 +1,4 @@
-package ru.spvrent.services;
+package searchengine.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

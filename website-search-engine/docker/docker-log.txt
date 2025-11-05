@@ -1,38 +1,36 @@
 #1 [internal] load local bake definitions
-#1 reading from stdin 566B 0.0s done
+#1 reading from stdin 586B 0.0s done
 #1 DONE 0.0s
 
 #2 [internal] load build definition from Dockerfile
-#2 transferring dockerfile: 145B 0.0s done
+#2 transferring dockerfile: 153B 0.0s done
 #2 DONE 0.0s
 
-#3 [internal] load metadata for docker.io/library/openjdk:17-oracle
+#3 [internal] load metadata for docker.io/library/eclipse-temurin:17-jdk-focal
 #3 ...
 
-#4 [auth] library/openjdk:pull token for registry-1.docker.io
+#4 [auth] library/eclipse-temurin:pull token for registry-1.docker.io
 #4 DONE 0.0s
 
-#3 [internal] load metadata for docker.io/library/openjdk:17-oracle
-#3 DONE 1.9s
+#3 [internal] load metadata for docker.io/library/eclipse-temurin:17-jdk-focal
+#3 DONE 2.0s
 
 #5 [internal] load .dockerignore
-#5 transferring context: 2B done
+#5 transferring context: 2B 0.0s done
 #5 DONE 0.0s
 
-#6 [1/3] FROM docker.io/library/openjdk:17-oracle@sha256:83ffa182a7cfc8313583fe1cc42172a48a021f368a1ff11fe0d957c3b3b8a620
-#6 resolve docker.io/library/openjdk:17-oracle@sha256:83ffa182a7cfc8313583fe1cc42172a48a021f368a1ff11fe0d957c3b3b8a620 0.1s done
-#6 DONE 0.1s
+#6 [internal] load build context
+#6 ...
 
-#7 [internal] load build context
-#7 ...
+#7 [1/3] FROM docker.io/library/eclipse-temurin:17-jdk-focal@sha256:5751a59a993d1011047d52df2b56a961a328596d75f6bea23c68b6647490db20
+#7 resolve docker.io/library/eclipse-temurin:17-jdk-focal@sha256:5751a59a993d1011047d52df2b56a961a328596d75f6bea23c68b6647490db20 0.1s done
+#7 DONE 0.1s
 
-#6 [1/3] FROM docker.io/library/openjdk:17-oracle@sha256:83ffa182a7cfc8313583fe1cc42172a48a021f368a1ff11fe0d957c3b3b8a620
-#6 DONE 0.1s
-
-#7 [internal] load build context
-#7 transferring context: 55.34MB 5.0s
-#7 transferring context: 56.38MB 5.1s done
-#7 DONE 5.1s
+#6 [internal] load build context
+#6 transferring context: 28.31MB 5.0s
+#6 transferring context: 43.26MB 10.1s
+#6 transferring context: 56.40MB 12.4s done
+#6 DONE 12.5s
 
 #8 [2/3] WORKDIR /app
 #8 CACHED
@@ -42,30 +40,31 @@
 
 #10 exporting to image
 #10 exporting layers
-#10 exporting layers 3.4s done
-#10 exporting manifest sha256:62dcf4518b8c40d03883318f35e475ab16e7584955df6830e67ff9002e63d744 0.0s done
-#10 exporting config sha256:d80959351518fc95e3aa40ef4102a12449c48dccb9c9db4b2f64183ee85c46cc 0.0s done
-#10 exporting attestation manifest sha256:392a6b517f5b932a15e2f2e7c093e7fe6cc3f6fe479980e345f51c3da298fabb 0.0s done
-#10 exporting manifest list sha256:4a6dacd974def164cf991e24c6a8cb332e5200aadf69ff96fe552f448464c62d 0.0s done
+#10 exporting layers 5.4s done
+#10 exporting manifest sha256:d7cf89db78dba64fcac7f7329544a71c11bbcbb44d52d65b354ddd6addcd2ccd 0.0s done
+#10 exporting config sha256:53daad8fa8a30d342d462d1bfcc1fea9d9d940497b8f4ef764128502efe541be 0.0s done
+#10 exporting attestation manifest sha256:98d1b7460baa910f98ae538bc082459dd968b0f18811865bf7fcc0608dafc8f9 0.0s done
+#10 exporting manifest list sha256:0f668b988980daf1fe8abf729440df4f5144abee3b7cb6d5f4c05d067d0e416f
+#10 exporting manifest list sha256:0f668b988980daf1fe8abf729440df4f5144abee3b7cb6d5f4c05d067d0e416f 0.0s done
 #10 naming to docker.io/library/docker-app:latest done
 #10 unpacking to docker.io/library/docker-app:latest
-#10 unpacking to docker.io/library/docker-app:latest 0.4s done
-#10 DONE 3.9s
+#10 unpacking to docker.io/library/docker-app:latest 0.6s done
+#10 DONE 6.4s
 
 #11 resolving provenance for metadata file
 #11 DONE 0.0s
  docker-app  Built
  Network docker_default  Creating
  Network docker_default  Created
- Volume docker_news-portal-db-data  Creating
- Volume docker_news-portal-db-data  Created
- Container news-portal-db  Creating
- Container news-portal-db  Created
- Container news-portal-app  Creating
- Container news-portal-app  Created
- Container news-portal-db  Starting
- Container news-portal-db  Started
- Container news-portal-db  Waiting
- Container news-portal-db  Healthy
- Container news-portal-app  Starting
- Container news-portal-app  Started
+ Volume docker_website-search-engine-db-data  Creating
+ Volume docker_website-search-engine-db-data  Created
+ Container website-search-engine-db  Creating
+ Container website-search-engine-db  Created
+ Container website-search-engine  Creating
+ Container website-search-engine  Created
+ Container website-search-engine-db  Starting
+ Container website-search-engine-db  Started
+ Container website-search-engine-db  Waiting
+ Container website-search-engine-db  Healthy
+ Container website-search-engine  Starting
+ Container website-search-engine  Started

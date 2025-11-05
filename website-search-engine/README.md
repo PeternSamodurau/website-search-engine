@@ -31,7 +31,7 @@
     ```bash
     .\docker\docker-start.cmd
     ```
-4.  Приложение будет доступно по адресу `http://localhost:8081`.
+4.  Приложение будет доступно по адресу [http://localhost:8081/](http://localhost:8081/).
 5.  Документация Swagger UI доступна по адресу [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html).
 
 ## Тестирование API через Swagger UI

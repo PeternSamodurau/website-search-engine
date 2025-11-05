@@ -1,4 +1,4 @@
-package ru.spvrent.statistics;
+package searchengine.dto.statistics;
 
 import lombok.Data;
 

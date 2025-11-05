@@ -1,4 +1,4 @@
-package ru.spvrent;
+package searchengine;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -13,16 +13,6 @@ import org.springframework.context.event.EventListener;
 
 @Slf4j
 @SpringBootApplication
-
-@OpenAPIDefinition(
-		info = @Info(title = "News Portal API", version = "v1"),
-		security = @SecurityRequirement(name = "basicAuth")
-)
-@SecurityScheme(
-		name = "basicAuth",
-		type = SecuritySchemeType.HTTP,
-		scheme = "basic"
-)
 
 public class WebsiteSearchEngineApplication {
 
