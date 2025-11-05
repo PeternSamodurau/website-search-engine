@@ -40,9 +40,8 @@ public class StatisticsServiceImpl implements StatisticsService {
             item.setName(site.getName());
             item.setUrl(site.getUrl());
             
-            // Используем новые методы для точного подсчета
-            item.setPages(pageRepository.countPageOnSite(site));
-            item.setLemmas(lemmaRepository.countLemmaOnSite(site));
+            item.setPages(pageRepository.countBySite(site));
+            item.setLemmas(lemmaRepository.countBySite(site));
             
             item.setStatus(site.getStatus().toString());
             item.setError(site.getLastError());
