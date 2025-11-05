@@ -1,63 +1,42 @@
 package searchengine.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import searchengine.config.SitesListConfig;
 import searchengine.dto.statistics.SiteStatisticsDTO;
 import searchengine.dto.statistics.StatisticsDataDTO;
 import searchengine.dto.statistics.StatisticsResponseDTO;
 import searchengine.dto.statistics.TotalStatisticsDTO;
-import searchengine.model.Site;
-import searchengine.repositories.LemmaRepository;
-import searchengine.repositories.PageRepository;
-import searchengine.repositories.SiteRepository;
-
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Profile("!init")
 public class StatisticsServiceImpl implements StatisticsService {
 
-    private final SiteRepository siteRepository;
-    private final PageRepository pageRepository;
-    private final LemmaRepository lemmaRepository;
-
+    private final SitesListConfig sites;
+   
     @Override
     public StatisticsResponseDTO getStatistics() {
-
         TotalStatisticsDTO total = new TotalStatisticsDTO();
-        total.setSites((int) siteRepository.count());
-        total.setPages((int) pageRepository.count());
-        total.setLemmas((int) lemmaRepository.count());
-        total.setIndexing(true); // Временная логика, позже заменим на реальный статус
+        // В будущем: total.setSites(siteRepository.count());
+        total.setSites(0);
+        total.setIndexing(false); // или реальный статус
+        total.setPages(0); // В будущем: pageRepository.count()
+        total.setLemmas(0); // В будущем: lemmaRepository.count()
 
         List<SiteStatisticsDTO> detailed = new ArrayList<>();
-        List<Site> sites = siteRepository.findAll();
+        // В будущем здесь будет цикл по сайтам из БД,
+        // который будет собирать реальную статистику по каждому
 
-        for (Site site : sites) {
-            SiteStatisticsDTO item = new SiteStatisticsDTO();
-            item.setName(site.getName());
-            item.setUrl(site.getUrl());
-            
-            item.setPages(pageRepository.countBySite(site));
-            item.setLemmas(lemmaRepository.countBySite(site));
-            
-            item.setStatus(site.getStatus().toString());
-            item.setError(site.getLastError());
-            item.setStatusTime(site.getStatusTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-            
-            detailed.add(item);
-        }
-
+        StatisticsResponseDTO response = new StatisticsResponseDTO();
         StatisticsDataDTO data = new StatisticsDataDTO();
         data.setTotal(total);
         data.setDetailed(detailed);
-
-        StatisticsResponseDTO response = new StatisticsResponseDTO();
-        response.setResult(true);
         response.setStatistics(data);
-
+        response.setResult(true);
         return response;
     }
 }

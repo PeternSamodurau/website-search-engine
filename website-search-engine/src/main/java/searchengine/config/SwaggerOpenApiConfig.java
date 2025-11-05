@@ -8,11 +8,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "Books Management API",
-                version = "v1",
-                description = "API для управления книгами и категориями",
+                title = "Поисковый движок для сайтов",
+                description = "API для поискового движка. Позволяет управлять индексацией сайтов и выполнять поиск по проиндексированным данным.",
+                version = "1.0.0",
                 contact = @Contact(
-                        name = "Peter_Samodurov",
+                        name = "Piter Samodurov",
                         email = "spvrent@mail.ru"
                 )
         )
