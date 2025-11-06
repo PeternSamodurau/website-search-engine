@@ -12,13 +12,26 @@ java {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
 }
+
 repositories {
 	mavenCentral()
+	// Репозиторий из ТЗ с аутентификацией по токену
+	maven {
+		url "https://gitlab.skillbox.ru/api/v4/projects/263574/packages/maven"
+		credentials(HttpHeaderCredentials) {
+			name = "Private-Token"
+			value = "glpat-Viu1C6oUSddYB3JdKviW" // Новый токен
+		}
+		authentication {
+			header(HttpHeaderAuthentication)
+		}
+	}
 }
 
 dependencies {
@@ -29,7 +42,14 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+	implementation 'org.jsoup:jsoup:1.17.2'
 
+	// Зависимости для лемматизатора из ТЗ
+	implementation 'org.apache.lucene.morphology:morph:1.5'
+	implementation 'org.apache.lucene.analysis:morphology:1.5'
+	implementation 'org.apache.lucene.morphology:dictionary-reader:1.5'
+	implementation 'org.apache.lucene.morphology:english:1.5'
+	implementation 'org.apache.lucene.morphology:russian:1.5'
 
 
 	compileOnly("org.projectlombok:lombok")

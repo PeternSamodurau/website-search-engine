@@ -1,42 +1,86 @@
 package searchengine.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import searchengine.config.SiteConfig;
 import searchengine.config.SitesListConfig;
 import searchengine.dto.statistics.SiteStatisticsDTO;
 import searchengine.dto.statistics.StatisticsDataDTO;
 import searchengine.dto.statistics.StatisticsResponseDTO;
 import searchengine.dto.statistics.TotalStatisticsDTO;
+import searchengine.model.Site;
+import searchengine.repositories.LemmaRepository;
+import searchengine.repositories.PageRepository;
+import searchengine.repositories.SiteRepository;
+
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Profile("!init")
 public class StatisticsServiceImpl implements StatisticsService {
 
+    private final SiteRepository siteRepository;
+    private final PageRepository pageRepository;
+    private final LemmaRepository lemmaRepository;
     private final SitesListConfig sites;
-   
+
     @Override
     public StatisticsResponseDTO getStatistics() {
+        log.info("Запрос на получение статистики");
+
         TotalStatisticsDTO total = new TotalStatisticsDTO();
-        // В будущем: total.setSites(siteRepository.count());
-        total.setSites(0);
-        total.setIndexing(false); // или реальный статус
-        total.setPages(0); // В будущем: pageRepository.count()
-        total.setLemmas(0); // В будущем: lemmaRepository.count()
+        total.setSites((int) siteRepository.count());
+        total.setPages((int) pageRepository.count());
+        total.setLemmas((int) lemmaRepository.count());
+        total.setIndexing(true); // TODO: Заменить на реальный статус из IndexingServiceImpl
 
         List<SiteStatisticsDTO> detailed = new ArrayList<>();
-        // В будущем здесь будет цикл по сайтам из БД,
-        // который будет собирать реальную статистику по каждому
+        List<SiteConfig> sitesList = sites.getSites();
 
-        StatisticsResponseDTO response = new StatisticsResponseDTO();
+        for (SiteConfig siteConfig : sitesList) {
+            log.info("Обработка сайта из конфигурации: {}", siteConfig.getName());
+
+            // Правильный способ найти сайт: сначала найти все, потом отфильтровать по имени
+            Optional<Site> siteModelOpt = siteRepository.findAll().stream()
+                    .filter(s -> s.getName().equals(siteConfig.getName()))
+                    .findFirst();
+
+            if (siteModelOpt.isEmpty()) {
+                log.warn("Сайт '{}' не найден в базе данных. Пропускаем.", siteConfig.getName());
+                continue;
+            }
+            Site siteModel = siteModelOpt.get();
+
+            SiteStatisticsDTO item = new SiteStatisticsDTO();
+            item.setName(siteModel.getName());
+            item.setUrl(siteModel.getUrl());
+            item.setPages(pageRepository.countBySiteId(siteModel.getId()));
+            item.setLemmas(lemmaRepository.countBySiteId(siteModel.getId()));
+            item.setStatus(siteModel.getStatus().toString());
+            item.setError(siteModel.getLastError() == null ? "Ошибок нет" : siteModel.getLastError());
+            // Правильный способ конвертировать LocalDateTime в long
+            item.setStatusTime(siteModel.getStatusTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+            detailed.add(item);
+        }
+
         StatisticsDataDTO data = new StatisticsDataDTO();
         data.setTotal(total);
         data.setDetailed(detailed);
+
+        StatisticsResponseDTO response = new StatisticsResponseDTO();
         response.setStatistics(data);
         response.setResult(true);
+
+        log.info("Статистика успешно собрана. Всего сайтов: {}, страниц: {}, лемм: {}",
+                total.getSites(), total.getPages(), total.getLemmas());
+
         return response;
     }
 }
