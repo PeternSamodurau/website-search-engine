@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import searchengine.dto.error.ErrorResponseDTO;
+import searchengine.dto.response.ErrorResponseDTO;
 
 @RestControllerAdvice
 @Slf4j

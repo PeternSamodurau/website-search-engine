@@ -24,8 +24,12 @@ public class WebsiteSearchEngineApplication {
 	@EventListener
 	public void onApplicationEvent(WebServerInitializedEvent event) {
 		int port = event.getWebServer().getPort();
-		String url = "http://localhost:" + port;
-		log.info("=================== WebsiteSearchEngineApplication started on URL : {}", url);
+		String host = "http://localhost:";
+		log.info("==================================================================");
+		log.info("Application is ready! You can access it at the following URLs:");
+		log.info("Home page:     " + host + port + "/");
+		log.info("Swagger UI:    " + host + port + "/swagger-ui.html");
+		log.info("==================================================================");
 	}
 
 }

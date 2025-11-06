@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SuccessResponseDTO {
-    private boolean result = true;
-    private String success;
+public class ErrorResponseDTO {
+    private boolean result = false;
+    private String error;
 
-    public SuccessResponseDTO(String successMessage) {
-        this.success = successMessage;
+    public ErrorResponseDTO(String errorMessage) {
+        this.error = errorMessage;
     }
 }
