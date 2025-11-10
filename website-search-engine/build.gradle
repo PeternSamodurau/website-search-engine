@@ -26,7 +26,7 @@ repositories {
 		url "https://gitlab.skillbox.ru/api/v4/projects/263574/packages/maven"
 		credentials(HttpHeaderCredentials) {
 			name = "Private-Token"
-			value = "glpat-Viu1C6oUSddYB3JdKviW" // Новый токен
+			value = "glpat-Viu1C6oUSddYB3JdKviW"
 		}
 		authentication {
 			header(HttpHeaderAuthentication)

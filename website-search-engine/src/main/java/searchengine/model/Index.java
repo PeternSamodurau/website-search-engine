@@ -19,10 +19,11 @@ public class Index {
     @JoinColumn(name = "page_id", nullable = false)
     private Page page;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lemma_id", nullable = false)
     private Lemma lemma;
 
     @Column(name = "\"rank\"", nullable = false) // "rank" - ключевое слово
     private float rank;
+
 }

@@ -37,3 +37,4 @@ out/
 .vscode/
 !/docker/docker-log.txt
 !/logs/app.log
+!/final_project/

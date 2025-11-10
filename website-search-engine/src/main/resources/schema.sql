@@ -4,17 +4,12 @@ DROP TABLE IF EXISTS lemma CASCADE;
 DROP TABLE IF EXISTS page CASCADE;
 DROP TABLE IF EXISTS site CASCADE;
 
--- Удаляем пользовательский тип ENUM, если он существует
-DROP TYPE IF EXISTS status_enum;
-
--- Создаем пользовательский тип ENUM для статусов сайта
-CREATE TYPE status_enum AS ENUM ('INDEXING', 'INDEXED', 'FAILED');
 
 -- Создаем таблицу site
 CREATE TABLE site
 (
     id          SERIAL PRIMARY KEY,
-    status      status_enum NOT NULL,
+    status      VARCHAR(255) NOT NULL,
     status_time TIMESTAMP   NOT NULL,
     last_error  TEXT,
     url         VARCHAR(255) NOT NULL,
@@ -26,7 +21,7 @@ CREATE TABLE page
 (
     id      SERIAL PRIMARY KEY,
     site_id INT          NOT NULL,
-    path    VARCHAR(255) NOT NULL,
+    path    TEXT         NOT NULL, -- Изменено с VARCHAR(255) на TEXT
     code    INT          NOT NULL,
     content TEXT         NOT NULL,
     FOREIGN KEY (site_id) REFERENCES site (id) ON DELETE CASCADE

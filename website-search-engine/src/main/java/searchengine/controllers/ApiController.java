@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import searchengine.dto.response.ErrorResponseDTO;
+import searchengine.dto.response.SearchResponseDTO;
 import searchengine.dto.response.SuccessResponseDTO;
 import searchengine.dto.statistics.StatisticsResponseDTO;
 import searchengine.services.IndexingService;
+import searchengine.services.SearchService;
 import searchengine.services.StatisticsService;
 
 @RestController
@@ -23,6 +25,7 @@ public class ApiController {
 
     private final StatisticsService statisticsService;
     private final IndexingService indexingService;
+    private final SearchService searchService;
 
     @GetMapping("/statistics")
     public ResponseEntity<StatisticsResponseDTO> statistics() {
@@ -58,5 +61,15 @@ public class ApiController {
         } else {
             return new ResponseEntity<>(new ErrorResponseDTO("Данная страница находится за пределами сайтов, указанных в конфигурационном файле"), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<SearchResponseDTO> search(@RequestParam(name = "query") String query,
+                                                    @RequestParam(name = "site", required = false) String site,
+                                                    @RequestParam(name = "offset", defaultValue = "0") int offset,
+                                                    @RequestParam(name = "limit", defaultValue = "20") int limit) {
+        log.info("Получен поисковый запрос: query={}, site={}, offset={}, limit={}", query, site, offset, limit);
+        SearchResponseDTO response = searchService.search(query, site, offset, limit);
+        return ResponseEntity.ok(response);
     }
 }
