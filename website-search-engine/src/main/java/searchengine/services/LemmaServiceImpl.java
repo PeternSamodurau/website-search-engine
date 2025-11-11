@@ -10,8 +10,8 @@ import searchengine.model.Index;
 import searchengine.model.Lemma;
 import searchengine.model.Page;
 import searchengine.model.Site;
-import searchengine.repositories.IndexRepository;
-import searchengine.repositories.LemmaRepository;
+import searchengine.repository.IndexRepository;
+import searchengine.repository.LemmaRepository;
 
 import java.util.HashMap;
 import java.util.List;

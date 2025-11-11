@@ -11,9 +11,9 @@ import searchengine.dto.statistics.StatisticsDataDTO;
 import searchengine.dto.statistics.StatisticsResponseDTO;
 import searchengine.dto.statistics.TotalStatisticsDTO;
 import searchengine.model.Site;
-import searchengine.repositories.LemmaRepository;
-import searchengine.repositories.PageRepository;
-import searchengine.repositories.SiteRepository;
+import searchengine.repository.LemmaRepository;
+import searchengine.repository.PageRepository;
+import searchengine.repository.SiteRepository;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -30,6 +30,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final PageRepository pageRepository;
     private final LemmaRepository lemmaRepository;
     private final SitesListConfig sites;
+    private final IndexingService indexingService; // <-- ДОБАВЛЕНА ЗАВИСИМОСТЬ
 
     @Override
     public StatisticsResponseDTO getStatistics() {
@@ -39,7 +40,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         total.setSites((int) siteRepository.count());
         total.setPages((int) pageRepository.count());
         total.setLemmas((int) lemmaRepository.count());
-        total.setIndexing(true); // TODO: Заменить на реальный статус из IndexingServiceImpl
+        total.setIndexing(indexingService.isIndexing()); // <-- ИСПРАВЛЕНО: Используется реальный статус
 
         List<SiteStatisticsDTO> detailed = new ArrayList<>();
         List<SiteConfig> sitesList = sites.getSites();
@@ -47,7 +48,6 @@ public class StatisticsServiceImpl implements StatisticsService {
         for (SiteConfig siteConfig : sitesList) {
             log.info("Обработка сайта из конфигурации: {}", siteConfig.getName());
 
-            // Правильный способ найти сайт: сначала найти все, потом отфильтровать по имени
             Optional<Site> siteModelOpt = siteRepository.findAll().stream()
                     .filter(s -> s.getName().equals(siteConfig.getName()))
                     .findFirst();
@@ -65,7 +65,6 @@ public class StatisticsServiceImpl implements StatisticsService {
             item.setLemmas(lemmaRepository.countBySiteId(siteModel.getId()));
             item.setStatus(siteModel.getStatus().toString());
             item.setError(siteModel.getLastError() == null ? "Ошибок нет" : siteModel.getLastError());
-            // Правильный способ конвертировать LocalDateTime в long
             item.setStatusTime(siteModel.getStatusTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             detailed.add(item);
         }

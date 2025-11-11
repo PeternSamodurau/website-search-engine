@@ -1,43 +1,42 @@
-2025-11-10 18:13:45 [INFO ] o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-11-10 18:13:45 [INFO ] s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
-2025-11-10 18:13:45 [INFO ] s.WebsiteSearchEngineApplication - The following 1 profile is active: "init"
-2025-11-10 18:13:48 [INFO ] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-11-10 18:13:48 [INFO ] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 180 ms. Found 4 JPA repository interfaces.
-2025-11-10 18:13:50 [INFO ] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8081 (http)
-2025-11-10 18:13:50 [INFO ] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
-2025-11-10 18:13:50 [INFO ] o.a.catalina.core.StandardService - Starting service [Tomcat]
-2025-11-10 18:13:50 [INFO ] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
-2025-11-10 18:13:51 [INFO ] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2025-11-10 18:13:51 [INFO ] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 5341 ms
-2025-11-10 18:13:51 [INFO ] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-11-10 18:13:52 [INFO ] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@681aad3b
-2025-11-10 18:13:52 [INFO ] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-11-10 18:13:52 [INFO ] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-11-10 18:13:52 [INFO ] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.2.24.Final
-2025-11-10 18:13:52 [INFO ] org.hibernate.cfg.Environment - HHH000406: Using bytecode reflection optimizer
-2025-11-10 18:13:53 [INFO ] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-11-10 18:13:56 [INFO ] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-11-10 18:13:56 [INFO ] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-11-10 18:13:57 [INFO ] o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-11-10 18:13:59 [WARN ] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2025-11-10 18:14:00 [INFO ] o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
-2025-11-10 18:14:02 [INFO ] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
-2025-11-10 18:14:02 [INFO ] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8081 (http) with context path ''
-2025-11-10 18:14:02 [INFO ] s.WebsiteSearchEngineApplication - ==================================================================
-2025-11-10 18:14:02 [INFO ] s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
-2025-11-10 18:14:02 [INFO ] s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
-2025-11-10 18:14:03 [INFO ] s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
-2025-11-10 18:14:03 [INFO ] s.WebsiteSearchEngineApplication - ==================================================================
-2025-11-10 18:14:03 [INFO ] s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 18.846 seconds (process running for 21.653)
-2025-11-10 18:14:06 [INFO ] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2025-11-10 18:14:06 [INFO ] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2025-11-10 18:14:06 [INFO ] o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
-2025-11-10 18:14:08 [INFO ] s.controllers.ApiController - Получен запрос на статистику
-2025-11-10 18:14:18 [INFO ] o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 1641 ms
-2025-11-10 18:14:25 [INFO ] s.controllers.ApiController - Получен запрос на запуск индексации
-2025-11-10 18:14:26 [INFO ] s.services.IndexingServiceImpl - Индексация новой страницы: https://ipfran.ru/
-2025-11-10 18:14:26 [INFO ] s.services.IndexingServiceImpl - Индексация новой страницы: https://www.lutherancathedral.ru/
-2025-11-10 18:14:29 [WARN ] s.services.IndexingServiceImpl - Страница https://www.lutherancathedral.ru/ вернула статус-код 403. Не будет проиндексирована.
-2025-11-10 18:14:29 [INFO ] s.services.IndexingServiceImpl - Индексация сайта https://www.lutherancathedral.ru/ завершена.
-2025-11-10 18:14:58 [ERROR] s.services.IndexingServiceImpl - Ошибка при получении HTML для обхода ссылок https://ipfran.ru/: Read timed out
-2025-11-10 18:14:58 [INFO ] s.services.IndexingServiceImpl - Индексация сайта https://ipfran.ru/ завершена.
+2025-11-11 14:13:08 [INFO ] o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-11-11 14:13:08 [INFO ] s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
+2025-11-11 14:13:08 [INFO ] s.WebsiteSearchEngineApplication - The following 1 profile is active: "init"
+2025-11-11 14:13:10 [INFO ] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-11 14:13:11 [INFO ] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 143 ms. Found 4 JPA repository interfaces.
+2025-11-11 14:13:12 [INFO ] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8081 (http)
+2025-11-11 14:13:12 [INFO ] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-11-11 14:13:12 [INFO ] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-11 14:13:12 [INFO ] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2025-11-11 14:13:12 [INFO ] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-11-11 14:13:12 [INFO ] o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4133 ms
+2025-11-11 14:13:12 [INFO ] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-11-11 14:13:13 [INFO ] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2cd2c8fe
+2025-11-11 14:13:13 [INFO ] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-11-11 14:13:13 [INFO ] o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-11 14:13:13 [INFO ] org.hibernate.Version - HHH000412: Hibernate ORM core version 6.2.24.Final
+2025-11-11 14:13:13 [INFO ] org.hibernate.cfg.Environment - HHH000406: Using bytecode reflection optimizer
+2025-11-11 14:13:14 [INFO ] o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-11 14:13:17 [INFO ] o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-11 14:13:17 [INFO ] o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-11 14:13:18 [INFO ] o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-11 14:13:20 [INFO ] s.init.StatisticsServiceInitImpl - Инициализация сайтов для 'init' профиля...
+2025-11-11 14:13:20 [INFO ] s.init.StatisticsServiceInitImpl - Сайт 'Lutheran Cathedral' доступен. Статус: INDEXING
+2025-11-11 14:13:21 [INFO ] s.init.StatisticsServiceInitImpl - Сайт 'ipfran' доступен. Статус: INDEXING
+2025-11-11 14:13:21 [INFO ] s.init.StatisticsServiceInitImpl - Сайт 'DimonVideo' доступен. Статус: INDEXING
+2025-11-11 14:13:22 [INFO ] s.init.StatisticsServiceInitImpl - Сайт 'Niko Art Gallery' доступен. Статус: INDEXING
+2025-11-11 14:13:22 [INFO ] s.init.StatisticsServiceInitImpl - Сайт 'Et Cetera' доступен. Статус: INDEXING
+2025-11-11 14:13:22 [INFO ] s.init.StatisticsServiceInitImpl - Сайт 'Lutheran Cathedral' доступен. Статус: INDEXING
+2025-11-11 14:13:23 [INFO ] s.init.StatisticsServiceInitImpl - Сайт 'svetlovka' доступен. Статус: INDEXING
+2025-11-11 14:13:23 [INFO ] s.init.StatisticsServiceInitImpl - Сайт 'radiomv' доступен. Статус: INDEXING
+2025-11-11 14:13:23 [WARN ] s.init.StatisticsServiceInitImpl - Сайт 'dombulgakova' недоступен. Статус: FAILED
+2025-11-11 14:13:23 [INFO ] s.init.StatisticsServiceInitImpl - Инициализация сайтов завершена.
+2025-11-11 14:13:23 [WARN ] o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-11 14:13:23 [INFO ] o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-11-11 14:13:25 [INFO ] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-11-11 14:13:26 [INFO ] o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8081 (http) with context path ''
+2025-11-11 14:13:26 [INFO ] s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-11 14:13:26 [INFO ] s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
+2025-11-11 14:13:26 [INFO ] s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
+2025-11-11 14:13:26 [INFO ] s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
+2025-11-11 14:13:26 [INFO ] s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-11 14:13:26 [INFO ] s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 18.842 seconds (process running for 20.55)
