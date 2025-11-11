@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,29 +44,55 @@ public class StatisticsServiceInitImpl implements StatisticsService {
     @PostConstruct
     @Transactional
     public void initializeSites() {
-        if (siteRepository.count() == 0) { // Проверяем, не были ли сайты уже инициализированы
-            log.info("Инициализация сайтов для 'init' профиля...");
-            for (SiteConfig siteConfig : sites.getSites()) {
-                Site site = new Site();
-                site.setName(siteConfig.getName());
-                site.setUrl(siteConfig.getUrl());
-                site.setStatusTime(LocalDateTime.now());
+        log.info("Инициализация/обновление сайтов для 'init' профиля...");
 
-                if (isSiteAvailable(siteConfig.getUrl())) {
-                    site.setStatus(Status.INDEXING); // Доступен, готов к индексации
-                    site.setLastError(null);
-                    log.info("Сайт '{}' доступен. Статус: INDEXING", siteConfig.getName());
-                } else {
-                    site.setStatus(Status.FAILED); // Недоступен
-                    site.setLastError("Сайт недоступен или произошла ошибка при проверке.");
-                    log.warn("Сайт '{}' недоступен. Статус: FAILED", siteConfig.getName());
+        // Удаляем сайты из БД, которых нет в конфигурации
+        List<Site> sitesInDb = siteRepository.findAll();
+        for (Site siteInDb : sitesInDb) {
+            boolean foundInConfig = false;
+            for (SiteConfig siteConfig : sites.getSites()) {
+                if (siteInDb.getUrl().equals(siteConfig.getUrl())) {
+                    foundInConfig = true;
+                    break;
                 }
-                siteRepository.save(site);
             }
-            log.info("Инициализация сайтов завершена.");
-        } else {
-            log.info("Сайты уже инициализированы в базе данных для 'init' профиля.");
+            if (!foundInConfig) {
+                log.info("Удаление сайта из БД, отсутствующего в конфигурации: {}", siteInDb.getName());
+                lemmaRepository.deleteAllBySite(siteInDb);
+                pageRepository.deleteAllBySite(siteInDb);
+                siteRepository.delete(siteInDb);
+            }
         }
+
+
+        for (SiteConfig siteConfig : sites.getSites()) {
+            Optional<Site> existingSiteOptional = siteRepository.findByUrl(siteConfig.getUrl());
+            Site site;
+
+            if (existingSiteOptional.isPresent()) {
+                site = existingSiteOptional.get();
+                log.info("Обновление существующего сайта: {}", siteConfig.getName());
+            } else {
+                site = new Site();
+                log.info("Создание нового сайта: {}", siteConfig.getName());
+            }
+
+            site.setName(siteConfig.getName());
+            site.setUrl(siteConfig.getUrl());
+            site.setStatusTime(LocalDateTime.now());
+
+            if (isSiteAvailable(siteConfig.getUrl())) {
+                site.setStatus(Status.INDEXING); // Доступен, готов к индексации
+                site.setLastError(null);
+                log.info("Сайт '{}' доступен. Статус: INDEXING", siteConfig.getName());
+            } else {
+                site.setStatus(Status.FAILED); // Недоступен
+                site.setLastError("Сайт недоступен или произошла ошибка при проверке.");
+                log.warn("Сайт '{}' недоступен. Статус: FAILED", siteConfig.getName());
+            }
+            siteRepository.save(site);
+        }
+        log.info("Инициализация/обновление сайтов завершено.");
     }
 
     @Override

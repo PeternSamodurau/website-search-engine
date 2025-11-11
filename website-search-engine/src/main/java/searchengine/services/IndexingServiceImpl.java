@@ -3,8 +3,7 @@ package searchengine.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import searchengine.config.SiteConfig; // Может быть удален, если SitesListConfig больше не используется напрямую
+import searchengine.config.SiteConfig;
 import searchengine.config.SitesListConfig;
 import searchengine.model.Site;
 import searchengine.model.Status;
@@ -13,6 +12,7 @@ import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +28,7 @@ public class IndexingServiceImpl implements IndexingService {
     private final PageRepository pageRepository;
     private final LemmaRepository lemmaRepository;
     private final LemmaService lemmaService;
-    private final SitesListConfig sites; // Оставлен, так как используется для инициализации в init профиле
+    private final SitesListConfig sites;
 
     private final AtomicBoolean isIndexing = new AtomicBoolean(false);
     private ForkJoinPool forkJoinPool;
@@ -39,50 +39,75 @@ public class IndexingServiceImpl implements IndexingService {
             log.info("Запуск процесса индексации");
 
             new Thread(() -> {
+                forkJoinPool = new ForkJoinPool();
                 try {
-                    // Получаем сайты для индексации из базы данных, которые имеют статус INDEXING
-                    List<Site> sitesToProcess = siteRepository.findAllByStatus(Status.INDEXING);
+                    Set<String> visitedUrls = ConcurrentHashMap.newKeySet();
 
+                    for (SiteConfig siteConfig : sites.getSites()) {
+                        Site site = siteRepository.findByUrl(siteConfig.getUrl()).orElseGet(() -> {
+                            Site newSite = new Site();
+                            newSite.setUrl(siteConfig.getUrl());
+                            newSite.setName(siteConfig.getName());
+                            return newSite;
+                        });
+
+                        site.setStatus(Status.INDEXING);
+                        site.setStatusTime(LocalDateTime.now());
+                        site.setLastError(null);
+                        siteRepository.save(site);
+
+                        log.info("Очистка старых данных для сайта: {}", site.getName());
+                        lemmaRepository.deleteAllBySite(site);
+                        pageRepository.deleteAllBySite(site);
+                    }
+
+                    List<Site> sitesToProcess = siteRepository.findAllByStatus(Status.INDEXING);
                     if (sitesToProcess.isEmpty()) {
-                        log.warn("Нет сайтов со статусом INDEXING для обработки. Процесс индексации завершен.");
-                        isIndexing.set(false); // Сбрасываем флаг, если нет сайтов для индексации
+                        log.info("Нет сайтов со статусом INDEXING для обработки. Процесс индексации завершен.");
                         return;
                     }
 
-                    forkJoinPool = new ForkJoinPool();
-                    Set<String> visitedUrls = ConcurrentHashMap.newKeySet();
-
-                    for (Site site : sitesToProcess) { // Итерируем по объектам Site из базы данных
-                        // Проверка на остановку индексации перед обработкой каждого сайта
+                    for (Site site : sitesToProcess) {
                         if (!isIndexing.get()) {
                             log.info("Индексация остановлена пользователем. Пропускаем оставшиеся сайты.");
-                            break; // Выходим из цикла, если индексация остановлена
+                            break;
                         }
 
-                        // Обновляем статус сайта и очищаем предыдущие данные
-                        updateSiteForIndexing(site); // Устанавливаем статус INDEXING и время
-                        clearSiteData(site);         // Очищаем страницы и леммы
+                        Site currentSiteState = siteRepository.findByUrl(site.getUrl()).orElse(site);
+                        if (currentSiteState.getStatus() == Status.FAILED) {
+                            log.warn("Сайт '{}' уже имеет статус FAILED (из-за инициализации), пропуск индексации. Причина: {}", currentSiteState.getName(), currentSiteState.getLastError());
+                            continue;
+                        }
 
                         log.info("Запуск индексации для сайта: {}", site.getName());
 
-                        // Передаем существующий объект Site в SiteCrawler
                         SiteCrawler task = new SiteCrawler(site, site.getUrl(), this, siteRepository, pageRepository, lemmaService, visitedUrls);
                         forkJoinPool.invoke(task);
 
-                        // После завершения обхода, обновляем статус сайта
-                        if (isIndexing.get()) { // Только если индексация не была остановлена
-                            site.setStatus(Status.INDEXED);
-                            site.setLastError(null);
-                        } else {
-                            // Если индексация была остановлена, метод stopIndexing() установит статус FAILED
-                        }
-                        site.setStatusTime(LocalDateTime.now());
-                        siteRepository.save(site);
+                        Site updatedSite = siteRepository.findByUrl(site.getUrl()).orElse(site);
+                        if (updatedSite != null) {
+                            if (updatedSite.getStatus() != Status.FAILED) {
+                                updatedSite.setStatus(Status.INDEXED);
+                                updatedSite.setLastError(null);
+                                updatedSite.setStatusTime(LocalDateTime.now());
+                                siteRepository.save(updatedSite);
 
-                        log.info("Индексация сайта '{}' завершена.", site.getName());
+                                log.info("Индексация сайта '{}' завершена.", updatedSite.getName());
+                            } else {
+                                log.warn("Индексация сайта '{}' завершена со статусом FAILED, установленным SiteCrawler'ом. Причина: {}", updatedSite.getName(), updatedSite.getLastError());
+                            }
+                        } else {
+                            log.error("Не удалось найти сайт '{}' после индексации для обновления статуса.", site.getName());
+                        }
                     }
                 } catch (Exception e) {
                     log.error("Критическая ошибка во время процесса индексации", e);
+                    siteRepository.findAllByStatus(Status.INDEXING).forEach(s -> {
+                        s.setStatus(Status.FAILED);
+                        s.setLastError("Критическая ошибка во время индексации: " + e.getMessage());
+                        s.setStatusTime(LocalDateTime.now());
+                        siteRepository.save(s);
+                    });
                 } finally {
                     if (forkJoinPool != null) {
                         forkJoinPool.shutdown();
@@ -99,26 +124,6 @@ public class IndexingServiceImpl implements IndexingService {
         }
     }
 
-    // Вспомогательный метод для обновления статуса сайта перед индексацией
-    @Transactional
-    private void updateSiteForIndexing(Site site) {
-        site.setStatus(Status.INDEXING);
-        site.setStatusTime(LocalDateTime.now());
-        site.setLastError(null); // Очищаем предыдущие ошибки
-        siteRepository.save(site);
-    }
-
-    // Вспомогательный метод для очистки данных существующего сайта
-    @Transactional
-    private void clearSiteData(Site site) {
-        log.info("Очистка старых данных для сайта: {}", site.getName());
-        lemmaRepository.deleteAllBySite(site);
-        pageRepository.deleteAllBySite(site);
-    }
-
-    // Методы deleteSiteData(SiteConfig siteConfig) и createSite(SiteConfig siteConfig) удалены,
-    // так как их логика интегрирована или заменена в новом потоке индексации.
-
     @Override
     public boolean stopIndexing() {
         if (!isIndexing.get()) {
@@ -132,10 +137,10 @@ public class IndexingServiceImpl implements IndexingService {
         }
         isIndexing.set(false);
 
-        // Обновляем только те сайты, которые были в процессе индексации
         siteRepository.findAllByStatus(Status.INDEXING).forEach(site -> {
             site.setStatus(Status.FAILED);
             site.setLastError("Индексация остановлена пользователем");
+            site.setStatusTime(LocalDateTime.now());
             siteRepository.save(site);
         });
         return true;
