@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.morphology.LuceneMorphology;
 import org.jsoup.Jsoup;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import searchengine.model.Index;
 import searchengine.model.Lemma;
 import searchengine.model.Page;
@@ -17,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,10 +30,12 @@ public class LemmaServiceImpl implements LemmaService {
     private final LuceneMorphology luceneMorphology;
     private final LemmaRepository lemmaRepository;
     private final IndexRepository indexRepository;
+    // private final LemmaServiceImpl self; // Удалено для устранения циклической зависимости
 
     @Override
     @Transactional
     public void lemmatizePage(Page page) {
+        log.debug("Начало лемматизации страницы: URL='{}', Site='{}'", page.getPath(), page.getSite().getName());
         Site site = page.getSite();
         String text = Jsoup.parse(page.getContent()).text();
         Map<String, Integer> lemmas = collectLemmas(text);
@@ -38,26 +44,72 @@ public class LemmaServiceImpl implements LemmaService {
             String lemmaString = entry.getKey();
             Integer rank = entry.getValue();
 
-            // Находим или создаем лемму
-            Lemma lemma = lemmaRepository.findByLemmaAndSite(lemmaString, site)
-                    .orElseGet(() -> {
-                        Lemma newLemma = new Lemma();
-                        newLemma.setLemma(lemmaString);
-                        newLemma.setSite(site);
-                        newLemma.setFrequency(0); // Изначально 0, увеличим ниже
-                        return newLemma;
-                    });
+            log.debug("Обработка леммы '{}' с рангом {} для страницы '{}'", lemmaString, rank, page.getPath());
 
-            // Увеличиваем общую частоту леммы для сайта
-            lemma.setFrequency(lemma.getFrequency() + 1);
-            lemmaRepository.save(lemma);
+            // Получаем или создаем лемму, и сразу увеличиваем ее частоту в отдельной транзакции
+            // Этот метод гарантирует, что лемма существует и ее частота обновлена
+            Lemma lemma = this.getOrCreateAndIncrementLemma(lemmaString, site); // Изменено с self на this
+            log.debug("Лемма '{}' (ID: {}) получена/создана и частота инкрементирована. Частота: {}", lemma.getLemma(), lemma.getId(), lemma.getFrequency());
 
-            // Создаем запись в таблице index
-            Index index = new Index();
-            index.setPage(page);
-            index.setLemma(lemma);
-            index.setRank(rank.floatValue());
-            indexRepository.save(index);
+            // Создаем или обновляем запись в таблице index
+            Optional<Index> optionalIndex = indexRepository.findByLemmaAndPage(lemma, page);
+            if (optionalIndex.isEmpty()) {
+                Index index = new Index();
+                index.setPage(page);
+                index.setLemma(lemma);
+                index.setRank(rank.floatValue());
+                indexRepository.save(index);
+
+                log.debug("Создан новый индекс для леммы '{}' и страницы '{}'", lemmaString, page.getPath());
+            } else {
+                Index index = optionalIndex.get();
+                index.setRank(index.getRank() + rank.floatValue()); // Обновляем ранг, если запись уже существует
+                indexRepository.save(index);
+                log.debug("Обновлен существующий индекс для леммы '{}' и страницы '{}'. Новый ранг: {}", lemmaString, page.getPath(), index.getRank());
+            }
+        }
+        log.debug("Завершение лемматизации страницы: URL='{}', Site='{}'", page.getPath(), page.getSite().getName());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Lemma getOrCreateAndIncrementLemma(String lemmaString, Site site) {
+        log.debug("Попытка получить/создать и инкрементировать лемму '{}' для сайта '{}'", lemmaString, site.getName());
+        // Пытаемся найти лемму с пессимистической блокировкой
+        log.debug("Поиск леммы '{}' с пессимистической блокировкой для сайта '{}'", lemmaString, site.getName());
+        Optional<Lemma> optionalLemma = lemmaRepository.findWithLockByLemmaAndSite(lemmaString, site);
+
+        if (optionalLemma.isPresent()) {
+            Lemma existingLemma = optionalLemma.get();
+            log.debug("Лемма '{}' (ID: {}) найдена. Текущая частота: {}. Инкрементируем.", existingLemma.getLemma(), existingLemma.getId(), existingLemma.getFrequency());
+            existingLemma.setFrequency(existingLemma.getFrequency() + 1);
+            Lemma updatedLemma = lemmaRepository.save(existingLemma);
+            log.debug("Лемма '{}' (ID: {}) обновлена. Новая частота: {}", updatedLemma.getLemma(), updatedLemma.getId(), updatedLemma.getFrequency());
+            return updatedLemma;
+        } else {
+            // Если лемма не найдена, создаем новую с частотой 1
+            log.debug("Лемма '{}' не найдена. Создаем новую лемму с частотой 1.", lemmaString);
+            Lemma newLemma = new Lemma();
+            newLemma.setLemma(lemmaString);
+            newLemma.setSite(site);
+            newLemma.setFrequency(1); // Изначальная частота 1 при первом создании
+
+            try {
+                Lemma savedLemma = lemmaRepository.save(newLemma);
+                log.debug("Новая лемма '{}' (ID: {}) успешно создана.", savedLemma.getLemma(), savedLemma.getId());
+                return savedLemma;
+            } catch (DataIntegrityViolationException e) {
+                // Если произошла конкурентная вставка, пытаемся получить уже созданную лемму с блокировкой
+                log.warn("Конкурентное создание леммы обнаружено для '{}' на сайте '{}'. Повторное получение с блокировкой.", lemmaString, site.getName());
+                return lemmaRepository.findWithLockByLemmaAndSite(lemmaString, site)
+                        .map(foundLemma -> {
+                            log.debug("После конкурентной вставки лемма '{}' (ID: {}) найдена. Текущая частота: {}. Инкрементируем.", foundLemma.getLemma(), foundLemma.getId(), foundLemma.getFrequency());
+                            foundLemma.setFrequency(foundLemma.getFrequency() + 1);
+                            Lemma updatedLemma = lemmaRepository.save(foundLemma);
+                            log.debug("Лемма '{}' (ID: {}) обновлена после конкурентной вставки. Новая частота: {}", updatedLemma.getLemma(), updatedLemma.getId(), updatedLemma.getFrequency());
+                            return updatedLemma;
+                        })
+                        .orElseThrow(() -> new IllegalStateException("Не удалось получить или создать лемму после конкурентной вставки: " + lemmaString));
+            }
         }
     }
 
