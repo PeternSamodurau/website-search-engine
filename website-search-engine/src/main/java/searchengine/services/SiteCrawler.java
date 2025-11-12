@@ -3,27 +3,32 @@ package searchengine.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
-import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import searchengine.model.Page;
 import searchengine.model.Site;
-import searchengine.model.Status; // Импортируем Status enum
+import searchengine.model.Status;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
+import java.security.cert.X509Certificate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.RecursiveAction;
-import javax.net.ssl.SSLHandshakeException; // Импортируем специфическое SSL исключение
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
 public class SiteCrawler extends RecursiveAction {
+
     private final Site site;
     private final String url;
     private final IndexingService indexingService;
@@ -32,92 +37,150 @@ public class SiteCrawler extends RecursiveAction {
     private final LemmaService lemmaService;
     private final Set<String> visitedUrls;
 
+    // Нормализованный базовый URL сайта для сравнений
+    private final String normalizedSiteUrl;
+
+    public SiteCrawler(Site site, String url, IndexingService indexingService, SiteRepository siteRepository, PageRepository pageRepository, LemmaService lemmaService, Set<String> visitedUrls) {
+        this.site = site;
+        this.url = url;
+        this.indexingService = indexingService;
+        this.siteRepository = siteRepository;
+        this.pageRepository = pageRepository;
+        this.lemmaService = lemmaService;
+        this.visitedUrls = visitedUrls;
+        this.normalizedSiteUrl = normalizeUrl(site.getUrl());
+    }
+
     @Override
     protected void compute() {
-        if (!indexingService.isIndexing() || visitedUrls.contains(url)) {
+        String normalizedCurrentUrl = normalizeUrl(url);
+        log.debug("Начинаем обход страницы: {}", normalizedCurrentUrl);
+
+        if (!indexingService.isIndexing()) {
+            log.debug("Индексация остановлена, прекращаем обход страницы: {}", normalizedCurrentUrl);
             return;
         }
-        visitedUrls.add(url);
+        if (visitedUrls.contains(normalizedCurrentUrl)) {
+            log.debug("Страница уже посещена или находится в процессе обхода: {}", normalizedCurrentUrl);
+            return;
+        }
+
+        visitedUrls.add(normalizedCurrentUrl);
 
         try {
-            Thread.sleep(150); // Небольшая задержка
-            Connection.Response response = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36")
+            Thread.sleep(150); // Задержка для снижения нагрузки на сайт
+
+            Connection.Response response = Jsoup.connect(url) // Используем оригинальный URL для запроса
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
                     .referrer("http://www.google.com")
-                    .timeout(10000) // Добавлен таймаут 10 секунд
+                    .sslSocketFactory(socketFactory()) // Игнорирование SSL ошибок
+                    .ignoreContentType(true)
+                    .ignoreHttpErrors(true)
                     .execute();
 
             int statusCode = response.statusCode();
             String content = response.body();
 
+            // Корректный расчет path относительно нормализованного URL сайта
+            String path = normalizedCurrentUrl.substring(normalizedSiteUrl.length());
+            if (path.isEmpty()) {
+                path = "/";
+            }
+
             Page page = new Page();
             page.setSite(site);
-            // ИСПРАВЛЕНО: Установка пути для корневого URL
-            String relativePath = url.replace(site.getUrl(), "");
-            if (relativePath.isEmpty()) {
-                page.setPath("/"); // Для корневого URL устанавливаем путь в "/"
-            } else {
-                page.setPath(relativePath);
-            }
+            page.setPath(path);
             page.setCode(statusCode);
             page.setContent(content);
             pageRepository.save(page);
+            log.info("Страница сохранена: {} (Статус: {})", normalizedCurrentUrl, statusCode);
 
-            if (statusCode >= 200 && statusCode < 300) {
+
+            if (statusCode < 400) {
                 lemmaService.lemmatizePage(page);
-
                 Document doc = response.parse();
                 Elements links = doc.select("a[href]");
                 Set<SiteCrawler> tasks = new HashSet<>();
 
-                for (org.jsoup.nodes.Element link : links) {
-                    String newUrl = link.attr("abs:href");
+                for (Element link : links) {
+                    String absUrl = link.attr("abs:href");
+                    String normalizedAbsUrl = normalizeUrl(absUrl);
 
-                    if (newUrl.startsWith(site.getUrl()) && !newUrl.equals(url) && !visitedUrls.contains(newUrl) && !newUrl.contains("#")) {
-                        tasks.add(new SiteCrawler(site, newUrl, indexingService, siteRepository, pageRepository, lemmaService, visitedUrls));
+                    if (isValidLink(normalizedAbsUrl)) {
+                        log.debug("Обнаружена новая ссылка: {} на странице {}", normalizedAbsUrl, normalizedCurrentUrl);
+                        tasks.add(new SiteCrawler(site, absUrl, indexingService, siteRepository, pageRepository, lemmaService, visitedUrls));
                     }
                 }
-                invokeAll(tasks);
+                if (!tasks.isEmpty()) {
+                    log.debug("Запускаем {} дочерних задач для страницы: {}", tasks.size(), normalizedCurrentUrl);
+                    invokeAll(tasks);
+                } else {
+                    log.debug("На странице {} не найдено новых ссылок для обхода.", normalizedCurrentUrl);
+                }
             } else {
-                // Логируем не-2xx статусы для дочерних страниц, но не помечаем весь сайт как FAILED, если это не корневой URL
-                log.warn("Страница {} вернула статус {}. Не будет проиндексирована.", url, statusCode);
+                log.warn("Страница {} вернула код состояния {}. Контент сохранен, но не лемматизирован и не обследован на ссылки.", normalizedCurrentUrl, statusCode);
             }
-        } catch (HttpStatusException e) {
-            log.error("Ошибка HTTP при обходе страницы {}: Статус {}, Сообщение: {}", url, e.getStatusCode(), e.getMessage());
 
-            if (url.equals(site.getUrl())) { // Если это корневой URL сайта
-                site.setStatus(Status.FAILED);
-                site.setLastError("Ошибка HTTP при доступе к главной странице: " + e.getStatusCode() + " " + e.getMessage());
-                siteRepository.save(site);
-            }
-        } catch (SSLHandshakeException e) {
-            log.error("Ошибка SSL при обходе страницы {}: {}", url, e.getMessage());
-            if (url.equals(site.getUrl())) { // Если это корневой URL сайта
-                site.setStatus(Status.FAILED);
-                site.setLastError("Ошибка SSL-сертификата при доступе к главной странице: " + e.getMessage());
-                siteRepository.save(site);
-            }
-        } catch (SocketTimeoutException e) {
-            log.error("Таймаут при обходе страницы {}: {}", url, e.getMessage());
-            if (url.equals(site.getUrl())) { // Если это корневой URL сайта
-                site.setStatus(Status.FAILED);
-                site.setLastError("Таймаут при доступе к главной странице: " + e.getMessage());
-                siteRepository.save(site);
-            }
+            updateSiteStatusTime();
+
         } catch (IOException e) {
-            log.error("Ошибка ввода-вывода при обходе страницы {}: {}", url, e.getMessage());
-            if (url.equals(site.getUrl())) { // Если это корневой URL сайта
-                site.setStatus(Status.FAILED);
-                site.setLastError("Ошибка ввода-вывода при доступе к главной странице: " + e.getMessage());
-                siteRepository.save(site);
-            }
+            handleError("Ошибка ввода-вывода при обходе страницы " + normalizedCurrentUrl + ": " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            handleError("Обход страницы " + normalizedCurrentUrl + " прерван.");
         } catch (Exception e) {
-            log.error("Неизвестная ошибка при обходе страницы {}: {}", url, e.getMessage());
-            if (url.equals(site.getUrl())) { // Если это корневой URL сайта
-                site.setStatus(Status.FAILED);
-                site.setLastError("Неизвестная ошибка при доступе к главной странице: " + e.getMessage());
-                siteRepository.save(site);
+            log.error("Неизвестная ошибка при обходе страницы " + normalizedCurrentUrl, e);
+            handleError("Неизвестная ошибка: " + e.getMessage());
+        }
+    }
+
+    private boolean isValidLink(String link) {
+        return link.startsWith(normalizedSiteUrl) && // Сравниваем с нормализованным URL сайта
+                !link.contains("#") &&
+                !visitedUrls.contains(link) && // Проверяем нормализованный URL
+                !link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|zip|rar|exe|mp3|mp4|avi)$");
+    }
+
+    private void updateSiteStatusTime() {
+        site.setStatusTime(LocalDateTime.now());
+        siteRepository.save(site);
+    }
+
+    private void handleError(String errorMessage) {
+        log.error(errorMessage);
+        site.setLastError(errorMessage);
+        site.setStatus(Status.FAILED);
+        siteRepository.save(site);
+    }
+
+    private String normalizeUrl(String inputUrl) {
+        String normalized = inputUrl.toLowerCase();
+        // Удаляем "www."
+        normalized = normalized.replace("://www.", "://");
+        // Удаляем конечный слэш, если это не корень сайта
+        if (normalized.endsWith("/") && !normalized.equals(inputUrl.substring(0, inputUrl.indexOf("://") + 3))) {
+            normalized = normalized.substring(0, normalized.length() - 1);
+        }
+        return normalized;
+    }
+
+    private static SSLSocketFactory socketFactory() {
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
             }
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            }
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            }
+        }};
+
+        try {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            return sslContext.getSocketFactory();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create a SSL socket factory", e);
         }
     }
 }

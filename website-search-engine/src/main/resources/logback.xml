@@ -19,7 +19,7 @@
     </appender>
 
     <logger name="searchengine" level="INFO"/>
-    <logger name="searchengine.services.SiteCrawler" level="INFO"/> <!-- Уровень логирования возвращен на INFO -->
+    <logger name="searchengine.services.SiteCrawler" level="DEBUG"/> <!-- Уровень логирования возвращен на INFO -->
     <logger name="org.springframework.transaction" level="INFO"/>
     <logger name="org.hibernate.SQL" level="INFO"/>
     <logger name="org.hibernate.type.descriptor.sql" level="INFO"/>

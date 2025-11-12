@@ -170,3 +170,376 @@
 2025-11-12 14:17:40.393 INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
 2025-11-12 14:17:40.396 INFO  s.WebsiteSearchEngineApplication - ==================================================================
 2025-11-12 14:17:40.420 INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 15.59 seconds (process running for 17.739)
+2025-11-12 15:08:57.519 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-12 15:08:57.556 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-11-12 15:08:57.569 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-11-12 15:09:46.987 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-11-12 15:09:47.120 INFO  s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
+2025-11-12 15:09:47.129 INFO  s.WebsiteSearchEngineApplication - The following 1 profile is active: "init"
+2025-11-12 15:09:49.211 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-12 15:09:49.375 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 142 ms. Found 4 JPA repository interfaces.
+2025-11-12 15:09:50.702 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8081 (http)
+2025-11-12 15:09:50.723 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-11-12 15:09:50.729 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-12 15:09:50.731 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2025-11-12 15:09:50.930 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-11-12 15:09:50.937 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3686 ms
+2025-11-12 15:09:51.160 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-11-12 15:09:51.474 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@6d6bc158
+2025-11-12 15:09:51.483 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-11-12 15:09:51.762 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-12 15:09:51.918 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.2.24.Final
+2025-11-12 15:09:51.924 INFO  org.hibernate.cfg.Environment - HHH000406: Using bytecode reflection optimizer
+2025-11-12 15:09:52.625 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-12 15:09:54.895 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-12 15:09:55.058 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-12 15:09:55.855 INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-12 15:09:57.274 INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов для 'init' профиля...
+2025-11-12 15:09:57.542 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: Lutheran Cathedral
+2025-11-12 15:09:58.344 INFO  s.init.StatisticsServiceInitImpl - Сайт 'Lutheran Cathedral' доступен. Статус: INDEXING
+2025-11-12 15:09:58.472 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: ipfran
+2025-11-12 15:09:59.178 INFO  s.init.StatisticsServiceInitImpl - Сайт 'ipfran' доступен. Статус: INDEXING
+2025-11-12 15:09:59.209 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: radiomv
+2025-11-12 15:09:59.265 INFO  s.init.StatisticsServiceInitImpl - Сайт 'radiomv' доступен. Статус: INDEXING
+2025-11-12 15:09:59.276 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: dombulgakova
+2025-11-12 15:09:59.410 WARN  s.init.StatisticsServiceInitImpl - Сайт 'dombulgakova' недоступен. Статус: FAILED
+2025-11-12 15:09:59.417 INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов завершено.
+2025-11-12 15:10:00.113 INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-11-12 15:10:01.764 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-11-12 15:10:01.841 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8081 (http) with context path ''
+2025-11-12 15:10:01.848 INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-12 15:10:01.850 INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
+2025-11-12 15:10:01.853 INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
+2025-11-12 15:10:01.855 INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
+2025-11-12 15:10:01.858 INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-12 15:10:01.893 INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 15.571 seconds (process running for 17.518)
+2025-11-12 15:36:18.063 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-12 15:36:18.077 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-11-12 15:36:18.096 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 17 ms
+2025-11-12 15:36:20.840 INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-11-12 15:36:20.868 INFO  s.init.StatisticsServiceInitImpl - Запрос на получение статистики для 'init' профиля
+2025-11-12 15:36:21.835 INFO  s.init.StatisticsServiceInitImpl - Статистика для 'init' профиля успешно собрана. Всего сайтов: 4, страниц: 0, лемм: 0
+2025-11-12 15:36:33.798 INFO  s.controllers.ApiController - Получен запрос на запуск индексации
+2025-11-12 15:36:33.799 INFO  s.services.IndexingServiceImpl - Запуск процесса индексации
+2025-11-12 15:36:34.005 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: Lutheran Cathedral
+2025-11-12 15:36:34.028 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: Lutheran Cathedral
+2025-11-12 15:36:35.021 WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Error: 0, SQLState: 42601
+2025-11-12 15:36:35.023 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - ERROR: syntax error at or near "DUPLICATE"
+  Position: 70
+2025-11-12 15:36:35.060 ERROR searchengine.services.SiteCrawler - Неизвестная ошибка при обходе страницы https://www.lutherancathedral.ru/: JDBC exception executing SQL [INSERT INTO lemma (lemma, site_id, frequency) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE frequency = frequency + ?] [ERROR: syntax error at or near "DUPLICATE"
+  Position: 70] [n/a]; SQL [n/a]
+2025-11-12 15:36:35.124 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: ipfran
+2025-11-12 15:36:35.142 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: ipfran
+2025-11-12 15:36:36.171 WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Error: 0, SQLState: 42601
+2025-11-12 15:36:36.174 ERROR o.h.e.jdbc.spi.SqlExceptionHelper - ERROR: syntax error at or near "DUPLICATE"
+  Position: 70
+2025-11-12 15:36:36.181 ERROR searchengine.services.SiteCrawler - Неизвестная ошибка при обходе страницы https://ipfran.ru/: JDBC exception executing SQL [INSERT INTO lemma (lemma, site_id, frequency) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE frequency = frequency + ?] [ERROR: syntax error at or near "DUPLICATE"
+  Position: 70] [n/a]; SQL [n/a]
+2025-11-12 15:36:36.243 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: radiomv
+2025-11-12 15:36:36.265 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: radiomv
+2025-11-12 15:36:36.556 ERROR searchengine.services.SiteCrawler - Ошибка SSL при обходе страницы http://radiomv.ru/: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+2025-11-12 15:36:36.606 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: dombulgakova
+2025-11-12 15:36:36.623 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: dombulgakova
+2025-11-12 15:36:36.986 ERROR searchengine.services.SiteCrawler - Ошибка HTTP при обходе страницы https://dombulgakova.ru/: Статус 403, Сообщение: HTTP error fetching URL. Status=403, URL=[https://dombulgakova.ru/]
+2025-11-12 15:36:37.010 INFO  s.services.IndexingServiceImpl - Процесс индексации ВСЕХ сайтов завершен.
+2025-11-12 15:37:04.207 INFO  s.controllers.ApiController - Получен запрос на остановку индексации
+2025-11-12 15:37:04.629 WARN  s.services.IndexingServiceImpl - Попытка остановить индексацию, когда она не запущена
+2025-11-12 15:37:25.170 INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-11-12 15:37:25.178 INFO  s.init.StatisticsServiceInitImpl - Запрос на получение статистики для 'init' профиля
+2025-11-12 15:37:25.302 INFO  s.init.StatisticsServiceInitImpl - Статистика для 'init' профиля успешно собрана. Всего сайтов: 4, страниц: 2, лемм: 0
+2025-11-12 15:39:56.727 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-12 15:39:56.737 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-11-12 15:39:56.760 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-11-12 15:40:58.897 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-11-12 15:40:59.090 INFO  s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
+2025-11-12 15:40:59.097 INFO  s.WebsiteSearchEngineApplication - The following 1 profile is active: "init"
+2025-11-12 15:41:02.967 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-12 15:41:03.410 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 373 ms. Found 4 JPA repository interfaces.
+2025-11-12 15:41:05.593 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8081 (http)
+2025-11-12 15:41:05.621 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-11-12 15:41:05.631 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-12 15:41:05.638 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2025-11-12 15:41:05.983 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-11-12 15:41:05.990 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 6713 ms
+2025-11-12 15:41:06.438 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-11-12 15:41:06.832 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@677dbd89
+2025-11-12 15:41:06.846 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-11-12 15:41:07.395 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-12 15:41:07.599 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.2.24.Final
+2025-11-12 15:41:07.613 INFO  org.hibernate.cfg.Environment - HHH000406: Using bytecode reflection optimizer
+2025-11-12 15:41:08.541 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-12 15:41:11.693 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-12 15:41:11.894 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-12 15:41:13.009 INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-12 15:41:15.639 INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов для 'init' профиля...
+2025-11-12 15:41:16.118 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: Lutheran Cathedral
+2025-11-12 15:41:17.610 INFO  s.init.StatisticsServiceInitImpl - Сайт 'Lutheran Cathedral' доступен. Статус: INDEXING
+2025-11-12 15:41:17.800 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: ipfran
+2025-11-12 15:41:18.536 INFO  s.init.StatisticsServiceInitImpl - Сайт 'ipfran' доступен. Статус: INDEXING
+2025-11-12 15:41:18.554 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: radiomv
+2025-11-12 15:41:18.600 INFO  s.init.StatisticsServiceInitImpl - Сайт 'radiomv' доступен. Статус: INDEXING
+2025-11-12 15:41:18.616 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: dombulgakova
+2025-11-12 15:41:18.726 WARN  s.init.StatisticsServiceInitImpl - Сайт 'dombulgakova' недоступен. Статус: FAILED
+2025-11-12 15:41:18.734 INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов завершено.
+2025-11-12 15:41:19.903 INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-11-12 15:41:22.309 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-11-12 15:41:22.391 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8081 (http) with context path ''
+2025-11-12 15:41:22.398 INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-12 15:41:22.399 INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
+2025-11-12 15:41:22.401 INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
+2025-11-12 15:41:22.402 INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
+2025-11-12 15:41:22.403 INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-12 15:41:22.433 INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 24.776 seconds (process running for 28.218)
+2025-11-12 15:41:27.955 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-12 15:41:27.959 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-11-12 15:41:27.971 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2025-11-12 15:41:29.971 INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-11-12 15:41:29.988 INFO  s.init.StatisticsServiceInitImpl - Запрос на получение статистики для 'init' профиля
+2025-11-12 15:41:30.555 INFO  s.init.StatisticsServiceInitImpl - Статистика для 'init' профиля успешно собрана. Всего сайтов: 4, страниц: 0, лемм: 0
+2025-11-12 15:41:37.522 INFO  s.controllers.ApiController - Получен запрос на запуск индексации
+2025-11-12 15:41:37.525 INFO  s.services.IndexingServiceImpl - Запуск процесса индексации
+2025-11-12 15:41:37.738 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: Lutheran Cathedral
+2025-11-12 15:41:37.760 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: Lutheran Cathedral
+2025-11-12 15:41:40.494 INFO  s.services.IndexingServiceImpl - Индексация сайта 'Lutheran Cathedral' завершена.
+2025-11-12 15:41:40.525 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: ipfran
+2025-11-12 15:41:40.538 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: ipfran
+2025-11-12 15:41:50.297 INFO  s.services.IndexingServiceImpl - Индексация сайта 'ipfran' завершена.
+2025-11-12 15:41:50.316 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: radiomv
+2025-11-12 15:41:50.326 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: radiomv
+2025-11-12 15:41:50.621 ERROR searchengine.services.SiteCrawler - Ошибка SSL при обходе страницы http://radiomv.ru/: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+2025-11-12 15:41:50.658 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: dombulgakova
+2025-11-12 15:41:50.669 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: dombulgakova
+2025-11-12 15:41:50.972 ERROR searchengine.services.SiteCrawler - Ошибка HTTP при обходе страницы https://dombulgakova.ru/: Статус 403, Сообщение: HTTP error fetching URL. Status=403, URL=[https://dombulgakova.ru/]
+2025-11-12 15:41:50.992 INFO  s.services.IndexingServiceImpl - Процесс индексации ВСЕХ сайтов завершен.
+2025-11-12 15:45:04.128 INFO  s.controllers.ApiController - Получен запрос на остановку индексации
+2025-11-12 15:45:04.130 WARN  s.services.IndexingServiceImpl - Попытка остановить индексацию, когда она не запущена
+2025-11-12 15:45:06.123 INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-11-12 15:45:06.131 INFO  s.init.StatisticsServiceInitImpl - Запрос на получение статистики для 'init' профиля
+2025-11-12 15:45:06.256 INFO  s.init.StatisticsServiceInitImpl - Статистика для 'init' профиля успешно собрана. Всего сайтов: 4, страниц: 3, лемм: 490
+2025-11-12 15:46:32.719 INFO  s.controllers.ApiController - Получен запрос на индексацию страницы: https://www.ipfran.ru/conferences
+2025-11-12 15:46:32.722 INFO  s.services.IndexingServiceImpl - Запрос на индексацию отдельной страницы: https://www.ipfran.ru/conferences
+2025-11-12 15:46:35.653 INFO  s.services.IndexingServiceImpl - Страница https://www.ipfran.ru/conferences успешно проиндексирована.
+2025-11-12 15:46:47.261 INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-11-12 15:46:47.264 INFO  s.init.StatisticsServiceInitImpl - Запрос на получение статистики для 'init' профиля
+2025-11-12 15:46:47.350 INFO  s.init.StatisticsServiceInitImpl - Статистика для 'init' профиля успешно собрана. Всего сайтов: 4, страниц: 4, лемм: 564
+2025-11-12 15:48:58.658 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-12 15:48:58.666 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-11-12 15:48:58.682 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-11-12 15:49:57.902 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-11-12 15:49:58.198 INFO  s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
+2025-11-12 15:49:58.205 INFO  s.WebsiteSearchEngineApplication - The following 1 profile is active: "init"
+2025-11-12 15:50:01.665 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-12 15:50:02.012 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 302 ms. Found 4 JPA repository interfaces.
+2025-11-12 15:50:04.094 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8081 (http)
+2025-11-12 15:50:04.125 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-11-12 15:50:04.135 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-12 15:50:04.139 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2025-11-12 15:50:04.453 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-11-12 15:50:04.467 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 6011 ms
+2025-11-12 15:50:04.797 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-11-12 15:50:05.219 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@10027fc9
+2025-11-12 15:50:05.228 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-11-12 15:50:05.756 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-12 15:50:05.983 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.2.24.Final
+2025-11-12 15:50:05.993 INFO  org.hibernate.cfg.Environment - HHH000406: Using bytecode reflection optimizer
+2025-11-12 15:50:06.949 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-12 15:50:10.320 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-12 15:50:10.587 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-12 15:50:11.725 INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-12 15:50:13.891 INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов для 'init' профиля...
+2025-11-12 15:50:14.303 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: Lutheran Cathedral
+2025-11-12 15:50:15.220 INFO  s.init.StatisticsServiceInitImpl - Сайт 'Lutheran Cathedral' доступен. Статус: INDEXING
+2025-11-12 15:50:15.343 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: ipfran
+2025-11-12 15:50:16.066 INFO  s.init.StatisticsServiceInitImpl - Сайт 'ipfran' доступен. Статус: INDEXING
+2025-11-12 15:50:16.082 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: radiomv
+2025-11-12 15:50:16.132 INFO  s.init.StatisticsServiceInitImpl - Сайт 'radiomv' доступен. Статус: INDEXING
+2025-11-12 15:50:16.149 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: dombulgakova
+2025-11-12 15:50:16.264 WARN  s.init.StatisticsServiceInitImpl - Сайт 'dombulgakova' недоступен. Статус: FAILED
+2025-11-12 15:50:16.273 INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов завершено.
+2025-11-12 15:50:17.371 INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-11-12 15:50:19.796 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-11-12 15:50:19.860 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8081 (http) with context path ''
+2025-11-12 15:50:19.866 INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-12 15:50:19.867 INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
+2025-11-12 15:50:19.870 INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
+2025-11-12 15:50:19.872 INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
+2025-11-12 15:50:19.875 INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-12 15:50:19.900 INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 23.153 seconds (process running for 26.123)
+2025-11-12 15:50:25.827 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-12 15:50:25.839 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-11-12 15:50:25.853 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 12 ms
+2025-11-12 15:50:29.150 INFO  o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 1927 ms
+2025-11-12 15:50:50.783 INFO  s.controllers.ApiController - Получен запрос на запуск индексации
+2025-11-12 15:50:50.785 INFO  s.services.IndexingServiceImpl - Запуск процесса индексации
+2025-11-12 15:50:51.027 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: Lutheran Cathedral
+2025-11-12 15:50:51.055 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: Lutheran Cathedral
+2025-11-12 15:50:54.076 INFO  s.services.IndexingServiceImpl - Индексация сайта 'Lutheran Cathedral' завершена.
+2025-11-12 15:50:54.124 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: ipfran
+2025-11-12 15:50:54.144 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: ipfran
+2025-11-12 15:51:04.773 INFO  s.services.IndexingServiceImpl - Индексация сайта 'ipfran' завершена.
+2025-11-12 15:51:04.789 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: radiomv
+2025-11-12 15:51:04.805 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: radiomv
+2025-11-12 15:51:08.160 INFO  s.services.IndexingServiceImpl - Индексация сайта 'radiomv' завершена.
+2025-11-12 15:51:08.184 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: dombulgakova
+2025-11-12 15:51:08.196 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: dombulgakova
+2025-11-12 15:51:08.618 INFO  s.services.IndexingServiceImpl - Индексация сайта 'dombulgakova' завершена.
+2025-11-12 15:51:08.620 INFO  s.services.IndexingServiceImpl - Процесс индексации ВСЕХ сайтов завершен.
+2025-11-12 15:51:16.598 INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-11-12 15:51:16.607 INFO  s.init.StatisticsServiceInitImpl - Запрос на получение статистики для 'init' профиля
+2025-11-12 15:51:16.990 INFO  s.init.StatisticsServiceInitImpl - Статистика для 'init' профиля успешно собрана. Всего сайтов: 4, страниц: 5, лемм: 632
+2025-11-12 16:08:29.406 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-12 16:08:29.412 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-11-12 16:08:29.421 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-11-12 16:09:16.725 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-11-12 16:09:16.849 INFO  s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
+2025-11-12 16:09:16.853 INFO  s.WebsiteSearchEngineApplication - The following 1 profile is active: "init"
+2025-11-12 16:09:19.357 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-12 16:09:19.827 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 370 ms. Found 4 JPA repository interfaces.
+2025-11-12 16:09:21.207 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8081 (http)
+2025-11-12 16:09:21.226 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-11-12 16:09:21.236 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-12 16:09:21.238 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2025-11-12 16:09:21.443 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-11-12 16:09:21.447 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4487 ms
+2025-11-12 16:09:21.681 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-11-12 16:09:21.987 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7d373bcf
+2025-11-12 16:09:22.000 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-11-12 16:09:22.384 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-12 16:09:22.550 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.2.24.Final
+2025-11-12 16:09:22.558 INFO  org.hibernate.cfg.Environment - HHH000406: Using bytecode reflection optimizer
+2025-11-12 16:09:23.447 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-12 16:09:25.511 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-12 16:09:25.658 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-12 16:09:26.423 INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-12 16:09:27.742 INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов для 'init' профиля...
+2025-11-12 16:09:28.072 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: Lutheran Cathedral
+2025-11-12 16:09:28.872 INFO  s.init.StatisticsServiceInitImpl - Сайт 'Lutheran Cathedral' доступен. Статус: INDEXING
+2025-11-12 16:09:28.993 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: ipfran
+2025-11-12 16:09:29.693 INFO  s.init.StatisticsServiceInitImpl - Сайт 'ipfran' доступен. Статус: INDEXING
+2025-11-12 16:09:29.722 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: radiomv
+2025-11-12 16:09:29.774 INFO  s.init.StatisticsServiceInitImpl - Сайт 'radiomv' доступен. Статус: INDEXING
+2025-11-12 16:09:29.785 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: dombulgakova
+2025-11-12 16:09:29.889 WARN  s.init.StatisticsServiceInitImpl - Сайт 'dombulgakova' недоступен. Статус: FAILED
+2025-11-12 16:09:29.896 INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов завершено.
+2025-11-12 16:09:30.630 INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-11-12 16:09:32.110 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-11-12 16:09:32.165 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8081 (http) with context path ''
+2025-11-12 16:09:32.173 INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-12 16:09:32.175 INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
+2025-11-12 16:09:32.178 INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
+2025-11-12 16:09:32.180 INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
+2025-11-12 16:09:32.182 INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-12 16:09:32.212 INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 16.17 seconds (process running for 18.042)
+2025-11-12 16:09:47.610 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-12 16:09:47.612 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-11-12 16:09:47.619 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 6 ms
+2025-11-12 16:09:48.759 INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-11-12 16:09:48.762 INFO  s.init.StatisticsServiceInitImpl - Запрос на получение статистики для 'init' профиля
+2025-11-12 16:09:49.084 INFO  s.init.StatisticsServiceInitImpl - Статистика для 'init' профиля успешно собрана. Всего сайтов: 4, страниц: 0, лемм: 0
+2025-11-12 16:09:53.547 INFO  s.controllers.ApiController - Получен запрос на запуск индексации
+2025-11-12 16:09:53.549 INFO  s.services.IndexingServiceImpl - Запуск процесса индексации
+2025-11-12 16:09:53.768 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: Lutheran Cathedral
+2025-11-12 16:09:53.800 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: Lutheran Cathedral
+2025-11-12 16:09:54.542 INFO  searchengine.services.SiteCrawler - Страница сохранена: https://www.lutherancathedral.ru/ (Статус: 200)
+2025-11-12 16:09:55.761 INFO  s.services.IndexingServiceImpl - Индексация сайта 'Lutheran Cathedral' завершена.
+2025-11-12 16:09:55.776 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: ipfran
+2025-11-12 16:09:55.784 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: ipfran
+2025-11-12 16:09:56.670 INFO  searchengine.services.SiteCrawler - Страница сохранена: https://ipfran.ru/ (Статус: 200)
+2025-11-12 16:10:00.607 INFO  searchengine.services.SiteCrawler - Страница сохранена: https://ipfran.ru/institute/news/2021/2021-06-23-optic-impuls (Статус: 200)
+2025-11-12 16:10:03.113 INFO  s.services.IndexingServiceImpl - Индексация сайта 'ipfran' завершена.
+2025-11-12 16:10:03.124 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: radiomv
+2025-11-12 16:10:03.132 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: radiomv
+2025-11-12 16:10:04.219 INFO  searchengine.services.SiteCrawler - Страница сохранена: http://radiomv.ru/ (Статус: 200)
+2025-11-12 16:10:05.221 INFO  s.services.IndexingServiceImpl - Индексация сайта 'radiomv' завершена.
+2025-11-12 16:10:05.238 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: dombulgakova
+2025-11-12 16:10:05.248 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: dombulgakova
+2025-11-12 16:10:05.621 INFO  searchengine.services.SiteCrawler - Страница сохранена: https://dombulgakova.ru/ (Статус: 403)
+2025-11-12 16:10:05.622 WARN  searchengine.services.SiteCrawler - Страница https://dombulgakova.ru/ вернула код состояния 403. Контент сохранен, но не лемматизирован и не обследован на ссылки.
+2025-11-12 16:10:05.670 INFO  s.services.IndexingServiceImpl - Индексация сайта 'dombulgakova' завершена.
+2025-11-12 16:10:05.672 INFO  s.services.IndexingServiceImpl - Процесс индексации ВСЕХ сайтов завершен.
+2025-11-12 16:10:19.049 INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-11-12 16:10:19.052 INFO  s.init.StatisticsServiceInitImpl - Запрос на получение статистики для 'init' профиля
+2025-11-12 16:10:19.126 INFO  s.init.StatisticsServiceInitImpl - Статистика для 'init' профиля успешно собрана. Всего сайтов: 4, страниц: 5, лемм: 632
+2025-11-12 16:12:10.616 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-12 16:12:10.621 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-11-12 16:12:10.637 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-11-12 16:12:55.974 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-11-12 16:12:56.096 INFO  s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
+2025-11-12 16:12:56.099 INFO  s.WebsiteSearchEngineApplication - The following 1 profile is active: "init"
+2025-11-12 16:12:58.049 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-12 16:12:58.279 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 196 ms. Found 4 JPA repository interfaces.
+2025-11-12 16:12:59.655 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8081 (http)
+2025-11-12 16:12:59.682 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-11-12 16:12:59.692 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-12 16:12:59.696 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2025-11-12 16:12:59.956 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-11-12 16:12:59.960 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3754 ms
+2025-11-12 16:13:00.207 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-11-12 16:13:00.477 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@fff25f1
+2025-11-12 16:13:00.502 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-11-12 16:13:00.812 INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-12 16:13:00.935 INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.2.24.Final
+2025-11-12 16:13:00.942 INFO  org.hibernate.cfg.Environment - HHH000406: Using bytecode reflection optimizer
+2025-11-12 16:13:01.656 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-12 16:13:03.887 INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-12 16:13:04.050 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-12 16:13:04.906 INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-12 16:13:06.499 INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов для 'init' профиля...
+2025-11-12 16:13:07.094 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: Lutheran Cathedral
+2025-11-12 16:13:07.916 INFO  s.init.StatisticsServiceInitImpl - Сайт 'Lutheran Cathedral' доступен. Статус: INDEXING
+2025-11-12 16:13:08.022 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: ipfran
+2025-11-12 16:13:08.721 INFO  s.init.StatisticsServiceInitImpl - Сайт 'ipfran' доступен. Статус: INDEXING
+2025-11-12 16:13:08.758 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: radiomv
+2025-11-12 16:13:08.812 INFO  s.init.StatisticsServiceInitImpl - Сайт 'radiomv' доступен. Статус: INDEXING
+2025-11-12 16:13:08.824 INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: dombulgakova
+2025-11-12 16:13:08.919 WARN  s.init.StatisticsServiceInitImpl - Сайт 'dombulgakova' недоступен. Статус: FAILED
+2025-11-12 16:13:08.926 INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов завершено.
+2025-11-12 16:13:09.643 INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-11-12 16:13:11.359 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-11-12 16:13:11.428 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8081 (http) with context path ''
+2025-11-12 16:13:11.436 INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-12 16:13:11.438 INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
+2025-11-12 16:13:11.442 INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
+2025-11-12 16:13:11.443 INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
+2025-11-12 16:13:11.444 INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-12 16:13:11.484 INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 16.265 seconds (process running for 18.292)
+2025-11-12 16:13:13.707 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-11-12 16:13:13.766 INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-11-12 16:13:13.786 INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms
+2025-11-12 16:13:17.170 INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-11-12 16:13:17.395 INFO  s.init.StatisticsServiceInitImpl - Запрос на получение статистики для 'init' профиля
+2025-11-12 16:13:18.541 INFO  s.init.StatisticsServiceInitImpl - Статистика для 'init' профиля успешно собрана. Всего сайтов: 4, страниц: 0, лемм: 0
+2025-11-12 16:13:22.329 INFO  s.controllers.ApiController - Получен запрос на запуск индексации
+2025-11-12 16:13:22.331 INFO  s.services.IndexingServiceImpl - Запуск процесса индексации
+2025-11-12 16:13:22.472 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: Lutheran Cathedral
+2025-11-12 16:13:22.494 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: Lutheran Cathedral
+2025-11-12 16:13:22.502 DEBUG searchengine.services.SiteCrawler - Начинаем обход страницы: https://www.lutherancathedral.ru/
+2025-11-12 16:13:23.099 INFO  searchengine.services.SiteCrawler - Страница сохранена: https://www.lutherancathedral.ru/ (Статус: 200)
+2025-11-12 16:13:24.266 DEBUG searchengine.services.SiteCrawler - На странице https://www.lutherancathedral.ru/ не найдено новых ссылок для обхода.
+2025-11-12 16:13:24.374 INFO  s.services.IndexingServiceImpl - Индексация сайта 'Lutheran Cathedral' завершена.
+2025-11-12 16:13:24.392 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: ipfran
+2025-11-12 16:13:24.403 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: ipfran
+2025-11-12 16:13:24.405 DEBUG searchengine.services.SiteCrawler - Начинаем обход страницы: https://ipfran.ru/
+2025-11-12 16:13:25.456 INFO  searchengine.services.SiteCrawler - Страница сохранена: https://ipfran.ru/ (Статус: 200)
+2025-11-12 16:13:28.696 DEBUG searchengine.services.SiteCrawler - Обнаружена новая ссылка: https://ipfran.ru/institute/news/2021/2021-06-23-optic-impuls на странице https://ipfran.ru/
+2025-11-12 16:13:28.711 DEBUG searchengine.services.SiteCrawler - Запускаем 1 дочерних задач для страницы: https://ipfran.ru/
+2025-11-12 16:13:28.716 DEBUG searchengine.services.SiteCrawler - Начинаем обход страницы: https://ipfran.ru/institute/news/2021/2021-06-23-optic-impuls
+2025-11-12 16:13:29.493 INFO  searchengine.services.SiteCrawler - Страница сохранена: https://ipfran.ru/institute/news/2021/2021-06-23-optic-impuls (Статус: 200)
+2025-11-12 16:13:31.454 DEBUG searchengine.services.SiteCrawler - На странице https://ipfran.ru/institute/news/2021/2021-06-23-optic-impuls не найдено новых ссылок для обхода.
+2025-11-12 16:13:31.629 INFO  s.services.IndexingServiceImpl - Индексация сайта 'ipfran' завершена.
+2025-11-12 16:13:31.643 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: radiomv
+2025-11-12 16:13:31.650 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: radiomv
+2025-11-12 16:13:31.652 DEBUG searchengine.services.SiteCrawler - Начинаем обход страницы: http://radiomv.ru/
+2025-11-12 16:13:32.750 INFO  searchengine.services.SiteCrawler - Страница сохранена: http://radiomv.ru/ (Статус: 200)
+2025-11-12 16:13:33.870 DEBUG searchengine.services.SiteCrawler - На странице http://radiomv.ru/ не найдено новых ссылок для обхода.
+2025-11-12 16:13:33.910 INFO  s.services.IndexingServiceImpl - Индексация сайта 'radiomv' завершена.
+2025-11-12 16:13:33.928 INFO  s.services.IndexingServiceImpl - Очистка старых данных для сайта: dombulgakova
+2025-11-12 16:13:33.939 INFO  s.services.IndexingServiceImpl - Запуск индексации для сайта: dombulgakova
+2025-11-12 16:13:33.940 DEBUG searchengine.services.SiteCrawler - Начинаем обход страницы: https://dombulgakova.ru/
+2025-11-12 16:13:34.294 INFO  searchengine.services.SiteCrawler - Страница сохранена: https://dombulgakova.ru/ (Статус: 403)
+2025-11-12 16:13:34.295 WARN  searchengine.services.SiteCrawler - Страница https://dombulgakova.ru/ вернула код состояния 403. Контент сохранен, но не лемматизирован и не обследован на ссылки.
+2025-11-12 16:13:34.335 INFO  s.services.IndexingServiceImpl - Индексация сайта 'dombulgakova' завершена.
+2025-11-12 16:13:34.337 INFO  s.services.IndexingServiceImpl - Процесс индексации ВСЕХ сайтов завершен.
+2025-11-12 16:15:12.924 INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-11-12 16:15:12.978 INFO  s.init.StatisticsServiceInitImpl - Запрос на получение статистики для 'init' профиля
+2025-11-12 16:15:13.090 INFO  s.init.StatisticsServiceInitImpl - Статистика для 'init' профиля успешно собрана. Всего сайтов: 4, страниц: 5, лемм: 632

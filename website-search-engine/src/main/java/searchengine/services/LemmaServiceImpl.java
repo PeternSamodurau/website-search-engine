@@ -7,7 +7,6 @@ import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
 import searchengine.model.Index;
 import searchengine.model.Lemma;
 import searchengine.model.Page;
@@ -15,12 +14,7 @@ import searchengine.model.Site;
 import searchengine.repository.IndexRepository;
 import searchengine.repository.LemmaRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-
+import java.util.*;
 
 @Slf4j
 @Service
@@ -47,7 +41,6 @@ public class LemmaServiceImpl implements LemmaService {
 
                     log.debug("Обработка леммы '{}' с рангом {} для страницы '{}'", lemmaString, rank, page.getPath());
 
-                    // Вот это изменение: передаем `rank` в метод
                     Lemma lemma = this.getOrCreateAndIncrementLemma(lemmaString, site, rank);
                     log.debug("Лемма '{}' (ID: {}) получена/создана. Частота обновлена.", lemma.getLemma(), lemma.getId());
 
@@ -70,14 +63,11 @@ public class LemmaServiceImpl implements LemmaService {
         log.debug("Завершение лемматизации страницы: URL='{}', Site='{}'", page.getPath(), page.getSite().getName());
     }
 
-    // Вот это изменение: метод теперь принимает `rank`
+    // Метод не является частью интерфейса, но используется внутри класса, оставляем public
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Lemma getOrCreateAndIncrementLemma(String lemmaString, Site site, Integer rank) {
         log.debug("Вызов upsertLemma для леммы '{}' на сайте '{}' со значением {}", lemmaString, site.getName(), rank);
-
-        // И передаем `rank` в репозиторий
         lemmaRepository.upsertLemma(lemmaString, site.getId(), rank);
-
         Optional<Lemma> optionalLemma = lemmaRepository.findByLemmaAndSite(lemmaString, site);
         if (optionalLemma.isPresent()) {
             Lemma lemma = optionalLemma.get();
@@ -90,13 +80,12 @@ public class LemmaServiceImpl implements LemmaService {
     }
 
     @Override
-    public Map<String, Integer> getLemmasFromQuery(String query, Site site) {
-        String text = Jsoup.parse(query).text();
-        return collectLemmas(text);
+    public Set<String> getLemmaSet(String text) {
+        String cleanText = Jsoup.parse(text).text();
+        return collectLemmas(cleanText).keySet();
     }
 
-    @Override
-    public HashMap<String, Integer> collectLemmas(String textContent) {
+    private HashMap<String, Integer> collectLemmas(String textContent) {
         HashMap<String, Integer> lemmas = new HashMap<>();
         String[] words = arrayContainsRussianWords(textContent);
 
@@ -125,11 +114,9 @@ public class LemmaServiceImpl implements LemmaService {
         return wordBaseForms.stream().anyMatch(this::isServiceWord);
     }
 
-
     private boolean isServiceWord(String wordBase) {
         return wordBase.matches(".*\\b(ПРЕДЛ|СОЮЗ|МЕЖД|ЧАСТ)\\b.*");
     }
-
 
     private String[] arrayContainsRussianWords(String text) {
         return text.toLowerCase(Locale.ROOT)
