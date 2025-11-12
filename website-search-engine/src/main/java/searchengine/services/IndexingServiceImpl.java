@@ -2,22 +2,27 @@ package searchengine.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import searchengine.config.SiteConfig;
 import searchengine.config.SitesListConfig;
-import searchengine.model.Site;
-import searchengine.model.Status;
+import searchengine.model.*;
+import searchengine.repository.IndexRepository;
 import searchengine.repository.LemmaRepository;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +32,7 @@ public class IndexingServiceImpl implements IndexingService {
     private final SiteRepository siteRepository;
     private final PageRepository pageRepository;
     private final LemmaRepository lemmaRepository;
+    private final IndexRepository indexRepository; // Добавлена необходимая зависимость
     private final LemmaService lemmaService;
     private final SitesListConfig sites;
 
@@ -64,6 +70,7 @@ public class IndexingServiceImpl implements IndexingService {
                     List<Site> sitesToProcess = siteRepository.findAllByStatus(Status.INDEXING);
                     if (sitesToProcess.isEmpty()) {
                         log.info("Нет сайтов со статусом INDEXING для обработки. Процесс индексации завершен.");
+                        isIndexing.set(false);
                         return;
                     }
 
@@ -153,7 +160,91 @@ public class IndexingServiceImpl implements IndexingService {
 
     @Override
     public boolean indexPage(String url) {
-        log.warn("Метод indexPage в данный момент не поддерживается. Используйте полную индексацию.");
-        return false;
+        log.info("Запрос на индексацию отдельной страницы: {}", url);
+
+        Optional<SiteConfig> optionalSiteConfig = sites.getSites().stream()
+                .filter(s -> normalizeUrl(url).startsWith(normalizeUrl(s.getUrl())))
+                .findFirst();
+
+        if (optionalSiteConfig.isEmpty()) {
+            log.error("Страница {} находится за пределами сайтов, указанных в конфигурационном файле.", url);
+            return false;
+        }
+
+        SiteConfig siteConfig = optionalSiteConfig.get();
+        Site site = siteRepository.findByUrl(siteConfig.getUrl())
+                .orElseGet(() -> {
+                    Site newSite = new Site();
+                    newSite.setUrl(siteConfig.getUrl());
+                    newSite.setName(siteConfig.getName());
+                    newSite.setStatus(Status.INDEXED);
+                    newSite.setStatusTime(LocalDateTime.now());
+                    return siteRepository.save(newSite);
+                });
+
+        String path = url.substring(siteConfig.getUrl().length());
+        if (path.isEmpty()) {
+            path = "/";
+        }
+
+        pageRepository.findByPathAndSite(path, site).ifPresent(this::deletePageData);
+
+        try {
+            Connection.Response response = Jsoup.connect(url)
+                    .userAgent("HeliontSearchBot/1.0")
+                    .referrer("http://www.google.com")
+                    .execute();
+
+            int statusCode = response.statusCode();
+            String content = response.body();
+
+            Page newPage = new Page();
+            newPage.setSite(site);
+            newPage.setPath(path);
+            newPage.setCode(statusCode);
+            newPage.setContent(content);
+            pageRepository.save(newPage);
+
+            if (statusCode < 400) {
+                lemmaService.lemmatizePage(newPage);
+                log.info("Страница {} успешно проиндексирована.", url);
+            } else {
+                log.warn("Страница {} вернула код состояния {}. Контент сохранен, но не лемматизирован.", url, statusCode);
+            }
+
+            site.setStatusTime(LocalDateTime.now());
+            siteRepository.save(site);
+
+            return true;
+
+        } catch (IOException e) {
+            log.error("Ошибка при индексации страницы " + url, e);
+            site.setStatus(Status.FAILED);
+            site.setLastError("Не удалось проиндексировать страницу: " + url + ". Ошибка: " + e.getMessage());
+            site.setStatusTime(LocalDateTime.now());
+            siteRepository.save(site);
+            return false;
+        }
+    }
+
+    @Transactional
+    private void deletePageData(Page page) {
+        log.info("Страница {} уже была проиндексирована. Удаление старых данных.", page.getPath());
+        List<Index> indices = indexRepository.findByPage(page);
+
+        List<Lemma> lemmasToUpdate = indices.stream()
+                .map(Index::getLemma)
+                .peek(lemma -> lemma.setFrequency(lemma.getFrequency() - 1))
+                .collect(Collectors.toList());
+
+        if (!lemmasToUpdate.isEmpty()) {
+            lemmaRepository.saveAll(lemmasToUpdate);
+        }
+        indexRepository.deleteAll(indices);
+        pageRepository.delete(page);
+    }
+
+    private String normalizeUrl(String url) {
+        return url.replace("://www.", "://");
     }
 }
