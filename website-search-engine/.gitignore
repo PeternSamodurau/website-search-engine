@@ -38,3 +38,4 @@ out/
 !/docker/docker-log.txt
 !/logs/app.log
 !/final_project/
+
