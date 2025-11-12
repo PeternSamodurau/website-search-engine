@@ -321,3 +321,6 @@
 2025-11-11 18:52:07.057 INFO  s.controllers.ApiController - Получен запрос на статистику
 2025-11-11 18:52:07.059 INFO  s.init.StatisticsServiceInitImpl - Запрос на получение статистики для 'init' профиля
 2025-11-11 18:52:07.139 INFO  s.init.StatisticsServiceInitImpl - Статистика для 'init' профиля успешно собрана. Всего сайтов: 4, страниц: 3, лемм: 478
+2025-11-11 18:54:15.301 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-11 18:54:15.311 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-11-11 18:54:15.338 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
