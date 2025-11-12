@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.morphology.LuceneMorphology;
 import org.jsoup.Jsoup;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
@@ -32,7 +30,6 @@ public class LemmaServiceImpl implements LemmaService {
     private final LuceneMorphology luceneMorphology;
     private final LemmaRepository lemmaRepository;
     private final IndexRepository indexRepository;
-    // private final LemmaServiceImpl self; // Удалено для устранения циклической зависимости
 
     @Override
     @Transactional
@@ -42,20 +39,18 @@ public class LemmaServiceImpl implements LemmaService {
         String text = Jsoup.parse(page.getContent()).text();
         Map<String, Integer> lemmas = collectLemmas(text);
 
-        // Сортируем леммы по алфавиту перед обработкой
         lemmas.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey()) // Сортировка по строке леммы (ключу)
+                .sorted(Map.Entry.comparingByKey())
                 .forEach(entry -> {
                     String lemmaString = entry.getKey();
                     Integer rank = entry.getValue();
 
                     log.debug("Обработка леммы '{}' с рангом {} для страницы '{}'", lemmaString, rank, page.getPath());
 
-                    // Используем новый UPSERT метод для атомарного получения/создания и инкремента леммы
-                    Lemma lemma = this.getOrCreateAndIncrementLemma(lemmaString, site);
-                    log.debug("Лемма '{}' (ID: {}) получена/создана и частота инкрементирована. Частота: {}", lemma.getLemma(), lemma.getId(), lemma.getFrequency());
+                    // Вот это изменение: передаем `rank` в метод
+                    Lemma lemma = this.getOrCreateAndIncrementLemma(lemmaString, site, rank);
+                    log.debug("Лемма '{}' (ID: {}) получена/создана. Частота обновлена.", lemma.getLemma(), lemma.getId());
 
-                    // Создаем или обновляем запись в таблице index
                     Optional<Index> optionalIndex = indexRepository.findByLemmaAndPage(lemma, page);
                     if (optionalIndex.isEmpty()) {
                         Index index = new Index();
@@ -67,29 +62,28 @@ public class LemmaServiceImpl implements LemmaService {
                         log.debug("Создан новый индекс для леммы '{}' и страницы '{}'", lemmaString, page.getPath());
                     } else {
                         Index index = optionalIndex.get();
-                        index.setRank(index.getRank() + rank.floatValue()); // Обновляем ранг, если запись уже существует
+                        index.setRank(index.getRank() + rank.floatValue());
                         indexRepository.save(index);
                         log.debug("Обновлен существующий индекс для леммы '{}' и страницы '{}'. Новый ранг: {}", lemmaString, page.getPath(), index.getRank());
                     }
-                }); // Конец forEach для отсортированных лемм
+                });
         log.debug("Завершение лемматизации страницы: URL='{}', Site='{}'", page.getPath(), page.getSite().getName());
     }
 
+    // Вот это изменение: метод теперь принимает `rank`
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Lemma getOrCreateAndIncrementLemma(String lemmaString, Site site) {
-        log.debug("Вызов upsertLemma для леммы '{}' на сайте '{}'", lemmaString, site.getName());
-        // Выполняем UPSERT операцию. Она вернет количество затронутых строк.
-        lemmaRepository.upsertLemma(lemmaString, site.getId());
+    public Lemma getOrCreateAndIncrementLemma(String lemmaString, Site site, Integer rank) {
+        log.debug("Вызов upsertLemma для леммы '{}' на сайте '{}' со значением {}", lemmaString, site.getName(), rank);
 
-        // После UPSERT, получаем сущность Lemma из базы данных, чтобы убедиться, что у нее есть ID
+        // И передаем `rank` в репозиторий
+        lemmaRepository.upsertLemma(lemmaString, site.getId(), rank);
+
         Optional<Lemma> optionalLemma = lemmaRepository.findByLemmaAndSite(lemmaString, site);
         if (optionalLemma.isPresent()) {
             Lemma lemma = optionalLemma.get();
-            log.debug("Лемма '{}' (ID: {}) получена после upsert. Частота: {}", lemma.getLemma(), lemma.getId(), lemma.getFrequency());
+            log.debug("Лемма '{}' (ID: {}) получена после upsert. Текущая частота: {}", lemma.getLemma(), lemma.getId(), lemma.getFrequency());
             return lemma;
         } else {
-            // Это должно быть очень редким случаем, если UPSERT был успешным.
-            // Возможно, стоит бросить исключение или обработать как ошибку.
             log.error("Не удалось найти лемму '{}' для сайта '{}' после успешного upsert.", lemmaString, site.getName());
             throw new IllegalStateException("Lemma not found after upsert operation.");
         }
@@ -107,7 +101,7 @@ public class LemmaServiceImpl implements LemmaService {
         String[] words = arrayContainsRussianWords(textContent);
 
         for (String word : words) {
-            if (word.isBlank() || word.length() <= 2) { // Игнорируем короткие слова
+            if (word.isBlank() || word.length() <= 2) {
                 continue;
             }
 
@@ -133,7 +127,6 @@ public class LemmaServiceImpl implements LemmaService {
 
 
     private boolean isServiceWord(String wordBase) {
-        // Более строгая проверка, чтобы избежать ложных срабатываний
         return wordBase.matches(".*\\b(ПРЕДЛ|СОЮЗ|МЕЖД|ЧАСТ)\\b.*");
     }
 
