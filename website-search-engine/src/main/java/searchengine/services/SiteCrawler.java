@@ -7,15 +7,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import searchengine.config.CrawlerConfig; // ДОБАВЛЕНО
 import searchengine.model.Page;
 import searchengine.model.Site;
-import searchengine.model.Status;
+import searchengine.model.Status; // ДОБАВЛЕНО
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
+import java.time.LocalDateTime; // ДОБАВЛЕНО
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.RecursiveAction;
@@ -31,56 +32,36 @@ public class SiteCrawler extends RecursiveAction {
     private final PageRepository pageRepository;
     private final LemmaService lemmaService;
     private final Set<String> visitedUrls;
-
-    // Нормализованный базовый URL сайта для сравнений
-    private final String normalizedSiteUrl;
-
-    public SiteCrawler(Site site, String url, IndexingService indexingService, SiteRepository siteRepository, PageRepository pageRepository, LemmaService lemmaService, Set<String> visitedUrls) {
-        this.site = site;
-        this.url = url;
-        this.indexingService = indexingService;
-        this.siteRepository = siteRepository;
-        this.pageRepository = pageRepository;
-        this.lemmaService = lemmaService;
-        this.visitedUrls = visitedUrls;
-        this.normalizedSiteUrl = normalizeUrl(site.getUrl());
-    }
+    private final CrawlerConfig crawlerConfig; // ДОБАВЛЕНО
 
     @Override
     protected void compute() {
-        if (Thread.currentThread().isInterrupted() || !indexingService.isIndexing()) {
-            log.debug("Индексация остановлена, прекращаем обход.");
+        if (!indexingService.isIndexing() || Thread.currentThread().isInterrupted()) {
             return;
         }
 
-        String normalizedCurrentUrl = normalizeUrl(url);
-        log.debug("Начинаем обход страницы: {}", normalizedCurrentUrl);
-
-        if (visitedUrls.contains(normalizedCurrentUrl)) {
-            log.debug("Страница уже посещена или находится в процессе обхода: {}", normalizedCurrentUrl);
+        if (!visitedUrls.add(url)) {
             return;
         }
 
-        visitedUrls.add(normalizedCurrentUrl);
+        log.debug("Обход страницы: {}", url);
 
         try {
-            Thread.sleep(150);
-
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("Обход страницы " + normalizedCurrentUrl + " прерван перед сетевым запросом.");
-            }
+            Thread.sleep(crawlerConfig.getDelay()); // ИСПОЛЬЗУЕМ ЗНАЧЕНИЕ ИЗ КОНФИГА
 
             Connection.Response response = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
-                    .referrer("http://www.google.com")
+                    // ИЗМЕНЕНО: Используем значения из конфигурации
+                    .userAgent(crawlerConfig.getUserAgent())
+                    .referrer(crawlerConfig.getReferrer())
                     .ignoreContentType(true)
                     .ignoreHttpErrors(true)
                     .execute();
 
             int statusCode = response.statusCode();
-            String content = response.body();
+            String content = (response.contentType() != null && response.contentType().startsWith("text/html"))
+                    ? response.body() : "";
 
-            String path = normalizedCurrentUrl.substring(normalizedSiteUrl.length());
+            String path = url.replaceFirst(site.getUrl(), "");
             if (path.isEmpty()) {
                 path = "/";
             }
@@ -91,65 +72,63 @@ public class SiteCrawler extends RecursiveAction {
             page.setCode(statusCode);
             page.setContent(content);
             pageRepository.save(page);
-            log.info("Страница сохранена: {} (Статус: {})", normalizedCurrentUrl, statusCode);
+            log.info("Сохранена страница: {} (Статус: {})", url, statusCode);
 
-            if (statusCode < 400) {
+            if (statusCode < 400 && !content.isEmpty()) {
                 lemmaService.lemmatizePage(page);
+
                 Document doc = response.parse();
                 Elements links = doc.select("a[href]");
-                Set<SiteCrawler> tasks = new HashSet<>();
+                List<SiteCrawler> tasks = new ArrayList<>();
 
                 for (Element link : links) {
                     String absUrl = link.attr("abs:href");
-                    String normalizedAbsUrl = normalizeUrl(absUrl);
-
-                    if (isValidLink(normalizedAbsUrl)) {
-                        tasks.add(new SiteCrawler(site, absUrl, indexingService, siteRepository, pageRepository, lemmaService, visitedUrls));
+                    if (isValidLink(absUrl)) {
+                        // ИЗМЕНЕНО: Передаем crawlerConfig в дочернюю задачу
+                        tasks.add(new SiteCrawler(site, absUrl, indexingService, siteRepository, pageRepository, lemmaService, visitedUrls, crawlerConfig));
                     }
                 }
+
                 if (!tasks.isEmpty()) {
                     invokeAll(tasks);
                 }
             }
 
-        } catch (IOException e) {
-            handleError("Ошибка ввода-вывода при обходе страницы " + normalizedCurrentUrl + ": " + e.getMessage());
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | CancellationException e) {
             Thread.currentThread().interrupt();
-            log.warn("Обход страницы " + normalizedCurrentUrl + " прерван.");
-        } catch (CancellationException e) {
-            // ИСПРАВЛЕНО: Ловим CancellationException, чтобы он не попадал в общий Exception
-            Thread.currentThread().interrupt();
-            log.warn("Обход страницы " + normalizedCurrentUrl + " отменен (CancellationException).");
+            log.warn("Обход страницы {} прерван.", url);
         } catch (Exception e) {
-            log.error("Неизвестная ошибка при обходе страницы " + normalizedCurrentUrl, e);
-            handleError("Неизвестная ошибка: " + e.getMessage());
+            // ИЗМЕНЕНО: Вызываем локальный метод handleError
+            handleError("Ошибка при обходе страницы " + url + ": " + e.getMessage());
         }
     }
 
     private boolean isValidLink(String link) {
-        return link.startsWith(normalizedSiteUrl) &&
-                !link.contains("#") &&
-                !visitedUrls.contains(link) &&
-                !link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|zip|rar|exe|mp3|mp4|avi|ppt|pptx)$");
+        if (link == null || link.isBlank()) {
+            return false;
+        }
+        String normalizedLink = normalizeUrl(link);
+        if (!normalizedLink.startsWith(normalizeUrl(site.getUrl()))) {
+            return false;
+        }
+        if (normalizedLink.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|zip|rar|exe|mp3|mp4|avi|ppt|pptx)$")) {
+            return false;
+        }
+        return !normalizedLink.contains("#");
     }
 
+    private String normalizeUrl(String url) {
+        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+    }
+
+    // ДОБАВЛЕН ЛОКАЛЬНЫЙ МЕТОД ДЛЯ ОБРАБОТКИ ОШИБОК
     private void handleError(String errorMessage) {
-        if (indexingService.isIndexing()) {
-            log.error(errorMessage);
-            site.setLastError(errorMessage);
-            site.setStatus(Status.FAILED);
-            siteRepository.save(site);
-        }
-    }
-
-    private String normalizeUrl(String inputUrl) {
-        if (inputUrl == null) return "";
-        String normalized = inputUrl.toLowerCase();
-        normalized = normalized.replace("://www.", "://");
-        if (normalized.endsWith("/")) {
-            normalized = normalized.substring(0, normalized.length() - 1);
-        }
-        return normalized;
+        log.error(errorMessage);
+        siteRepository.findById(site.getId()).ifPresent(s -> {
+            s.setStatus(Status.FAILED);
+            s.setLastError(errorMessage);
+            s.setStatusTime(LocalDateTime.now());
+            siteRepository.save(s);
+        });
     }
 }

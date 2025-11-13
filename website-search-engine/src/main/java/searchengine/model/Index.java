@@ -19,7 +19,7 @@ public class Index {
     @JoinColumn(name = "page_id", nullable = false)
     private Page page;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY) // ИЗМЕНЕНО С EAGER НА LAZY
     @JoinColumn(name = "lemma_id", nullable = false)
     private Lemma lemma;
 

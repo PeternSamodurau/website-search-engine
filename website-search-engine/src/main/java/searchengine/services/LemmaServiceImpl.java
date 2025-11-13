@@ -31,6 +31,9 @@ public class LemmaServiceImpl implements LemmaService {
     @Override
     @Transactional
     public void lemmatizePage(Page page) {
+        // --- ЛОГ НАЧАЛА ---
+        log.info("Начало лемматизации для страницы: {}", page.getPath());
+
         Site site = page.getSite();
         if (site == null) {
             log.error("У страницы с ID {} отсутствует сайт. Лемматизация невозможна.", page.getId());
@@ -44,6 +47,8 @@ public class LemmaServiceImpl implements LemmaService {
             Map<String, Integer> lemmasFromText = collectLemmas(text);
 
             if (lemmasFromText.isEmpty()) {
+                // --- ЛОГ, ЕСЛИ ЛЕММ НЕ НАЙДЕНО ---
+                log.warn("Для страницы {} не найдено подходящих лемм.", page.getPath());
                 return;
             }
 
@@ -80,6 +85,8 @@ public class LemmaServiceImpl implements LemmaService {
                 index.setRank(rank.floatValue());
                 indexRepository.save(index);
             }
+            // --- ЛОГ ЗАВЕРШЕНИЯ ---
+            log.info("Завершено. Найдено и обработано {} уникальных лемм для страницы {}", lemmasFromText.size(), page.getPath());
         }
     }
 

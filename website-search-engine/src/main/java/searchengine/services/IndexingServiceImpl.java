@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
+import searchengine.config.CrawlerConfig; // ДОБАВЛЕНО
 import searchengine.config.SiteConfig;
 import searchengine.config.SitesListConfig;
 import searchengine.model.*;
@@ -35,6 +36,7 @@ public class IndexingServiceImpl implements IndexingService {
     private final IndexRepository indexRepository;
     private final LemmaService lemmaService;
     private final SitesListConfig sites;
+    private final CrawlerConfig crawlerConfig; // ДОБАВЛЕНО
 
     private final AtomicBoolean isIndexing = new AtomicBoolean(false);
     private ForkJoinPool forkJoinPool;
@@ -79,10 +81,10 @@ public class IndexingServiceImpl implements IndexingService {
                         pageRepository.deleteAllBySite(site);
 
                         log.info("Запуск индексации для сайта: {}", site.getName());
-                        SiteCrawler task = new SiteCrawler(site, site.getUrl(), this, siteRepository, pageRepository, lemmaService, ConcurrentHashMap.newKeySet());
-                        forkJoinPool.invoke(task); // Блокирующий вызов, который выполнит всю задачу
+                        // ИЗМЕНЕНО: Добавлен crawlerConfig в конструктор
+                        SiteCrawler task = new SiteCrawler(site, site.getUrl(), this, siteRepository, pageRepository, lemmaService, ConcurrentHashMap.newKeySet(), crawlerConfig);
+                        forkJoinPool.invoke(task);
 
-                        // После завершения задачи проверяем, не была ли она прервана
                         Site updatedSite = siteRepository.findById(site.getId()).orElseThrow();
                         if (isIndexing.get() && updatedSite.getStatus() != Status.FAILED) {
                             updatedSite.setStatus(Status.INDEXED);
@@ -118,12 +120,11 @@ public class IndexingServiceImpl implements IndexingService {
         }
 
         log.info("Остановка процесса индексации...");
-        isIndexing.set(false); // Устанавливаем флаг остановки
+        isIndexing.set(false);
 
         if (forkJoinPool != null && !forkJoinPool.isShutdown()) {
-            forkJoinPool.shutdownNow(); // Прерываем все задачи
+            forkJoinPool.shutdownNow();
             try {
-                // Даем немного времени на завершение
                 if (!forkJoinPool.awaitTermination(5, TimeUnit.SECONDS)) {
                     log.error("ForkJoinPool не завершился в течение 5 секунд.");
                 }
@@ -132,7 +133,6 @@ public class IndexingServiceImpl implements IndexingService {
             }
         }
 
-        // Обновляем статус сайтов, которые были в процессе
         siteRepository.findAllByStatus(Status.INDEXING).forEach(site -> {
             site.setStatus(Status.FAILED);
             site.setLastError("Индексация остановлена пользователем");
@@ -182,9 +182,10 @@ public class IndexingServiceImpl implements IndexingService {
         pageRepository.findByPathAndSite(path, site).ifPresent(this::deletePageData);
 
         try {
+            // ИЗМЕНЕНО: Используем значения из конфигурации
             Connection.Response response = Jsoup.connect(url)
-                    .userAgent("HeliontSearchBot/1.0")
-                    .referrer("http://www.google.com")
+                    .userAgent(crawlerConfig.getUserAgent())
+                    .referrer(crawlerConfig.getReferrer())
                     .execute();
 
             int statusCode = response.statusCode();
