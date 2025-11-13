@@ -16,18 +16,15 @@ import java.util.Optional;
 public interface LemmaRepository extends JpaRepository<Lemma, Integer> {
     Optional<Lemma> findByLemmaAndSite(String lemma, Site site);
 
-    // Метод для поиска лемм по списку строк и сайту
-    List<Lemma> findByLemmaInAndSite(Collection<String> lemmas, Site site);
+    List<Lemma> findBySite(Site site);
 
-    // ИСПРАВЛЕНО: Заменен на явный нативный запрос по ID для надежности и единообразия
-    @Query(value = "SELECT count(*) FROM lemma WHERE site_id = ?1", nativeQuery = true)
-    int countBySiteId(Integer siteId);
-
-    void deleteAllBySite(Site site);
+    int countBySite(Site site);
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO lemma (lemma, site_id, frequency) VALUES (?1, ?2, ?3) " +
-            "ON CONFLICT (lemma, site_id) DO UPDATE SET frequency = lemma.frequency + EXCLUDED.frequency", nativeQuery = true)
-    void upsertLemma(String lemma, Integer siteId, Integer value);
+    @Query("DELETE FROM Lemma l WHERE l.site = :site")
+    void deleteAllBySite(Site site);
+
+    // Добавлен для поиска нескольких лемм на конкретном сайте
+    List<Lemma> findByLemmaInAndSite(Collection<String> lemmas, Site site);
 }

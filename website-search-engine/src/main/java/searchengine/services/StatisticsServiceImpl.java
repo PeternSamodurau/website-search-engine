@@ -62,7 +62,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             item.setName(siteModel.getName());
             item.setUrl(siteModel.getUrl());
             item.setPages(pageRepository.countBySiteId(siteModel.getId()));
-            item.setLemmas(lemmaRepository.countBySiteId(siteModel.getId()));
+            item.setLemmas(lemmaRepository.countBySite(siteModel));
             item.setStatus(siteModel.getStatus().toString());
             item.setError(siteModel.getLastError() == null ? "Ошибок нет" : siteModel.getLastError());
             item.setStatusTime(siteModel.getStatusTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());

@@ -13,17 +13,12 @@ import searchengine.model.Status;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.security.cert.X509Certificate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.RecursiveAction;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -53,13 +48,14 @@ public class SiteCrawler extends RecursiveAction {
 
     @Override
     protected void compute() {
+        if (Thread.currentThread().isInterrupted() || !indexingService.isIndexing()) {
+            log.debug("Индексация остановлена, прекращаем обход.");
+            return;
+        }
+
         String normalizedCurrentUrl = normalizeUrl(url);
         log.debug("Начинаем обход страницы: {}", normalizedCurrentUrl);
 
-        if (!indexingService.isIndexing()) {
-            log.debug("Индексация остановлена, прекращаем обход страницы: {}", normalizedCurrentUrl);
-            return;
-        }
         if (visitedUrls.contains(normalizedCurrentUrl)) {
             log.debug("Страница уже посещена или находится в процессе обхода: {}", normalizedCurrentUrl);
             return;
@@ -68,12 +64,15 @@ public class SiteCrawler extends RecursiveAction {
         visitedUrls.add(normalizedCurrentUrl);
 
         try {
-            Thread.sleep(150); // Задержка для снижения нагрузки на сайт
+            Thread.sleep(150);
 
-            Connection.Response response = Jsoup.connect(url) // Используем оригинальный URL для запроса
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("Обход страницы " + normalizedCurrentUrl + " прерван перед сетевым запросом.");
+            }
+
+            Connection.Response response = Jsoup.connect(url)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
                     .referrer("http://www.google.com")
-                    .sslSocketFactory(socketFactory()) // Игнорирование SSL ошибок
                     .ignoreContentType(true)
                     .ignoreHttpErrors(true)
                     .execute();
@@ -81,7 +80,6 @@ public class SiteCrawler extends RecursiveAction {
             int statusCode = response.statusCode();
             String content = response.body();
 
-            // Корректный расчет path относительно нормализованного URL сайта
             String path = normalizedCurrentUrl.substring(normalizedSiteUrl.length());
             if (path.isEmpty()) {
                 path = "/";
@@ -95,7 +93,6 @@ public class SiteCrawler extends RecursiveAction {
             pageRepository.save(page);
             log.info("Страница сохранена: {} (Статус: {})", normalizedCurrentUrl, statusCode);
 
-
             if (statusCode < 400) {
                 lemmaService.lemmatizePage(page);
                 Document doc = response.parse();
@@ -107,27 +104,23 @@ public class SiteCrawler extends RecursiveAction {
                     String normalizedAbsUrl = normalizeUrl(absUrl);
 
                     if (isValidLink(normalizedAbsUrl)) {
-                        log.debug("Обнаружена новая ссылка: {} на странице {}", normalizedAbsUrl, normalizedCurrentUrl);
                         tasks.add(new SiteCrawler(site, absUrl, indexingService, siteRepository, pageRepository, lemmaService, visitedUrls));
                     }
                 }
                 if (!tasks.isEmpty()) {
-                    log.debug("Запускаем {} дочерних задач для страницы: {}", tasks.size(), normalizedCurrentUrl);
                     invokeAll(tasks);
-                } else {
-                    log.debug("На странице {} не найдено новых ссылок для обхода.", normalizedCurrentUrl);
                 }
-            } else {
-                log.warn("Страница {} вернула код состояния {}. Контент сохранен, но не лемматизирован и не обследован на ссылки.", normalizedCurrentUrl, statusCode);
             }
-
-            updateSiteStatusTime();
 
         } catch (IOException e) {
             handleError("Ошибка ввода-вывода при обходе страницы " + normalizedCurrentUrl + ": " + e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            handleError("Обход страницы " + normalizedCurrentUrl + " прерван.");
+            log.warn("Обход страницы " + normalizedCurrentUrl + " прерван.");
+        } catch (CancellationException e) {
+            // ИСПРАВЛЕНО: Ловим CancellationException, чтобы он не попадал в общий Exception
+            Thread.currentThread().interrupt();
+            log.warn("Обход страницы " + normalizedCurrentUrl + " отменен (CancellationException).");
         } catch (Exception e) {
             log.error("Неизвестная ошибка при обходе страницы " + normalizedCurrentUrl, e);
             handleError("Неизвестная ошибка: " + e.getMessage());
@@ -135,52 +128,28 @@ public class SiteCrawler extends RecursiveAction {
     }
 
     private boolean isValidLink(String link) {
-        return link.startsWith(normalizedSiteUrl) && // Сравниваем с нормализованным URL сайта
+        return link.startsWith(normalizedSiteUrl) &&
                 !link.contains("#") &&
-                !visitedUrls.contains(link) && // Проверяем нормализованный URL
-                !link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|zip|rar|exe|mp3|mp4|avi)$");
-    }
-
-    private void updateSiteStatusTime() {
-        site.setStatusTime(LocalDateTime.now());
-        siteRepository.save(site);
+                !visitedUrls.contains(link) &&
+                !link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|zip|rar|exe|mp3|mp4|avi|ppt|pptx)$");
     }
 
     private void handleError(String errorMessage) {
-        log.error(errorMessage);
-        site.setLastError(errorMessage);
-        site.setStatus(Status.FAILED);
-        siteRepository.save(site);
+        if (indexingService.isIndexing()) {
+            log.error(errorMessage);
+            site.setLastError(errorMessage);
+            site.setStatus(Status.FAILED);
+            siteRepository.save(site);
+        }
     }
 
     private String normalizeUrl(String inputUrl) {
+        if (inputUrl == null) return "";
         String normalized = inputUrl.toLowerCase();
-        // Удаляем "www."
         normalized = normalized.replace("://www.", "://");
-        // Удаляем конечный слэш, если это не корень сайта
-        if (normalized.endsWith("/") && !normalized.equals(inputUrl.substring(0, inputUrl.indexOf("://") + 3))) {
+        if (normalized.endsWith("/")) {
             normalized = normalized.substring(0, normalized.length() - 1);
         }
         return normalized;
-    }
-
-    private static SSLSocketFactory socketFactory() {
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-            public void checkClientTrusted(X509Certificate[] certs, String authType) {
-            }
-            public void checkServerTrusted(X509Certificate[] certs, String authType) {
-            }
-        }};
-
-        try {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-            return sslContext.getSocketFactory();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create a SSL socket factory", e);
-        }
     }
 }

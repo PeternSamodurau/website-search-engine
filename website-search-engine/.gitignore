@@ -39,3 +39,4 @@ out/
 !/logs/app.log
 !/final_project/
 
+!/logs/

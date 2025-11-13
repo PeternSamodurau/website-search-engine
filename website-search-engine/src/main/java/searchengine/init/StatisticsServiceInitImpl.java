@@ -115,7 +115,7 @@ public class StatisticsServiceInitImpl implements StatisticsService {
             item.setPages(pageRepository.countBySiteId(siteModel.getId()));
             
             // ИСПРАВЛЕНО: Явное преобразование типа
-            item.setLemmas(lemmaRepository.countBySiteId(siteModel.getId()));
+            item.setLemmas(lemmaRepository.countBySite(siteModel));
             
             item.setStatus(siteModel.getStatus().toString());
             item.setError(siteModel.getLastError() == null ? "Ошибок нет" : siteModel.getLastError());

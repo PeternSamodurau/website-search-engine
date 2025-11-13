@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
-import searchengine.dto.response.SearchResponseDTO; // Исправлено
-import searchengine.dto.response.SearchDataDTO; // Исправлено
+import searchengine.dto.response.SearchResponseDTO;
+import searchengine.dto.response.SearchDataDTO;
 import searchengine.model.Index;
 import searchengine.model.Lemma;
 import searchengine.model.Page;
@@ -50,7 +50,7 @@ public class SearchServiceImpl implements SearchService {
             Set<String> queryLemmas = lemmaService.getLemmaSet(query);
 
             // 3. Ищем релевантные страницы по всем сайтам
-            List<SearchDataDTO> allResults = new ArrayList<>(); // Исправлено
+            List<SearchDataDTO> allResults = new ArrayList<>();
             for (Site site : sitesToSearch) {
                 allResults.addAll(searchSite(site, query, queryLemmas));
             }
@@ -60,7 +60,7 @@ public class SearchServiceImpl implements SearchService {
             }
 
             // 4. Рассчитываем относительную релевантность, сортируем и применяем пагинацию
-            List<SearchDataDTO> finalResults = postProcessResults(allResults, offset, limit); // Исправлено
+            List<SearchDataDTO> finalResults = postProcessResults(allResults, offset, limit);
 
             return new SearchResponseDTO(true, allResults.size(), finalResults);
 
@@ -85,11 +85,11 @@ public class SearchServiceImpl implements SearchService {
     /**
      * Выполняет поиск в пределах одного сайта.
      */
-    private List<SearchDataDTO> searchSite(Site site, String query, Set<String> queryLemmas) { // Исправлено
+    private List<SearchDataDTO> searchSite(Site site, String query, Set<String> queryLemmas) {
         // 3.1. Находим леммы из запроса в базе данных для данного сайта
         // ПРИМЕЧАНИЕ: Для этого необходим метод в LemmaRepository:
         // List<Lemma> findByLemmaInAndSite(Collection<String> lemmas, Site site);
-        List<Lemma> foundLemmas = lemmaRepository.findByLemmaInAndSite(queryLemmas, site);
+        List<Lemma> foundLemmas = lemmaRepository.findByLemmaInAndSite(queryLemmas, site); // ИСПРАВЛЕНО
 
         // 3.2. Фильтруем слишком частые леммы и сортируем по редкости (от самой редкой к самой частой)
         List<Lemma> filteredAndSortedLemmas = filterAndSortLemmas(foundLemmas, site);
@@ -118,7 +118,7 @@ public class SearchServiceImpl implements SearchService {
         Map<Integer, Float> absoluteRelevanceByPageId = calculateAbsoluteRelevance(indexes);
 
         // 3.6. Генерируем DTO с результатами
-        return createSearchDataDTOs(foundPages, absoluteRelevanceByPageId, query, site); // Исправлено
+        return createSearchDataDTOs(foundPages, absoluteRelevanceByPageId, query, site);
     }
 
     /**
@@ -150,8 +150,8 @@ public class SearchServiceImpl implements SearchService {
     /**
      * Создает список DTO с результатами поиска для одного сайта.
      */
-    private List<SearchDataDTO> createSearchDataDTOs(List<Page> pages, Map<Integer, Float> relevanceMap, String query, Site site) { // Исправлено
-        List<SearchDataDTO> results = new ArrayList<>(); // Исправлено
+    private List<SearchDataDTO> createSearchDataDTOs(List<Page> pages, Map<Integer, Float> relevanceMap, String query, Site site) {
+        List<SearchDataDTO> results = new ArrayList<>();
         for (Page page : pages) {
             Document doc = Jsoup.parse(page.getContent());
             String title = doc.title();
@@ -160,7 +160,7 @@ public class SearchServiceImpl implements SearchService {
             // Генерируем сниппет
             String snippet = generateSnippet(doc.text(), query);
 
-            results.add(new SearchDataDTO( // Исправлено
+            results.add(new SearchDataDTO(
                     site.getUrl(),
                     site.getName(),
                     page.getPath(),
@@ -180,7 +180,7 @@ public class SearchServiceImpl implements SearchService {
         try {
             // Получаем уникальные слова из запроса
             Set<String> queryWords = Arrays.stream(query.toLowerCase().split("\\s+"))
-                                           .collect(Collectors.toSet());
+                    .collect(Collectors.toSet());
 
             // Находим все вхождения слов запроса в тексте
             List<Integer> occurrences = new ArrayList<>();
@@ -241,17 +241,17 @@ public class SearchServiceImpl implements SearchService {
     /**
      * Финальная обработка результатов: расчет относительной релевантности, сортировка, пагинация.
      */
-    private List<SearchDataDTO> postProcessResults(List<SearchDataDTO> results, int offset, int limit) { // Исправлено
+    private List<SearchDataDTO> postProcessResults(List<SearchDataDTO> results, int offset, int limit) {
         // Находим максимальную абсолютную релевантность среди всех результатов
         float maxRelevance = results.stream()
-                .max(Comparator.comparing(SearchDataDTO::getRelevance)) // Исправлено
-                .map(SearchDataDTO::getRelevance) // Исправлено
+                .max(Comparator.comparing(SearchDataDTO::getRelevance))
+                .map(SearchDataDTO::getRelevance)
                 .orElse(1.0f); // Если результатов нет, maxRelevance = 1.0f, чтобы избежать деления на ноль
 
         // Рассчитываем относительную релевантность, сортируем и возвращаем нужный срез
         return results.stream()
                 .peek(r -> r.setRelevance(r.getRelevance() / maxRelevance)) // Обновляем до относительной
-                .sorted(Comparator.comparing(SearchDataDTO::getRelevance).reversed()) // Исправлено // Сортируем по убыванию релевантности
+                .sorted(Comparator.comparing(SearchDataDTO::getRelevance).reversed()) // Сортируем по убыванию релевантности
                 .skip(offset) // Применяем смещение для пагинации
                 .limit(limit) // Применяем лимит для пагинации
                 .collect(Collectors.toList());

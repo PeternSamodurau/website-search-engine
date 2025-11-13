@@ -3,23 +3,26 @@
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p %logger{36} - %msg%n</pattern>
+            <!-- ИСПРАВЛЕНО: Добавлен [%thread] для отображения имени потока -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5p %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/app.log</file>
+        <append>false</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/app.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p %logger{36} - %msg%n</pattern>
+            <!-- ИСПРАВЛЕНО: Добавлен [%thread] для отображения имени потока -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5p %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <logger name="searchengine" level="INFO"/>
-    <logger name="searchengine.services.SiteCrawler" level="DEBUG"/> <!-- Уровень логирования возвращен на INFO -->
+    <logger name="searchengine.services" level="DEBUG"/>
     <logger name="org.springframework.transaction" level="INFO"/>
     <logger name="org.hibernate.SQL" level="INFO"/>
     <logger name="org.hibernate.type.descriptor.sql" level="INFO"/>

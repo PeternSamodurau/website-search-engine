@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import searchengine.config.SiteConfig;
 import searchengine.config.SitesListConfig;
 import searchengine.model.*;
@@ -19,9 +18,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -39,16 +38,13 @@ public class IndexingServiceImpl implements IndexingService {
 
     private final AtomicBoolean isIndexing = new AtomicBoolean(false);
     private ForkJoinPool forkJoinPool;
-    private Thread indexingThread;
 
     @Override
     public boolean startIndexing() {
         if (isIndexing.compareAndSet(false, true)) {
             log.info("Запуск процесса индексации");
 
-            forkJoinPool = new ForkJoinPool();
-
-            indexingThread = new Thread(() -> {
+            new Thread(() -> {
                 try {
                     siteRepository.findAll().forEach(site -> {
                         if (site.getStatus() == Status.INDEXING) {
@@ -57,6 +53,8 @@ public class IndexingServiceImpl implements IndexingService {
                             siteRepository.save(site);
                         }
                     });
+
+                    forkJoinPool = new ForkJoinPool();
 
                     for (SiteConfig siteConfig : sites.getSites()) {
                         if (!isIndexing.get()) {
@@ -82,37 +80,29 @@ public class IndexingServiceImpl implements IndexingService {
 
                         log.info("Запуск индексации для сайта: {}", site.getName());
                         SiteCrawler task = new SiteCrawler(site, site.getUrl(), this, siteRepository, pageRepository, lemmaService, ConcurrentHashMap.newKeySet());
-                        forkJoinPool.invoke(task);
+                        forkJoinPool.invoke(task); // Блокирующий вызов, который выполнит всю задачу
 
+                        // После завершения задачи проверяем, не была ли она прервана
                         Site updatedSite = siteRepository.findById(site.getId()).orElseThrow();
-                        if (updatedSite.getStatus() != Status.FAILED) {
+                        if (isIndexing.get() && updatedSite.getStatus() != Status.FAILED) {
                             updatedSite.setStatus(Status.INDEXED);
                             updatedSite.setStatusTime(LocalDateTime.now());
                             siteRepository.save(updatedSite);
-                            log.info("Индексация сайта '{}' завершена.", updatedSite.getName());
+                            log.info("Индексация сайта '{}' успешно завершена.", updatedSite.getName());
+                        } else {
+                            log.warn("Индексация сайта '{}' была остановлена или завершилась с ошибкой.", updatedSite.getName());
                         }
                     }
                 } catch (Exception e) {
-                    if (e instanceof CancellationException) {
-                        log.info("Процесс индексации был прерван пользователем.");
-                    } else {
-                        log.error("Критическая ошибка во время процесса индексации", e);
-                        siteRepository.findAllByStatus(Status.INDEXING).forEach(s -> {
-                            s.setStatus(Status.FAILED);
-                            s.setLastError("Критическая ошибка во время индексации: " + e.getMessage());
-                            s.setStatusTime(LocalDateTime.now());
-                            siteRepository.save(s);
-                        });
-                    }
+                    log.error("Критическая ошибка в главном потоке индексации", e);
                 } finally {
-                    if (forkJoinPool != null) {
+                    isIndexing.set(false);
+                    if (forkJoinPool != null && !forkJoinPool.isShutdown()) {
                         forkJoinPool.shutdown();
                     }
-                    isIndexing.set(false);
                     log.info("Процесс индексации ВСЕХ сайтов завершен.");
                 }
-            }, "Indexing-Manager-Thread");
-            indexingThread.start();
+            }, "Indexing-Manager-Thread").start();
             return true;
         } else {
             log.warn("Попытка запуска индексации, когда она уже запущена");
@@ -127,21 +117,31 @@ public class IndexingServiceImpl implements IndexingService {
             return false;
         }
 
-        log.info("Остановка процесса индексации");
-        isIndexing.set(false);
+        log.info("Остановка процесса индексации...");
+        isIndexing.set(false); // Устанавливаем флаг остановки
+
         if (forkJoinPool != null && !forkJoinPool.isShutdown()) {
-            forkJoinPool.shutdownNow();
-        }
-        if (indexingThread != null && indexingThread.isAlive()) {
-            indexingThread.interrupt();
+            forkJoinPool.shutdownNow(); // Прерываем все задачи
+            try {
+                // Даем немного времени на завершение
+                if (!forkJoinPool.awaitTermination(5, TimeUnit.SECONDS)) {
+                    log.error("ForkJoinPool не завершился в течение 5 секунд.");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
 
+        // Обновляем статус сайтов, которые были в процессе
         siteRepository.findAllByStatus(Status.INDEXING).forEach(site -> {
             site.setStatus(Status.FAILED);
             site.setLastError("Индексация остановлена пользователем");
             site.setStatusTime(LocalDateTime.now());
             siteRepository.save(site);
+            log.info("Сайт '{}' помечен как остановленный.", site.getName());
         });
+
+        log.info("Процесс индексации остановлен.");
         return true;
     }
 
@@ -219,7 +219,7 @@ public class IndexingServiceImpl implements IndexingService {
         }
     }
 
-    @Transactional
+    @org.springframework.transaction.annotation.Transactional
     private void deletePageData(Page page) {
         log.info("Страница {} уже была проиндексирована. Удаление старых данных.", page.getPath());
         List<Index> indices = indexRepository.findByPage(page);
@@ -237,6 +237,7 @@ public class IndexingServiceImpl implements IndexingService {
     }
 
     private String normalizeUrl(String url) {
-        return url.replace("://www.", "://");
+        if (url == null) return "";
+        return url.toLowerCase().replace("://www.", "://");
     }
 }

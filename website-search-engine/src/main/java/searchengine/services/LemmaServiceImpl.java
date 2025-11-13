@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.morphology.LuceneMorphology;
 import org.jsoup.Jsoup;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import searchengine.model.Index;
 import searchengine.model.Lemma;
@@ -15,6 +15,7 @@ import searchengine.repository.IndexRepository;
 import searchengine.repository.LemmaRepository;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
@@ -25,64 +26,68 @@ public class LemmaServiceImpl implements LemmaService {
     private final LemmaRepository lemmaRepository;
     private final IndexRepository indexRepository;
 
+    private final Map<Integer, Object> siteLocks = new ConcurrentHashMap<>();
+
     @Override
     @Transactional
     public void lemmatizePage(Page page) {
-        log.debug("Начало лемматизации страницы: URL='{}', Site='{}'", page.getPath(), page.getSite().getName());
         Site site = page.getSite();
-        String text = Jsoup.parse(page.getContent()).text();
-        Map<String, Integer> lemmas = collectLemmas(text);
+        if (site == null) {
+            log.error("У страницы с ID {} отсутствует сайт. Лемматизация невозможна.", page.getId());
+            return;
+        }
 
-        lemmas.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .forEach(entry -> {
-                    String lemmaString = entry.getKey();
-                    Integer rank = entry.getValue();
+        Object siteLock = siteLocks.computeIfAbsent(site.getId(), k -> new Object());
 
-                    log.debug("Обработка леммы '{}' с рангом {} для страницы '{}'", lemmaString, rank, page.getPath());
+        synchronized (siteLock) {
+            String text = Jsoup.parse(page.getContent()).text();
+            Map<String, Integer> lemmasFromText = collectLemmas(text);
 
-                    Lemma lemma = this.getOrCreateAndIncrementLemma(lemmaString, site, rank);
-                    log.debug("Лемма '{}' (ID: {}) получена/создана. Частота обновлена.", lemma.getLemma(), lemma.getId());
+            if (lemmasFromText.isEmpty()) {
+                return;
+            }
 
-                    Optional<Index> optionalIndex = indexRepository.findByLemmaAndPage(lemma, page);
-                    if (optionalIndex.isEmpty()) {
-                        Index index = new Index();
-                        index.setPage(page);
-                        index.setLemma(lemma);
-                        index.setRank(rank.floatValue());
-                        indexRepository.save(index);
+            for (Map.Entry<String, Integer> entry : lemmasFromText.entrySet()) {
+                String lemmaString = entry.getKey();
+                Integer rank = entry.getValue();
 
-                        log.debug("Создан новый индекс для леммы '{}' и страницы '{}'", lemmaString, page.getPath());
-                    } else {
-                        Index index = optionalIndex.get();
-                        index.setRank(index.getRank() + rank.floatValue());
-                        indexRepository.save(index);
-                        log.debug("Обновлен существующий индекс для леммы '{}' и страницы '{}'. Новый ранг: {}", lemmaString, page.getPath(), index.getRank());
-                    }
-                });
-        log.debug("Завершение лемматизации страницы: URL='{}', Site='{}'", page.getPath(), page.getSite().getName());
-    }
+                Lemma lemma;
+                try {
+                    // Пытаемся найти лемму. Если нет - создаем и сохраняем.
+                    lemma = lemmaRepository.findByLemmaAndSite(lemmaString, site)
+                            .orElseGet(() -> {
+                                Lemma newLemma = new Lemma();
+                                newLemma.setLemma(lemmaString);
+                                newLemma.setSite(site);
+                                newLemma.setFrequency(0);
+                                return lemmaRepository.save(newLemma);
+                            });
+                } catch (DataIntegrityViolationException e) {
+                    // ИСПРАВЛЕНО: Если другой поток уже создал лемму, ловим ошибку и просто загружаем ее.
+                    log.warn("Произошла гонка потоков при создании леммы '{}'. Повторно загружаем.", lemmaString);
+                    lemma = lemmaRepository.findByLemmaAndSite(lemmaString, site)
+                            .orElseThrow(() -> new IllegalStateException("Не удалось найти лемму после гонки потоков: " + lemmaString));
+                }
 
-    // Метод не является частью интерфейса, но используется внутри класса, оставляем public
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Lemma getOrCreateAndIncrementLemma(String lemmaString, Site site, Integer rank) {
-        log.debug("Вызов upsertLemma для леммы '{}' на сайте '{}' со значением {}", lemmaString, site.getName(), rank);
-        lemmaRepository.upsertLemma(lemmaString, site.getId(), rank);
-        Optional<Lemma> optionalLemma = lemmaRepository.findByLemmaAndSite(lemmaString, site);
-        if (optionalLemma.isPresent()) {
-            Lemma lemma = optionalLemma.get();
-            log.debug("Лемма '{}' (ID: {}) получена после upsert. Текущая частота: {}", lemma.getLemma(), lemma.getId(), lemma.getFrequency());
-            return lemma;
-        } else {
-            log.error("Не удалось найти лемму '{}' для сайта '{}' после успешного upsert.", lemmaString, site.getName());
-            throw new IllegalStateException("Lemma not found after upsert operation.");
+                // Увеличиваем частоту леммы для сайта
+                lemma.setFrequency(lemma.getFrequency() + 1);
+                lemmaRepository.save(lemma);
+
+                // Создаем новый индекс
+                Index index = new Index();
+                index.setPage(page);
+                index.setLemma(lemma);
+                index.setRank(rank.floatValue());
+                indexRepository.save(index);
+            }
         }
     }
 
     @Override
     public Set<String> getLemmaSet(String text) {
         String cleanText = Jsoup.parse(text).text();
-        return collectLemmas(cleanText).keySet();
+        Map<String, Integer> lemmas = collectLemmas(cleanText);
+        return lemmas.keySet();
     }
 
     private HashMap<String, Integer> collectLemmas(String textContent) {

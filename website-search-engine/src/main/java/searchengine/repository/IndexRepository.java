@@ -1,9 +1,11 @@
 package searchengine.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import searchengine.model.Index;
 import searchengine.model.Lemma;
 import searchengine.model.Page;
@@ -33,4 +35,12 @@ public interface IndexRepository extends JpaRepository<Index, Integer> {
      * @return список индексов
      */
     List<Index> findByPageInAndLemmaIn(Collection<Page> pages, Collection<Lemma> lemmas);
+
+    /**
+     * ИСПРАВЛЕНО: Добавлен метод для удаления всех индексов, связанных с конкретной страницей.
+     * @param page страница, для которой нужно удалить индексы
+     */
+    @Transactional
+    @Modifying
+    void deleteByPage(Page page);
 }
