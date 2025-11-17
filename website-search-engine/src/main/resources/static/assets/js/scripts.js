@@ -1323,10 +1323,10 @@ var form = function(){
                     });
                     
                     if (error) {
-                        if ($this.hasClass('form-input')) {
+                        if ($this.hasClass('form-input')){
                             $this.addClass('form-input_error');
                         }
-                        if ($this.hasClass('form-textarea')) {
+                        if ($this.hasClass('form-textarea')){
                             $this.addClass('form-textarea_error');
                         }
                         if (!$this.next('.form-error').length){
@@ -1467,11 +1467,6 @@ var API = function(){
                     if ($this.next('.API-error').length) {
                         $this.next('.API-error').remove();
                     }
-                    if ($this.next('.API-success').length) {
-                        $this.next('.API-success').text(result.success);
-                    } else {
-                        $this.after('<div class="API-success">' + result.success + '</div>');
-                    }
                     if ($this.is('[data-btntype="check"]')) {
                         shiftCheck($this);
                     }
@@ -1491,11 +1486,6 @@ var API = function(){
                 if (result.result){
                     if ($this.next('.API-error').length) {
                         $this.next('.API-error').remove();
-                    }
-                    if ($this.next('.API-success').length) {
-                        $this.next('.API-success').text(result.success);
-                    } else {
-                        $this.after('<div class="API-success">' + result.success + '</div>');
                     }
                     if ($this.is('[data-btntype="check"]')) {
                         shiftCheck($this);
@@ -1691,7 +1681,7 @@ var API = function(){
             $element.find('.btn-content').text($element.data('alttext'));
             $element.data('alttext', text);
         }
-        if ($element.data('send') == 'startIndexing' || $element.data('send') == 'stopIndexing') {
+        if ($element.data('send') == 'startIndexing' || $element.data('send') == 'stopIndexing'){
             if (check) {
                 $('.UpdatePageBlock').show(0)
             } else {
@@ -1745,7 +1735,7 @@ var API = function(){
                 var $this = $(this);
                 var data = '';
                 if (($this.hasClass('form') && e.type==='submit')
-                    || (e.type==='click' && !$this.hasClass('form'))) {
+                    || (e.type==='click' && !$this.hasClass('form'))){
                     e.preventDefault();
                     
                     switch ($this.data('send')) {
@@ -1938,7 +1928,7 @@ var Tabs = function(){
             $tabs.each(function(){
                 $(this).find($tabsLink).eq(0).trigger('click');
             });
-            if (~window.location.href.indexOf('#')) {
+            if (~window.location.href.indexOf('#')){
                 // $(window).scrollTop(0);
                 var tab = window.location.href.split('#');
                 tab = tab[tab.length - 1];
