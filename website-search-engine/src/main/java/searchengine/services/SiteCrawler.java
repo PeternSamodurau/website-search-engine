@@ -7,14 +7,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import searchengine.config.CrawlerConfig; // ДОБАВЛЕНО
+import searchengine.config.CrawlerConfig;
 import searchengine.model.Page;
 import searchengine.model.Site;
-import searchengine.model.Status; // ДОБАВЛЕНО
+import searchengine.model.Status;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 
-import java.time.LocalDateTime; // ДОБАВЛЕНО
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +32,7 @@ public class SiteCrawler extends RecursiveAction {
     private final PageRepository pageRepository;
     private final LemmaService lemmaService;
     private final Set<String> visitedUrls;
-    private final CrawlerConfig crawlerConfig; // ДОБАВЛЕНО
+    private final CrawlerConfig crawlerConfig;
 
     @Override
     protected void compute() {
@@ -47,10 +47,9 @@ public class SiteCrawler extends RecursiveAction {
         log.debug("Обход страницы: {}", url);
 
         try {
-            Thread.sleep(crawlerConfig.getDelay()); // ИСПОЛЬЗУЕМ ЗНАЧЕНИЕ ИЗ КОНФИГА
+            Thread.sleep(crawlerConfig.getDelay());
 
             Connection.Response response = Jsoup.connect(url)
-                    // ИЗМЕНЕНО: Используем значения из конфигурации
                     .userAgent(crawlerConfig.getUserAgent())
                     .referrer(crawlerConfig.getReferrer())
                     .ignoreContentType(true)
@@ -84,7 +83,7 @@ public class SiteCrawler extends RecursiveAction {
                 for (Element link : links) {
                     String absUrl = link.attr("abs:href");
                     if (isValidLink(absUrl)) {
-                        // ИЗМЕНЕНО: Передаем crawlerConfig в дочернюю задачу
+
                         tasks.add(new SiteCrawler(site, absUrl, indexingService, siteRepository, pageRepository, lemmaService, visitedUrls, crawlerConfig));
                     }
                 }
@@ -98,7 +97,7 @@ public class SiteCrawler extends RecursiveAction {
             Thread.currentThread().interrupt();
             log.warn("Обход страницы {} прерван.", url);
         } catch (Exception e) {
-            // ИЗМЕНЕНО: Вызываем локальный метод handleError
+
             handleError("Ошибка при обходе страницы " + url + ": " + e.getMessage());
         }
     }
@@ -121,7 +120,7 @@ public class SiteCrawler extends RecursiveAction {
         return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
-    // ДОБАВЛЕН ЛОКАЛЬНЫЙ МЕТОД ДЛЯ ОБРАБОТКИ ОШИБОК
+
     private void handleError(String errorMessage) {
         log.error(errorMessage);
         siteRepository.findById(site.getId()).ifPresent(s -> {

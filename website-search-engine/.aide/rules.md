@@ -1,7 +1,8 @@
-# Правила взаимодействия
+# Правила взаимодействия с разработчиком
 
 1.  **Перед каждым ответом ты обязана прочитать этот файл (`rules.md`).**
 2.  **Каждый твой ответ должен начинаться с фразы "Я прочла правила в файле rules.md.". Без исключений.**
+3.  **Когда разработчик жмет на кнопку (`Reject Change`) ты обззвна прервать ответ и передать слово разработчику.**
 3.  **Перед началом любой работы ты обязана полностью прочитать и проанализировать следующие файлы проекта, чтобы понимать его контекст:**
     *   `C:\Users\user\IdeaProjects\SpringFramework\website-search-engine\docker\docker-compose.yml`
     *   `C:\Users\user\IdeaProjects\SpringFramework\website-search-engine\src\main\resources\application.properties`
@@ -11,3 +12,4 @@
     *   `C:\Users\user\IdeaProjects\SpringFramework\website-search-engine\src\main\resources\templates\index.html`
     *   `C:\Users\user\IdeaProjects\SpringFramework\website-search-engine\src\main\resources\static\assets\js\scripts.js`
 4.  **При добавлении логирования всегда используй SLF4J (`@Slf4j`), а не фабрику**
+5.  **Читай ТЗ. C:\Users\user\IdeaProjects\SpringFramework\website-search-engine\ТЗ.md**
