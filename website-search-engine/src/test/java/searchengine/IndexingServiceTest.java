@@ -86,7 +86,7 @@ public class IndexingServiceTest {
     }
 
     @Test
-    void testSiteCrawling() {
+    void shouldIndexAllPagesFromTestSite() {
         // 1. Подготовка: создаем и сохраняем сайт, который будем индексировать
         String rootUrl = wireMockServer.baseUrl();
         Site site = new Site();
@@ -111,6 +111,10 @@ public class IndexingServiceTest {
         // 3. Проверка: убеждаемся, что в базе данных ровно 3 страницы
         long expectedPageCount = 3;
         long actualPageCount = pageRepository.count();
+
+        System.out.println("Ожидаемое количество страниц: " + expectedPageCount);
+        System.out.println("Фактическое количество страниц: " + actualPageCount);
+
         assertEquals(expectedPageCount, actualPageCount, "Количество проиндексированных страниц должно быть равно 3.");
     }
 

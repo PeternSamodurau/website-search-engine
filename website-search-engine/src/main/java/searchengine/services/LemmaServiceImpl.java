@@ -103,28 +103,29 @@ public class LemmaServiceImpl implements LemmaService {
     }
 
     private HashMap<String, Integer> collectLemmas(String textContent) {
-        HashMap<String, Integer> lemmas = new HashMap<>();
-        String[] words = arrayContainsRussianWords(textContent);
-
-        for (String word : words) {
-            if (word.isBlank() || word.length() <= 2) {
-                continue;
-            }
-
-            List<String> wordBaseForms = luceneMorphology.getMorphInfo(word);
-            if (anyWordBaseFormIsService(wordBaseForms)) {
-                continue;
-            }
-
-            List<String> normalForms = luceneMorphology.getNormalForms(word);
-            if (normalForms.isEmpty()) {
-                continue;
-            }
-
-            String normalWord = normalForms.get(0);
-            lemmas.put(normalWord, lemmas.getOrDefault(normalWord, 0) + 1);
-        }
-        return lemmas;
+        return new HashMap<>(); // <-- ВРЕМЕННО ОТКЛЮЧАЕМ ЛЕММАТИЗАЦИЮ
+//        HashMap<String, Integer> lemmas = new HashMap<>();
+//        String[] words = arrayContainsRussianWords(textContent);
+//
+//        for (String word : words) {
+//            if (word.isBlank() || word.length() <= 2) {
+//                continue;
+//            }
+//
+//            List<String> wordBaseForms = luceneMorphology.getMorphInfo(word);
+//            if (anyWordBaseFormIsService(wordBaseForms)) {
+//                continue;
+//            }
+//
+//            List<String> normalForms = luceneMorphology.getNormalForms(word);
+//            if (normalForms.isEmpty()) {
+//                continue;
+//            }
+//
+//            String normalWord = normalForms.get(0);
+//            lemmas.put(normalWord, lemmas.getOrDefault(normalWord, 0) + 1);
+//        }
+//        return lemmas;
     }
 
     private boolean anyWordBaseFormIsService(List<String> wordBaseForms) {
