@@ -1,58 +1,28 @@
-2025-11-19 16:01:55.436 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-11-19 16:01:55.566 [main] INFO  searchengine.ManualCrawlerRunner - Starting ManualCrawlerRunner using Java 17.0.17 with PID 7204 (C:\Users\user\IdeaProjects\SpringFramework\website-search-engine\build\classes\java\test started by user in C:\Users\user\IdeaProjects\SpringFramework\website-search-engine)
-2025-11-19 16:01:55.570 [main] INFO  searchengine.ManualCrawlerRunner - The following 1 profile is active: "init"
-2025-11-19 16:01:58.748 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-11-19 16:01:58.933 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 154 ms. Found 4 JPA repository interfaces.
-2025-11-19 16:02:00.884 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8081 (http)
-2025-11-19 16:02:00.906 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
-2025-11-19 16:02:00.916 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
-2025-11-19 16:02:00.916 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
-2025-11-19 16:02:01.284 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2025-11-19 16:02:01.289 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 5523 ms
-2025-11-19 16:02:01.543 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-11-19 16:02:01.835 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@11ede87f
-2025-11-19 16:02:01.843 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-11-19 16:02:02.259 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-11-19 16:02:02.492 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.2.24.Final
-2025-11-19 16:02:02.497 [main] INFO  org.hibernate.cfg.Environment - HHH000406: Using bytecode reflection optimizer
-2025-11-19 16:02:03.325 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-11-19 16:02:03.484 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-11-19 16:02:05.708 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-11-19 16:02:05.717 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-11-19 16:02:06.475 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-11-19 16:02:08.374 [main] INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов для 'init' профиля...
-2025-11-19 16:02:08.865 [main] INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: skillbox
-2025-11-19 16:02:08.866 [main] INFO  s.init.StatisticsServiceInitImpl - Проверка доступности сайта: https://skillbox.ru
-2025-11-19 16:02:09.717 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт https://skillbox.ru вернул код ответа: 200
-2025-11-19 16:02:09.717 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт 'skillbox' доступен. Статус: INDEXING
-2025-11-19 16:02:09.842 [main] INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: ipfran
-2025-11-19 16:02:09.842 [main] INFO  s.init.StatisticsServiceInitImpl - Проверка доступности сайта: https://ipfran.ru
-2025-11-19 16:02:10.569 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт https://ipfran.ru вернул код ответа: 200
-2025-11-19 16:02:10.571 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт 'ipfran' доступен. Статус: INDEXING
-2025-11-19 16:02:10.612 [main] INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: ack
-2025-11-19 16:02:10.613 [main] INFO  s.init.StatisticsServiceInitImpl - Проверка доступности сайта: http://ack.by
-2025-11-19 16:02:10.645 [main] ERROR s.init.StatisticsServiceInitImpl - Ошибка IO при проверке доступности сайта http://ack.by: ack.by
-2025-11-19 16:02:10.646 [main] WARN  s.init.StatisticsServiceInitImpl - Сайт 'ack' недоступен. Статус: FAILED
-2025-11-19 16:02:10.655 [main] INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов завершено.
-2025-11-19 16:02:11.545 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
-2025-11-19 16:02:14.632 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
-2025-11-19 16:02:14.683 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8081 (http) with context path ''
-2025-11-19 16:02:14.689 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
-2025-11-19 16:02:14.689 [main] INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
-2025-11-19 16:02:14.691 [main] INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
-2025-11-19 16:02:14.691 [main] INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
-2025-11-19 16:02:14.694 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
-2025-11-19 16:02:14.719 [main] INFO  searchengine.ManualCrawlerRunner - Started ManualCrawlerRunner in 20.18 seconds (process running for 21.446)
-2025-11-19 16:02:17.468 [ForkJoinPool-1-worker-1] INFO  s.services.LemmaServiceImpl - Начало лемматизации для страницы: /
-2025-11-19 16:02:17.767 [ForkJoinPool-1-worker-1] INFO  s.services.LemmaServiceImpl - Завершено. Найдено и обработано 4 уникальных лемм для страницы /
-2025-11-19 16:02:17.965 [ForkJoinPool-1-worker-1] INFO  s.services.LemmaServiceImpl - Начало лемматизации для страницы: /page2
-2025-11-19 16:02:18.119 [ForkJoinPool-1-worker-1] INFO  s.services.LemmaServiceImpl - Завершено. Найдено и обработано 5 уникальных лемм для страницы /page2
-2025-11-19 16:02:18.313 [ForkJoinPool-1-worker-1] INFO  s.services.LemmaServiceImpl - Начало лемматизации для страницы: /page3
-2025-11-19 16:02:18.478 [ForkJoinPool-1-worker-1] INFO  s.services.LemmaServiceImpl - Завершено. Найдено и обработано 7 уникальных лемм для страницы /page3
-2025-11-19 16:02:18.600 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Pausing ProtocolHandler ["http-nio-8081"]
-2025-11-19 16:02:18.600 [main] INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
-2025-11-19 16:02:18.611 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Stopping ProtocolHandler ["http-nio-8081"]
-2025-11-19 16:02:18.615 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Destroying ProtocolHandler ["http-nio-8081"]
-2025-11-19 16:02:18.619 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-11-19 16:02:18.625 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
-2025-11-19 16:02:18.653 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-11-19 17:23:20.011 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-11-19 17:23:20.107 [Test worker] INFO  searchengine.IndexingServiceTest - Starting IndexingServiceTest using Java 17.0.17 with PID 4880 (started by user in C:\Users\user\IdeaProjects\SpringFramework\website-search-engine)
+2025-11-19 17:23:20.110 [Test worker] INFO  searchengine.IndexingServiceTest - The following 1 profile is active: "test"
+2025-11-19 17:23:22.324 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-19 17:23:22.616 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 266 ms. Found 4 JPA repository interfaces.
+2025-11-19 17:23:23.549 [Test worker] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-11-19 17:23:23.986 [Test worker] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@212e39ee
+2025-11-19 17:23:23.994 [Test worker] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-11-19 17:23:24.381 [Test worker] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-19 17:23:24.659 [Test worker] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.2.24.Final
+2025-11-19 17:23:24.666 [Test worker] INFO  org.hibernate.cfg.Environment - HHH000406: Using bytecode reflection optimizer
+2025-11-19 17:23:25.348 [Test worker] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-19 17:23:25.478 [Test worker] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-11-19 17:23:28.222 [Test worker] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-19 17:23:28.230 [Test worker] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-19 17:23:29.162 [Test worker] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-19 17:23:31.918 [Test worker] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-11-19 17:23:36.145 [Test worker] INFO  searchengine.IndexingServiceTest - Started IndexingServiceTest in 16.646 seconds (process running for 26.12)
+2025-11-19 17:23:41.540 [ForkJoinPool-1-worker-1] INFO  s.services.LemmaServiceImpl - Начало лемматизации для страницы: /
+2025-11-19 17:23:41.673 [ForkJoinPool-1-worker-1] INFO  s.services.LemmaServiceImpl - Завершено. Найдено и обработано 4 уникальных лемм для страницы /
+2025-11-19 17:23:41.867 [ForkJoinPool-1-worker-1] INFO  s.services.LemmaServiceImpl - Начало лемматизации для страницы: /page2
+2025-11-19 17:23:41.965 [ForkJoinPool-1-worker-1] INFO  s.services.LemmaServiceImpl - Завершено. Найдено и обработано 5 уникальных лемм для страницы /page2
+2025-11-19 17:23:42.153 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Страница / уже существует в базе. Пропускаем.
+2025-11-19 17:23:42.198 [ForkJoinPool-1-worker-3] INFO  s.services.LemmaServiceImpl - Начало лемматизации для страницы: /page3
+2025-11-19 17:23:42.370 [ForkJoinPool-1-worker-3] INFO  s.services.LemmaServiceImpl - Завершено. Найдено и обработано 9 уникальных лемм для страницы /page3
+2025-11-19 17:23:43.468 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-19 17:23:43.472 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-11-19 17:23:43.485 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
