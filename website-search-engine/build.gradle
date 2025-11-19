@@ -21,7 +21,7 @@ configurations {
 
 repositories {
 	mavenCentral()
-	// Репозиторий из ТЗ с аутентификацией по токену
+	// Репозиторий из ТЗ с аутентификации по токену
 	maven {
 		url "https://gitlab.skillbox.ru/api/v4/projects/263574/packages/maven"
 		credentials(HttpHeaderCredentials) {
@@ -61,6 +61,28 @@ dependencies {
 	testImplementation 'net.javacrumbs.json-unit:json-unit-spring:2.38.0'
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	// --- ИСПРАВЛЕННЫЕ ЗАВИСИМОСТИ WIREMOCK ---
+	// Используем WireMock 3.x, совместимый со Spring Boot 3.x (Jakarta EE)
+	// Перемещено в 'implementation', чтобы ManualCrawlerRunner мог его видеть.
+	// wiremock-standalone включает свою собственную совместимую версию Jetty.
+	// НЕ добавляйте сюда никаких других зависимостей Jetty или javax.servlet-api.
+	implementation 'org.wiremock:wiremock-standalone:3.6.0'
+	// Если вы планируете писать JUnit тесты с WireMock, добавьте:
+	// testImplementation 'org.wiremock:wiremock-junit5:3.6.0'
+	// Но для ManualCrawlerRunner это не обязательно.
+	// --- КОНЕЦ ИСПРАВЛЕННЫХ ЗАВИСИМОСТЕЙ WIREMOCK ---
+
+	// --- УДАЛЕНЫ КОНФЛИКТУЮЩИЕ ЗАВИСИМОСТИ ---
+	// Удалены:
+	// testImplementation('com.github.tomakehurst:wiremock-jre8:2.35.0') { // Добавлена зависимость WireMock
+	// 	exclude group: 'org.eclipse.jetty', module: 'jetty-server'
+	// 	exclude group: 'org.eclipse.jetty', module: 'jetty-servlet'
+	// }
+	// testImplementation 'org.eclipse.jetty:jetty-server:9.4.51.v20230217'
+	// testImplementation 'org.eclipse.jetty:jetty-servlet:9.4.51.v20230217'
+	// testImplementation 'javax.servlet:javax.servlet-api:4.0.1' // Добавлена для WireMock совместимости со Spring Boot 3.x
+	// --- КОНЕЦ УДАЛЕННЫХ ЗАВИСИМОСТЕЙ ---
 }
 
 

@@ -5,129 +5,95 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import searchengine.config.CrawlerConfig;
 import searchengine.model.Page;
 import searchengine.model.Site;
-import searchengine.model.Status;
 import searchengine.repository.PageRepository;
-import searchengine.repository.SiteRepository;
 
-import java.time.LocalDateTime;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.RecursiveAction;
 
 @RequiredArgsConstructor
 @Slf4j
 public class SiteCrawler extends RecursiveAction {
 
+    private static volatile Set<String> visitedUrls;
+
     private final Site site;
     private final String url;
-    private final IndexingService indexingService;
-    private final SiteRepository siteRepository;
+    private final CrawlerConfig crawlerConfig;
     private final PageRepository pageRepository;
     private final LemmaService lemmaService;
-    private final Set<String> visitedUrls;
-    private final CrawlerConfig crawlerConfig;
+
+    public static void init() {
+        visitedUrls = ConcurrentHashMap.newKeySet();
+    }
 
     @Override
     protected void compute() {
-        if (!indexingService.isIndexing() || Thread.currentThread().isInterrupted()) {
+        if (visitedUrls.contains(url) || !IndexingServiceImpl.isIndexing.get()) {
             return;
         }
-
-        if (!visitedUrls.add(url)) {
-            return;
-        }
-
-        log.debug("Обход страницы: {}", url);
+        visitedUrls.add(url);
 
         try {
-            Thread.sleep(crawlerConfig.getDelay());
+            Thread.sleep(150);
+            String path = new URL(url).getPath();
+
+            if (pageRepository.findByPathAndSite(path, site).isPresent()) {
+                log.debug("Страница {} уже существует в базе. Пропускаем.", path);
+                return;
+            }
 
             Connection.Response response = Jsoup.connect(url)
                     .userAgent(crawlerConfig.getUserAgent())
                     .referrer(crawlerConfig.getReferrer())
-                    .ignoreContentType(true)
-                    .ignoreHttpErrors(true)
                     .execute();
 
             int statusCode = response.statusCode();
-            String content = (response.contentType() != null && response.contentType().startsWith("text/html"))
-                    ? response.body() : "";
-
-            String path = url.replaceFirst(site.getUrl(), "");
-            if (path.isEmpty()) {
-                path = "/";
-            }
+            Document document = response.parse();
+            String content = document.outerHtml();
 
             Page page = new Page();
             page.setSite(site);
-            page.setPath(path);
+            page.setPath(path.isEmpty() ? "/" : path);
             page.setCode(statusCode);
             page.setContent(content);
             pageRepository.save(page);
-            log.info("Сохранена страница: {} (Статус: {})", url, statusCode);
 
-            if (statusCode < 400 && !content.isEmpty()) {
+            if (statusCode >= 200 && statusCode < 300) {
                 lemmaService.lemmatizePage(page);
 
-                Document doc = response.parse();
-                Elements links = doc.select("a[href]");
                 List<SiteCrawler> tasks = new ArrayList<>();
+                document.select("a[href]").stream()
+                        .map(link -> link.absUrl("href"))
+                        .filter(this::isLinkValid)
+                        .forEach(link -> {
+                            SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, lemmaService);
+                            tasks.add(task);
+                            task.fork();
+                        });
 
-                for (Element link : links) {
-                    String absUrl = link.attr("abs:href");
-                    if (isValidLink(absUrl)) {
-
-                        tasks.add(new SiteCrawler(site, absUrl, indexingService, siteRepository, pageRepository, lemmaService, visitedUrls, crawlerConfig));
-                    }
-                }
-
-                if (!tasks.isEmpty()) {
-                    invokeAll(tasks);
+                for (SiteCrawler task : tasks) {
+                    task.join();
                 }
             }
 
-        } catch (InterruptedException | CancellationException e) {
-            Thread.currentThread().interrupt();
-            log.warn("Обход страницы {} прерван.", url);
         } catch (Exception e) {
-
-            handleError("Ошибка при обходе страницы " + url + ": " + e.getMessage());
+            log.error("Error parsing URL: {} or thread was interrupted. Error: {}", url, e.getMessage());
         }
     }
 
-    private boolean isValidLink(String link) {
-        if (link == null || link.isBlank()) {
-            return false;
-        }
-        String normalizedLink = normalizeUrl(link);
-        if (!normalizedLink.startsWith(normalizeUrl(site.getUrl()))) {
-            return false;
-        }
-        if (normalizedLink.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|zip|rar|exe|mp3|mp4|avi|ppt|pptx)$")) {
-            return false;
-        }
-        return !normalizedLink.contains("#");
-    }
-
-    private String normalizeUrl(String url) {
-        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
-    }
-
-
-    private void handleError(String errorMessage) {
-        log.error(errorMessage);
-        siteRepository.findById(site.getId()).ifPresent(s -> {
-            s.setStatus(Status.FAILED);
-            s.setLastError(errorMessage);
-            s.setStatusTime(LocalDateTime.now());
-            siteRepository.save(s);
-        });
+    private boolean isLinkValid(String link) {
+        return !link.isEmpty() &&
+                link.startsWith(site.getUrl()) &&
+                !link.equals(site.getUrl()) &&
+                !visitedUrls.contains(link) &&
+                !link.contains("#") &&
+                !link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|exe|mp3|mp4|avi|mov)$");
     }
 }

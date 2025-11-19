@@ -31,7 +31,6 @@ public class LemmaServiceImpl implements LemmaService {
     @Override
     @Transactional
     public void lemmatizePage(Page page) {
-        // --- ЛОГ НАЧАЛА ---
         log.info("Начало лемматизации для страницы: {}", page.getPath());
 
         Site site = page.getSite();
@@ -47,7 +46,6 @@ public class LemmaServiceImpl implements LemmaService {
             Map<String, Integer> lemmasFromText = collectLemmas(text);
 
             if (lemmasFromText.isEmpty()) {
-                // --- ЛОГ, ЕСЛИ ЛЕММ НЕ НАЙДЕНО ---
                 log.warn("Для страницы {} не найдено подходящих лемм.", page.getPath());
                 return;
             }
@@ -58,7 +56,6 @@ public class LemmaServiceImpl implements LemmaService {
 
                 Lemma lemma;
                 try {
-                    // Пытаемся найти лемму. Если нет - создаем и сохраняем.
                     lemma = lemmaRepository.findByLemmaAndSite(lemmaString, site)
                             .orElseGet(() -> {
                                 Lemma newLemma = new Lemma();
@@ -68,24 +65,32 @@ public class LemmaServiceImpl implements LemmaService {
                                 return lemmaRepository.save(newLemma);
                             });
                 } catch (DataIntegrityViolationException e) {
-                    // ИСПРАВЛЕНО: Если другой поток уже создал лемму, ловим ошибку и просто загружаем ее.
                     log.warn("Произошла гонка потоков при создании леммы '{}'. Повторно загружаем.", lemmaString);
                     lemma = lemmaRepository.findByLemmaAndSite(lemmaString, site)
                             .orElseThrow(() -> new IllegalStateException("Не удалось найти лемму после гонки потоков: " + lemmaString));
                 }
 
-                // Увеличиваем частоту леммы для сайта
                 lemma.setFrequency(lemma.getFrequency() + 1);
                 lemmaRepository.save(lemma);
 
-                // Создаем новый индекс
-                Index index = new Index();
-                index.setPage(page);
-                index.setLemma(lemma);
-                index.setRank(rank.floatValue());
-                indexRepository.save(index);
+                // --- ИСПРАВЛЕНО: НАЧАЛО БЛОКА ---
+                // Проверяем, существует ли уже индекс для данной леммы и страницы
+                Optional<Index> optionalIndex = indexRepository.findByLemmaAndPage(lemma, page);
+                if (optionalIndex.isPresent()) {
+                    // Если индекс существует, увеличиваем его rank
+                    Index existingIndex = optionalIndex.get();
+                    existingIndex.setRank(existingIndex.getRank() + rank.floatValue());
+                    indexRepository.save(existingIndex);
+                } else {
+                    // Если индекс не существует, создаем новый
+                    Index newIndex = new Index();
+                    newIndex.setPage(page);
+                    newIndex.setLemma(lemma);
+                    newIndex.setRank(rank.floatValue());
+                    indexRepository.save(newIndex);
+                }
+                // --- ИСПРАВЛЕНО: КОНЕЦ БЛОКА ---
             }
-            // --- ЛОГ ЗАВЕРШЕНИЯ ---
             log.info("Завершено. Найдено и обработано {} уникальных лемм для страницы {}", lemmasFromText.size(), page.getPath());
         }
     }

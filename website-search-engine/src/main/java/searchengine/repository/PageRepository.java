@@ -18,6 +18,8 @@ public interface PageRepository extends JpaRepository<Page, Integer> {
     @Transactional
     void deleteAllBySite(Site site);
 
+    List<Page> findBySite(Site site); // ДОБАВЛЕН МЕТОД
+
     @Query("SELECT p FROM Page p JOIN Index i ON p.id = i.page.id WHERE i.lemma.id = :lemmaId")
     List<Page> findByLemma(@Param("lemmaId") int lemmaId);
 
