@@ -6,6 +6,9 @@ import org.apache.lucene.morphology.LuceneMorphology;
 import org.apache.lucene.morphology.english.EnglishLuceneMorphology;
 import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import searchengine.model.Index;
@@ -25,13 +28,11 @@ public class LemmaServiceImpl implements LemmaService {
     private final LemmaRepository lemmaRepository;
     private final IndexRepository indexRepository;
 
-    // --- ИЗМЕНЕНИЯ НАЧИНАЮТСЯ ЗДЕСЬ ---
-
     @Override
     @Transactional
     public void lemmatizePage(Page page) {
-        // --- ШАГ 2.1: ОЧИСТКА СТАРЫХ ДАННЫХ (уже реализован) ---
         List<Index> oldIndices = indexRepository.findByPage(page);
+
         if (!oldIndices.isEmpty()) {
             log.debug("Обнаружены старые данные для страницы {}. Начинаю очистку...", page.getPath());
             for (Index oldIndex : oldIndices) {
@@ -46,9 +47,18 @@ public class LemmaServiceImpl implements LemmaService {
             indexRepository.deleteAll(oldIndices);
         }
 
-        // --- ШАГ 2.2: СОХРАНЕНИЕ НОВЫХ ДАННЫХ (исправленная логика) ---
-        String content = Jsoup.parse(page.getContent()).text();
-        Map<String, Integer> lemmasFromPage = collectLemmas(content);
+        // --- ПРАВИЛЬНАЯ ЛОГИКА ИЗВЛЕЧЕНИЯ ТЕКСТА ---
+        Document doc = Jsoup.parse(page.getContent());
+        Elements paragraphs = doc.select("p"); // Выбираем только теги <p>
+
+        StringBuilder textBuilder = new StringBuilder();
+        for (Element p : paragraphs) {
+            textBuilder.append(p.text()).append(" "); // Извлекаем текст из каждого <p>
+        }
+        String textForLemmas = textBuilder.toString().trim();
+        // --- КОНЕЦ ---
+
+        Map<String, Integer> lemmasFromPage = collectLemmas(textForLemmas);
 
         if (lemmasFromPage.isEmpty()) {
             log.warn("Для страницы {} не найдено подходящих лемм.", page.getPath());
@@ -59,30 +69,25 @@ public class LemmaServiceImpl implements LemmaService {
             String lemmaString = lemmaEntry.getKey();
             Integer rankOnPage = lemmaEntry.getValue();
 
-            // 1. Найти или создать Лемму
             Lemma lemma = lemmaRepository.findByLemmaAndSite(lemmaString, page.getSite())
                     .orElseGet(() -> {
                         Lemma newLemma = new Lemma();
                         newLemma.setLemma(lemmaString);
                         newLemma.setSite(page.getSite());
-                        newLemma.setFrequency(0); // Изначально 0, т.к. мы сейчас увеличим
+                        newLemma.setFrequency(0);
                         return newLemma;
                     });
 
-            // 2. Увеличить общую частоту (frequency)
             lemma.setFrequency(lemma.getFrequency() + 1);
             lemmaRepository.save(lemma);
 
-            // 3. Создать НОВЫЙ Индекс с правильным rank
             Index newIndex = new Index();
             newIndex.setPage(page);
             newIndex.setLemma(lemma);
-            newIndex.setRank(rankOnPage.floatValue()); // Прямое присвоение, а не накопление
+            newIndex.setRank(rankOnPage.floatValue());
             indexRepository.save(newIndex);
         }
     }
-
-    // --- ОСТАЛЬНОЙ КОД БЕЗ ИЗМЕНЕНИЙ ---
 
     @Override
     public Set<String> getLemmaSet(String text) {
