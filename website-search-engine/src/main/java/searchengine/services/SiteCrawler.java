@@ -35,10 +35,17 @@ public class SiteCrawler extends RecursiveAction {
 
     @Override
     protected void compute() {
-        if (visitedUrls.contains(url) || !IndexingServiceImpl.isIndexing.get()) {
+        String normalizedUrl = normalizeUrl(url);
+        log.info("Начинаю обработку: {}", normalizedUrl);
+
+        if (!visitedUrls.add(normalizedUrl)) {
+            log.warn("Уже посещено: {}. Пропускаю.", normalizedUrl);
             return;
         }
-        visitedUrls.add(url);
+        if (!IndexingServiceImpl.isIndexing.get()) {
+            log.warn("Индексация остановлена. Прерываю задачу для {}.", normalizedUrl);
+            return;
+        }
 
         try {
             Thread.sleep(150);
@@ -64,18 +71,25 @@ public class SiteCrawler extends RecursiveAction {
             page.setCode(statusCode);
             page.setContent(content);
             pageRepository.save(page);
+            log.info("Сохранена страница: {} (Код: {})", normalizedUrl, statusCode);
+
 
             if (statusCode >= 200 && statusCode < 300) {
                 lemmaService.lemmatizePage(page);
 
                 List<SiteCrawler> tasks = new ArrayList<>();
+                log.debug("Ищу ссылки на странице {}", normalizedUrl);
                 document.select("a[href]").stream()
                         .map(link -> link.absUrl("href"))
-                        .filter(this::isLinkValid)
                         .forEach(link -> {
-                            SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, lemmaService);
-                            tasks.add(task);
-                            task.fork();
+                            if (isLinkValid(link)) {
+                                log.info("Найдена валидная ссылка: {} -> {}. Создаю подзадачу.", normalizedUrl, link);
+                                SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, lemmaService);
+                                tasks.add(task);
+                                task.fork();
+                            } else {
+                                log.debug("Ссылка {} отброшена как невалидная.", link);
+                            }
                         });
 
                 for (SiteCrawler task : tasks) {
@@ -84,16 +98,29 @@ public class SiteCrawler extends RecursiveAction {
             }
 
         } catch (Exception e) {
-            log.error("Error parsing URL: {} or thread was interrupted. Error: {}", url, e.getMessage());
+            log.error("Ошибка при обработке URL: {}. Ошибка: {}", url, e.getMessage());
         }
     }
 
     private boolean isLinkValid(String link) {
-        return !link.isEmpty() &&
-                link.startsWith(site.getUrl()) &&
-                !link.equals(site.getUrl()) &&
-                !visitedUrls.contains(link) &&
-                !link.contains("#") &&
-                !link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|exe|mp3|mp4|avi|mov)$");
+        boolean isEmpty = link.isEmpty();
+        boolean startsWithSite = link.startsWith(site.getUrl());
+        boolean isVisited = visitedUrls.contains(normalizeUrl(link));
+        boolean hasAnchor = link.contains("#");
+        boolean isFile = link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|exe|mp3|mp4|avi|mov)$");
+
+        if (isEmpty || !startsWithSite || isVisited || hasAnchor || isFile) {
+            log.trace("Проверка ссылки {}: isEmpty={}, startsWithSite={}, isVisited={}, hasAnchor={}, isFile={}",
+                    link, isEmpty, startsWithSite, isVisited, hasAnchor, isFile);
+            return false;
+        }
+        return true;
+    }
+
+    private String normalizeUrl(String urlToNormalize) {
+        if (urlToNormalize != null && urlToNormalize.endsWith("/")) {
+            return urlToNormalize.substring(0, urlToNormalize.length() - 1);
+        }
+        return urlToNormalize;
     }
 }

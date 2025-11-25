@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.1.11'
-	id 'io.spring.dependency-management' version '1.1.4'
+	id 'org.springframework.boot' version '3.2.0'
+	id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group = "com.example"
@@ -61,13 +61,18 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.wiremock:wiremock-standalone:3.6.0'
-    // Testcontainers для запуска настоящей БД в Docker во время тестов
-    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testImplementation 'org.testcontainers:junit-jupiter'
-    testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'com.h2database:h2'
+
+    // *** ИСПРАВЛЕНИЕ: Добавляем Lombok для тестов ***
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 
-tasks.withType(Test) {
+tasks.named('test') {
 	useJUnitPlatform()
+	reports {
+		junitXml.required.set(true)
+		html.required.set(true)
+	}
 }

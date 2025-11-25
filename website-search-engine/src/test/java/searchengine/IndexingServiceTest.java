@@ -1,44 +1,32 @@
 package searchengine;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import searchengine.config.CrawlerConfig;
-import searchengine.model.Site;
-import searchengine.model.Status;
+import searchengine.config.SiteConfig;
+import searchengine.config.SitesListConfig;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
-import searchengine.services.IndexingServiceImpl;
-import searchengine.services.LemmaService;
-import searchengine.services.SiteCrawler;
+import searchengine.services.IndexingService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.concurrent.ForkJoinPool;
+import java.util.Collections;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@Testcontainers
 @ActiveProfiles("test")
+@Slf4j
 public class IndexingServiceTest {
-
-    // 2. Определяем контейнер PostgreSQL, который будет запущен для тестов
-    @Container
-    @ServiceConnection // 3. Spring Boot автоматически подключится к этому контейнеру
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
 
     @Autowired
     private SiteRepository siteRepository;
@@ -47,33 +35,36 @@ public class IndexingServiceTest {
     private PageRepository pageRepository;
 
     @Autowired
-    private CrawlerConfig crawlerConfig;
+    private IndexingService indexingService;
 
-    @Autowired
-    private LemmaService lemmaService;
+    @MockBean
+    private SitesListConfig sitesListConfig;
 
     private WireMockServer wireMockServer;
 
     @BeforeEach
     void setUp() throws IOException {
-        // Запускаем WireMock на случайном свободном порту
         wireMockServer = new WireMockServer();
         wireMockServer.start();
         configureFor("localhost", wireMockServer.port());
 
-        // Полностью очищаем таблицы перед каждым тестом для изоляции.
         pageRepository.deleteAll();
         siteRepository.deleteAll();
 
-        // Настраиваем WireMock, чтобы он отдавал содержимое наших файлов
+        // Конфигурация мока для тестового сайта вынесена сюда,
+        // так как она общая для большинства тестов.
+        SiteConfig siteConfig = new SiteConfig();
+        siteConfig.setUrl(wireMockServer.baseUrl());
+        siteConfig.setName("Test Site");
+        when(sitesListConfig.getSites()).thenReturn(Collections.singletonList(siteConfig));
+
+        // Настройка моков для страниц
         stubFor(get(urlEqualTo("/")).willReturn(aResponse()
                 .withHeader("Content-Type", "text/html")
                 .withBody(readTestResource("test-site/index.html"))));
-
         stubFor(get(urlEqualTo("/page2")).willReturn(aResponse()
                 .withHeader("Content-Type", "text/html")
                 .withBody(readTestResource("test-site/page2.html"))));
-
         stubFor(get(urlEqualTo("/page3")).willReturn(aResponse()
                 .withHeader("Content-Type", "text/html")
                 .withBody(readTestResource("test-site/page3.html"))));
@@ -82,43 +73,109 @@ public class IndexingServiceTest {
     @AfterEach
     void tearDown() {
         wireMockServer.stop();
-        IndexingServiceImpl.isIndexing.set(false); // На всякий случай сбрасываем флаг после теста
     }
 
     @Test
-    void shouldIndexAllPagesFromTestSite() {
-        // 1. Подготовка: создаем и сохраняем сайт, который будем индексировать
-        String rootUrl = wireMockServer.baseUrl();
-        Site site = new Site();
-        site.setUrl(rootUrl);
-        site.setName("Test Site");
-        site.setStatus(Status.INDEXING);
-        site.setStatusTime(LocalDateTime.now());
-        siteRepository.save(site);
+    @DisplayName("Успешная индексация: сервис должен найти и сохранить все 3 страницы с тестового сайта.")
+    void shouldIndexAllPagesFromTestSite() throws InterruptedException {
+        // Action
+        boolean result = indexingService.startIndexing();
+        assertTrue(result, "Запуск индексации должен вернуть true");
 
-        // 2. Действие: инициализируем и запускаем краулер
-        SiteCrawler.init(); // Сбрасываем кеш посещенных ссылок
-        IndexingServiceImpl.isIndexing.set(true); // <-- ВКЛЮЧАЕМ ИНДЕКСАЦИЮ ДЛЯ ТЕСТА
+        waitForIndexingToComplete();
 
-        ForkJoinPool forkJoinPool = new ForkJoinPool();
-
-        // Получаем управляемую JPA-сущность сайта из БД
-        Site managedSite = siteRepository.findByUrl(rootUrl).orElseThrow();
-
-        SiteCrawler task = new SiteCrawler(managedSite, rootUrl, crawlerConfig, pageRepository, lemmaService);
-        forkJoinPool.invoke(task);
-
-        // 3. Проверка: убеждаемся, что в базе данных ровно 3 страницы
+        // Assert
         long expectedPageCount = 3;
         long actualPageCount = pageRepository.count();
-
-        System.out.println("Ожидаемое количество страниц: " + expectedPageCount);
-        System.out.println("Фактическое количество страниц: " + actualPageCount);
-
+        log.info("Проверка результата: ожидается {}, в базе данных найдено: {}", expectedPageCount, actualPageCount);
         assertEquals(expectedPageCount, actualPageCount, "Количество проиндексированных страниц должно быть равно 3.");
     }
 
-    // Вспомогательный метод для чтения файлов из тестовых ресурсов
+    @Test
+    @DisplayName("Повторная индексация: при повторном запуске сервис должен сначала удалить старые данные, а затем проиндексировать сайт заново. Итоговое количество страниц не должно измениться.")
+    void shouldReIndexSiteCorrectly() throws InterruptedException {
+        log.info("Тест повторной индексации: запуск первого прохода...");
+        indexingService.startIndexing();
+        waitForIndexingToComplete();
+
+        long countAfterFirstRun = pageRepository.count();
+        assertEquals(3, countAfterFirstRun, "После первого запуска должно быть 3 страницы.");
+        log.info("Первый проход завершен. В базе {} страниц.", countAfterFirstRun);
+
+        log.info("Тест повторной индексации: запуск второго прохода...");
+        indexingService.startIndexing();
+        waitForIndexingToComplete();
+
+        long countAfterSecondRun = pageRepository.count();
+        log.info("Второй проход завершен. В базе {} страниц.", countAfterSecondRun);
+        assertEquals(3, countAfterSecondRun, "После повторной индексации количество страниц не должно измениться.");
+    }
+
+    @Test
+    @DisplayName("Остановка индексации: при вызове stopIndexing() процесс должен быть прерван, в результате чего в базе сохранится меньше страниц, чем есть на сайте.")
+    void shouldStopIndexingMidway() throws InterruptedException {
+        log.info("Тест остановки индексации: запуск...");
+        indexingService.startIndexing();
+        // Даем краулеру немного времени, чтобы он начал работу
+        Thread.sleep(500);
+
+        log.info("Отправка команды на остановку...");
+        boolean stopResult = indexingService.stopIndexing();
+        assertTrue(stopResult, "Остановка индексации должна вернуть true");
+
+        // Ждем фактической остановки потоков
+        waitForIndexingToComplete();
+
+        long actualPageCount = pageRepository.count();
+        log.info("Индексация остановлена. В базе найдено {} страниц.", actualPageCount);
+        assertTrue(actualPageCount < 3 && actualPageCount > 0, "Количество страниц должно быть больше 0, но меньше 3, если остановка прошла успешно.");
+    }
+
+    @Test
+    @DisplayName("Обработка ошибок сети: если одна из страниц возвращает ошибку (500), сервис должен пропустить ее, залогировать ошибку и продолжить работу, не падая.")
+    void shouldHandleSiteErrorGracefully() throws InterruptedException {
+        log.info("Тест обработки ошибок: настройка мока на возврат ошибки 500...");
+        // Переопределяем мок для одной из страниц, чтобы он возвращал ошибку
+        stubFor(get(urlEqualTo("/page2")).willReturn(aResponse().withStatus(500)));
+
+        indexingService.startIndexing();
+        waitForIndexingToComplete();
+
+        long actualPageCount = pageRepository.count();
+        log.info("Индексация с ошибкой завершена. В базе найдено {} страниц.", actualPageCount);
+        // Ожидаем, что будет проиндексирована только главная страница,
+        // так как ссылка на page3 находится на недоступной page2.
+        assertEquals(1, actualPageCount, "Должна быть проиндексирована только одна страница, остальные должны быть пропущены из-за ошибки.");
+    }
+
+    @Test
+    @Disabled("Функционал еще не реализован в IndexingServiceImpl.indexPage")
+    @DisplayName("Индексация одной страницы: сервис должен корректно индексировать одну указанную страницу (когда функционал будет реализован).")
+    void shouldIndexSinglePageCorrectly() {
+        // TODO: Реализовать логику в IndexingServiceImpl.indexPage и затем этот тест
+
+        // 1. Действие
+        boolean result = indexingService.indexPage(wireMockServer.baseUrl() + "/page2");
+        assertTrue(result);
+
+        // 2. Проверка
+        assertEquals(1, pageRepository.count());
+        assertEquals("/page2", pageRepository.findAll().get(0).getPath());
+    }
+
+    // Вспомогательный метод, чтобы не дублировать код ожидания
+    private void waitForIndexingToComplete() throws InterruptedException {
+        // Ждем, пока флаг isIndexing не станет false, с таймаутом
+        int maxWaitTimeSeconds = 30;
+        while (indexingService.isIndexing() && maxWaitTimeSeconds > 0) {
+            Thread.sleep(1000);
+            maxWaitTimeSeconds--;
+        }
+        if (indexingService.isIndexing()) {
+            fail("Индексация не завершилась за 30 секунд.");
+        }
+    }
+
     private String readTestResource(String path) throws IOException {
         return Files.readString(Paths.get("src/test/resources/" + path), StandardCharsets.UTF_8);
     }

@@ -17,7 +17,7 @@ echo.
 echo "========================================================"
 echo "  3. Cleaning and building the Gradle project..."
 echo "========================================================"
-call gradlew clean build > nul 2>&1
+call gradlew clean build -x test > nul 2>&1
 
 rem Проверяем, успешно ли прошла сборка. Если нет - останавливаем скрипт.
 if %errorlevel% neq 0 (

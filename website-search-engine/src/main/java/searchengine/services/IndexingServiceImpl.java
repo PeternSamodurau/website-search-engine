@@ -47,11 +47,7 @@ public class IndexingServiceImpl implements IndexingService {
                             log.info("Индексация остановлена пользователем. Пропускаем оставшиеся сайты.");
                             break;
                         }
-
-                        // --- ИСПРАВЛЕНО: НАЧАЛО БЛОКА ---
-                        // Явная и безопасная логика удаления
                         siteRepository.findByUrl(siteConfig.getUrl()).ifPresent(this::deleteSiteData);
-                        // --- ИСПРАВЛЕНО: КОНЕЦ БЛОКА ---
 
                         Site site = new Site();
                         site.setUrl(siteConfig.getUrl());
