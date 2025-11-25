@@ -48,17 +48,15 @@ public class IndexingServiceTest {
         wireMockServer.start();
         configureFor("localhost", wireMockServer.port());
 
+        // ВАЖНО: Очищаем только те репозитории, которые относятся к этому тесту
         pageRepository.deleteAll();
         siteRepository.deleteAll();
 
-        // Конфигурация мока для тестового сайта вынесена сюда,
-        // так как она общая для большинства тестов.
         SiteConfig siteConfig = new SiteConfig();
         siteConfig.setUrl(wireMockServer.baseUrl());
         siteConfig.setName("Test Site");
         when(sitesListConfig.getSites()).thenReturn(Collections.singletonList(siteConfig));
 
-        // Настройка моков для страниц
         stubFor(get(urlEqualTo("/")).willReturn(aResponse()
                 .withHeader("Content-Type", "text/html")
                 .withBody(readTestResource("test-site/index.html"))));
@@ -78,13 +76,11 @@ public class IndexingServiceTest {
     @Test
     @DisplayName("Успешная индексация: сервис должен найти и сохранить все 3 страницы с тестового сайта.")
     void shouldIndexAllPagesFromTestSite() throws InterruptedException {
-        // Action
         boolean result = indexingService.startIndexing();
         assertTrue(result, "Запуск индексации должен вернуть true");
 
         waitForIndexingToComplete();
 
-        // Assert
         long expectedPageCount = 3;
         long actualPageCount = pageRepository.count();
         log.info("Проверка результата: ожидается {}, в базе данных найдено: {}", expectedPageCount, actualPageCount);
@@ -116,14 +112,12 @@ public class IndexingServiceTest {
     void shouldStopIndexingMidway() throws InterruptedException {
         log.info("Тест остановки индексации: запуск...");
         indexingService.startIndexing();
-        // Даем краулеру немного времени, чтобы он начал работу
         Thread.sleep(500);
 
         log.info("Отправка команды на остановку...");
         boolean stopResult = indexingService.stopIndexing();
         assertTrue(stopResult, "Остановка индексации должна вернуть true");
 
-        // Ждем фактической остановки потоков
         waitForIndexingToComplete();
 
         long actualPageCount = pageRepository.count();
@@ -135,7 +129,6 @@ public class IndexingServiceTest {
     @DisplayName("Обработка ошибок сети: если одна из страниц возвращает ошибку (500), сервис должен пропустить ее, залогировать ошибку и продолжить работу, не падая.")
     void shouldHandleSiteErrorGracefully() throws InterruptedException {
         log.info("Тест обработки ошибок: настройка мока на возврат ошибки 500...");
-        // Переопределяем мок для одной из страниц, чтобы он возвращал ошибку
         stubFor(get(urlEqualTo("/page2")).willReturn(aResponse().withStatus(500)));
 
         indexingService.startIndexing();
@@ -143,29 +136,22 @@ public class IndexingServiceTest {
 
         long actualPageCount = pageRepository.count();
         log.info("Индексация с ошибкой завершена. В базе найдено {} страниц.", actualPageCount);
-        // Ожидаем, что будет проиндексирована только главная страница,
-        // так как ссылка на page3 находится на недоступной page2.
         assertEquals(1, actualPageCount, "Должна быть проиндексирована только одна страница, остальные должны быть пропущены из-за ошибки.");
     }
 
     @Test
-    @Disabled("Функционал еще не реализован в IndexingServiceImpl.indexPage")
-    @DisplayName("Индексация одной страницы: сервис должен корректно индексировать одну указанную страницу (когда функционал будет реализован).")
+    @DisplayName("Индексация одной страницы: сервис должен корректно индексировать одну указанную страницу.")
     void shouldIndexSinglePageCorrectly() {
-        // TODO: Реализовать логику в IndexingServiceImpl.indexPage и затем этот тест
-
         // 1. Действие
         boolean result = indexingService.indexPage(wireMockServer.baseUrl() + "/page2");
-        assertTrue(result);
+        assertTrue(result, "Индексация отдельной страницы должна вернуть true");
 
-        // 2. Проверка
-        assertEquals(1, pageRepository.count());
-        assertEquals("/page2", pageRepository.findAll().get(0).getPath());
+        // 2. Проверка (только для Page)
+        assertEquals(1, pageRepository.count(), "В базе должна быть одна страница.");
+        assertEquals("/page2", pageRepository.findAll().get(0).getPath(), "Путь сохраненной страницы должен быть /page2.");
     }
 
-    // Вспомогательный метод, чтобы не дублировать код ожидания
     private void waitForIndexingToComplete() throws InterruptedException {
-        // Ждем, пока флаг isIndexing не станет false, с таймаутом
         int maxWaitTimeSeconds = 30;
         while (indexingService.isIndexing() && maxWaitTimeSeconds > 0) {
             Thread.sleep(1000);

@@ -9,8 +9,10 @@ import searchengine.config.CrawlerConfig;
 import searchengine.model.Page;
 import searchengine.model.Site;
 import searchengine.repository.PageRepository;
+import searchengine.repository.SiteRepository;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +30,7 @@ public class SiteCrawler extends RecursiveAction {
     private final CrawlerConfig crawlerConfig;
     private final PageRepository pageRepository;
     private final LemmaService lemmaService;
+    private final SiteRepository siteRepository;
 
     public static void init() {
         visitedUrls = ConcurrentHashMap.newKeySet();
@@ -73,6 +76,8 @@ public class SiteCrawler extends RecursiveAction {
             pageRepository.save(page);
             log.info("Сохранена страница: {} (Код: {})", normalizedUrl, statusCode);
 
+            site.setStatusTime(LocalDateTime.now());
+            siteRepository.save(site);
 
             if (statusCode >= 200 && statusCode < 300) {
                 lemmaService.lemmatizePage(page);
@@ -84,7 +89,7 @@ public class SiteCrawler extends RecursiveAction {
                         .forEach(link -> {
                             if (isLinkValid(link)) {
                                 log.info("Найдена валидная ссылка: {} -> {}. Создаю подзадачу.", normalizedUrl, link);
-                                SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, lemmaService);
+                                SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, lemmaService, siteRepository);
                                 tasks.add(task);
                                 task.fork();
                             } else {
