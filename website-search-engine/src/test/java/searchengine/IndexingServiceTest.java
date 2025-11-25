@@ -9,6 +9,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import searchengine.config.SiteConfig;
 import searchengine.config.SitesListConfig;
+import searchengine.repository.IndexRepository;
+import searchengine.repository.LemmaRepository;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 import searchengine.services.IndexingService;
@@ -35,6 +37,12 @@ public class IndexingServiceTest {
     private PageRepository pageRepository;
 
     @Autowired
+    private LemmaRepository lemmaRepository;
+
+    @Autowired
+    private IndexRepository indexRepository;
+
+    @Autowired
     private IndexingService indexingService;
 
     @MockBean
@@ -48,7 +56,9 @@ public class IndexingServiceTest {
         wireMockServer.start();
         configureFor("localhost", wireMockServer.port());
 
-        // ВАЖНО: Очищаем только те репозитории, которые относятся к этому тесту
+        // ИСПРАВЛЕНО: Правильный порядок очистки таблиц во избежание ConstraintViolationException
+        indexRepository.deleteAll();
+        lemmaRepository.deleteAll();
         pageRepository.deleteAll();
         siteRepository.deleteAll();
 
