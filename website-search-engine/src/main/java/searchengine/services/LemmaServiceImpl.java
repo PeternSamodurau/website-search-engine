@@ -7,6 +7,7 @@ import org.apache.lucene.morphology.english.EnglishLuceneMorphology;
 import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import searchengine.model.Index;
 import searchengine.model.Lemma;
 import searchengine.model.Page;
@@ -24,58 +25,69 @@ public class LemmaServiceImpl implements LemmaService {
     private final LemmaRepository lemmaRepository;
     private final IndexRepository indexRepository;
 
+    // --- ИЗМЕНЕНИЯ НАЧИНАЮТСЯ ЗДЕСЬ ---
+
     @Override
+    @Transactional
     public void lemmatizePage(Page page) {
-        // ЭТОТ МЕТОД ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ - ОН УЖЕ РАБОТАЕТ ПРАВИЛЬНО
+        // --- ШАГ 2.1: ОЧИСТКА СТАРЫХ ДАННЫХ (уже реализован) ---
+        List<Index> oldIndices = indexRepository.findByPage(page);
+        if (!oldIndices.isEmpty()) {
+            log.debug("Обнаружены старые данные для страницы {}. Начинаю очистку...", page.getPath());
+            for (Index oldIndex : oldIndices) {
+                Lemma lemma = oldIndex.getLemma();
+                lemma.setFrequency(lemma.getFrequency() - 1);
+                if (lemma.getFrequency() == 0) {
+                    lemmaRepository.delete(lemma);
+                } else {
+                    lemmaRepository.save(lemma);
+                }
+            }
+            indexRepository.deleteAll(oldIndices);
+        }
+
+        // --- ШАГ 2.2: СОХРАНЕНИЕ НОВЫХ ДАННЫХ (исправленная логика) ---
         String content = Jsoup.parse(page.getContent()).text();
-        Map<String, Integer> lemmas = collectLemmas(content);
+        Map<String, Integer> lemmasFromPage = collectLemmas(content);
 
-        for (Map.Entry<String, Integer> lemmaEntry : lemmas.entrySet()) {
+        if (lemmasFromPage.isEmpty()) {
+            log.warn("Для страницы {} не найдено подходящих лемм.", page.getPath());
+            return;
+        }
+
+        for (Map.Entry<String, Integer> lemmaEntry : lemmasFromPage.entrySet()) {
             String lemmaString = lemmaEntry.getKey();
-            Integer rank = lemmaEntry.getValue();
+            Integer rankOnPage = lemmaEntry.getValue();
 
-            lemmaRepository.findByLemmaAndSite(lemmaString, page.getSite()).ifPresentOrElse(
-                    lemma -> {
-                        lemma.setFrequency(lemma.getFrequency() + 1);
-                        lemmaRepository.save(lemma);
-
-                        indexRepository.findByLemmaAndPage(lemma, page).ifPresentOrElse(
-                                existingIndex -> {
-                                    existingIndex.setRank(existingIndex.getRank() + rank.floatValue());
-                                    indexRepository.save(existingIndex);
-                                },
-                                () -> {
-                                    Index newIndex = new Index();
-                                    newIndex.setLemma(lemma);
-                                    newIndex.setPage(page);
-                                    newIndex.setRank(rank.floatValue());
-                                    indexRepository.save(newIndex);
-                                }
-                        );
-                    },
-                    () -> {
+            // 1. Найти или создать Лемму
+            Lemma lemma = lemmaRepository.findByLemmaAndSite(lemmaString, page.getSite())
+                    .orElseGet(() -> {
                         Lemma newLemma = new Lemma();
                         newLemma.setLemma(lemmaString);
                         newLemma.setSite(page.getSite());
-                        newLemma.setFrequency(1);
-                        lemmaRepository.save(newLemma);
+                        newLemma.setFrequency(0); // Изначально 0, т.к. мы сейчас увеличим
+                        return newLemma;
+                    });
 
-                        Index newIndex = new Index();
-                        newIndex.setLemma(newLemma);
-                        newIndex.setPage(page);
-                        newIndex.setRank(rank.floatValue());
-                        indexRepository.save(newIndex);
-                    }
-            );
+            // 2. Увеличить общую частоту (frequency)
+            lemma.setFrequency(lemma.getFrequency() + 1);
+            lemmaRepository.save(lemma);
+
+            // 3. Создать НОВЫЙ Индекс с правильным rank
+            Index newIndex = new Index();
+            newIndex.setPage(page);
+            newIndex.setLemma(lemma);
+            newIndex.setRank(rankOnPage.floatValue()); // Прямое присвоение, а не накопление
+            indexRepository.save(newIndex);
         }
     }
+
+    // --- ОСТАЛЬНОЙ КОД БЕЗ ИЗМЕНЕНИЙ ---
 
     @Override
     public Set<String> getLemmaSet(String text) {
         return collectLemmas(text).keySet();
     }
-
-    // --- ИЗМЕНЕНИЯ НАЧИНАЮТСЯ ЗДЕСЬ ---
 
     public Map<String, Integer> collectLemmas(String text) {
         Map<String, Integer> lemmas = new HashMap<>();
@@ -90,7 +102,7 @@ public class LemmaServiceImpl implements LemmaService {
             String[] words = splitTextIntoWords(text);
 
             for (String word : words) {
-                if (word.isBlank() || word.length() <= 1) { // Игнорируем слишком короткие слова
+                if (word.isBlank() || word.length() <= 1) {
                     continue;
                 }
 
@@ -102,7 +114,7 @@ public class LemmaServiceImpl implements LemmaService {
                 } else if (isEnglish(word)) {
                     luceneMorphology = luceneMorphologyEn;
                 } else {
-                    continue; // Пропускаем смешанные или другие слова
+                    continue;
                 }
 
                 List<String> morphInfo = luceneMorphology.getMorphInfo(word);
@@ -135,7 +147,6 @@ public class LemmaServiceImpl implements LemmaService {
             return false;
         }
         String info = morphInfo.get(0);
-        // Части речи в русской и английской морфологии
         return info.contains("ПРЕДЛ") || info.contains("СОЮЗ") || info.contains("МЕЖД") || info.contains("ЧАСТ") // Русский
                 || info.contains("PREP") || info.contains("CONJ") || info.contains("PART"); // Английский
     }
@@ -147,5 +158,4 @@ public class LemmaServiceImpl implements LemmaService {
     private boolean isEnglish(String word) {
         return word.matches("[a-z]+");
     }
-    // --- ИЗМЕНЕНИЯ ЗАКАНЧИВАЮТСЯ ЗДЕСЬ ---
 }
