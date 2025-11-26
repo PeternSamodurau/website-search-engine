@@ -47,7 +47,6 @@ public class LemmaServiceImpl implements LemmaService {
             indexRepository.deleteAll(oldIndices);
         }
 
-        // --- ПРАВИЛЬНАЯ ЛОГИКА ИЗВЛЕЧЕНИЯ ТЕКСТА ---
         Document doc = Jsoup.parse(page.getContent());
         Elements paragraphs = doc.select("p"); // Выбираем только теги <p>
 
@@ -56,7 +55,7 @@ public class LemmaServiceImpl implements LemmaService {
             textBuilder.append(p.text()).append(" "); // Извлекаем текст из каждого <p>
         }
         String textForLemmas = textBuilder.toString().trim();
-        // --- КОНЕЦ ---
+
 
         Map<String, Integer> lemmasFromPage = collectLemmas(textForLemmas);
 
