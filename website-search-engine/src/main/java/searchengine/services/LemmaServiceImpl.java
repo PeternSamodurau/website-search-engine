@@ -7,8 +7,6 @@ import org.apache.lucene.morphology.english.EnglishLuceneMorphology;
 import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import searchengine.model.Index;
@@ -48,14 +46,7 @@ public class LemmaServiceImpl implements LemmaService {
         }
 
         Document doc = Jsoup.parse(page.getContent());
-        Elements paragraphs = doc.select("p"); // Выбираем только теги <p>
-
-        StringBuilder textBuilder = new StringBuilder();
-        for (Element p : paragraphs) {
-            textBuilder.append(p.text()).append(" "); // Извлекаем текст из каждого <p>
-        }
-        String textForLemmas = textBuilder.toString().trim();
-
+        String textForLemmas = doc.title() + " " + doc.body().text(); // ИЗМЕНЕНИЕ: Получаем текст из <title> и <body>
 
         Map<String, Integer> lemmasFromPage = collectLemmas(textForLemmas);
 
