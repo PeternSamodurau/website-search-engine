@@ -106,7 +106,7 @@ public class LemmaServiceImpl implements LemmaService {
             String[] words = splitTextIntoWords(text);
 
             for (String word : words) {
-                if (word.isBlank() || word.length() <= 1) {
+                if (word.isBlank()) {
                     continue;
                 }
 
