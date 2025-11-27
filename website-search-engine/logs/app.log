@@ -43,3 +43,6 @@
 2025-11-27 15:46:45.119 [main] INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
 2025-11-27 15:46:45.124 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
 2025-11-27 15:46:45.165 [main] INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 18.805 seconds (process running for 21.372)
+2025-11-27 16:05:27.595 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-27 16:05:27.604 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-11-27 16:05:27.626 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

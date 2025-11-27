@@ -1,29 +1,42 @@
 package searchengine.services;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import searchengine.config.SiteConfig;
 import searchengine.config.SitesListConfig;
+import searchengine.dto.statistics.SiteStatisticsDTO;
 import searchengine.dto.statistics.StatisticsResponseDTO;
-import searchengine.model.*;
+import searchengine.dto.statistics.TotalStatisticsDTO;
+import searchengine.model.Site;
+import searchengine.model.Status;
 import searchengine.repository.IndexRepository;
 import searchengine.repository.LemmaRepository;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Optional;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
-class StatisticsServiceTest {
+@ActiveProfiles("test")
+@Slf4j
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class StatisticsServiceTest {
 
-    @Autowired
-    private StatisticsService statisticsService;
     @Autowired
     private SiteRepository siteRepository;
     @Autowired
@@ -33,89 +46,189 @@ class StatisticsServiceTest {
     @Autowired
     private IndexRepository indexRepository;
     @Autowired
+    private IndexingService indexingService;
+    @Autowired
+    private StatisticsService statisticsService;
+
+    @MockBean
     private SitesListConfig sitesListConfig;
 
+    private static WireMockServer wireMockServer;
+    private StatisticsResponseDTO statisticsResponse;
+
+    @BeforeAll
+    static void startServer() {
+        wireMockServer = new WireMockServer();
+        wireMockServer.start();
+        configureFor("localhost", wireMockServer.port());
+    }
+
+    @AfterAll
+    static void stopServer() {
+        wireMockServer.stop();
+    }
+
     @BeforeEach
-    void setUp() {
-        // Очистка репозиториев в правильном порядке
+    void setUp() throws IOException, InterruptedException {
+        log.info("--- Начало настройки теста ---");
+        // 1. Очистка БД
         indexRepository.deleteAll();
         lemmaRepository.deleteAll();
         pageRepository.deleteAll();
         siteRepository.deleteAll();
+        log.info("Репозитории очищены.");
 
-        // Создание тестовых данных
-        SiteConfig siteConfig1 = sitesListConfig.getSites().get(0);
-        Site site1 = new Site();
-        site1.setStatus(Status.INDEXED);
-        site1.setStatusTime(LocalDateTime.now());
-        site1.setLastError(null);
-        site1.setUrl(siteConfig1.getUrl());
-        site1.setName(siteConfig1.getName());
-        siteRepository.save(site1);
+        // 2. Настройка моков для двух сайтов
+        SiteConfig siteConfig1 = new SiteConfig();
+        siteConfig1.setUrl(wireMockServer.baseUrl());
+        siteConfig1.setName("Test Site 1 (Indexed)");
 
-        Page page1 = new Page(site1, "/path1", 200, "content1");
-        Page page2 = new Page(site1, "/path2", 200, "content2");
-        pageRepository.saveAll(List.of(page1, page2));
+        SiteConfig siteConfig2 = new SiteConfig();
+        siteConfig2.setUrl("http://example.com");
+        siteConfig2.setName("Test Site 2 (Empty)");
 
-        Lemma lemma1 = new Lemma(site1, "лемма1", 2);
-        Lemma lemma2 = new Lemma(site1, "лемма2", 1);
-        lemmaRepository.saveAll(List.of(lemma1, lemma2));
+        when(sitesListConfig.getSites()).thenReturn(Arrays.asList(siteConfig1, siteConfig2));
+        log.info("Мок для SitesListConfig настроен с 2 сайтами.");
 
-        SiteConfig siteConfig2 = sitesListConfig.getSites().get(1);
-        Site site2 = new Site();
-        site2.setStatus(Status.INDEXING);
-        site2.setStatusTime(LocalDateTime.now());
-        site2.setLastError("Ошибка индексации");
-        site2.setUrl(siteConfig2.getUrl());
-        site2.setName(siteConfig2.getName());
-        siteRepository.save(site2);
+        // 3. Настройка WireMock
+        stubFor(get(urlEqualTo("/")).willReturn(aResponse().withHeader("Content-Type", "text/html").withBody(readTestResource("test-site/index.html"))));
+        stubFor(get(urlEqualTo("/page2")).willReturn(aResponse().withHeader("Content-Type", "text/html").withBody(readTestResource("test-site/page2.html"))));
+        stubFor(get(urlEqualTo("/page3")).willReturn(aResponse().withHeader("Content-Type", "text/html").withBody(readTestResource("test-site/page3.html"))));
+        log.info("Заглушки WireMock настроены.");
 
-        Page page3 = new Page(site2, "/path3", 200, "content3");
-        pageRepository.save(page3);
+        // 4. Добавляем второй сайт в БД вручную
+        Site emptySite = new Site();
+        emptySite.setUrl(siteConfig2.getUrl());
+        emptySite.setName(siteConfig2.getName());
+        emptySite.setStatus(Status.INDEXED);
+        emptySite.setStatusTime(LocalDateTime.now());
+        siteRepository.save(emptySite);
+        log.info("Пустой сайт создан в БД.");
 
-        Lemma lemma3 = new Lemma(site2, "лемма3", 1);
-        lemmaRepository.save(lemma3);
+        // 5. Запуск и ожидание полной индексации первого сайта
+        log.info("Запуск полной индексации для первого сайта...");
+        indexingService.startIndexing();
+        waitForIndexingToComplete();
+        log.info("Индексация завершена.");
+
+        // 6. Получение статистики
+        statisticsResponse = statisticsService.getStatistics();
+        log.info("Статистика получена. --- Настройка теста завершена ---");
     }
 
     @Test
-    @DisplayName("Проверка получения статистики на основе тестовых данных")
-    void getStatistics() {
-        StatisticsResponseDTO response = statisticsService.getStatistics();
+    @Order(1)
+    @DisplayName("Проверка общей структуры ответа: должен быть успешным и содержать статистику по всем сайтам")
+    void testGeneralResponse_ShouldBeSuccessfulAndContainAllSites() {
+        log.info("Тест: Общая структура ответа");
+        assertNotNull(statisticsResponse, "Ответ не должен быть null");
 
-        // Проверки общего ответа
-        assertNotNull(response);
-        assertTrue(response.isResult());
-        assertNotNull(response.getStatistics());
+        log.info("Проверка поля 'result'. Ожидается: true, Фактически: {}", statisticsResponse.isResult());
+        assertTrue(statisticsResponse.isResult(), "Поле 'result' должно быть true");
+        assertNotNull(statisticsResponse.getStatistics(), "Блок 'statistics' не должен быть null");
 
-        // Проверки общей статистики (total)
-        var total = response.getStatistics().getTotal();
-        assertNotNull(total);
-        assertEquals(2, total.getSites());
-        assertEquals(3, total.getPages());
-        assertEquals(3, total.getLemmas());
-        assertFalse(total.isIndexing()); // По умолчанию индексация не идет
+        int expectedSiteCount = 2;
+        int actualSiteCount = statisticsResponse.getStatistics().getDetailed().size();
+        log.info("Проверка количества сайтов в 'detailed'. Ожидается: {}, Фактически: {}", expectedSiteCount, actualSiteCount);
+        assertEquals(expectedSiteCount, actualSiteCount, "Количество сайтов в 'detailed' должно быть " + expectedSiteCount);
+    }
 
-        // Проверки детальной статистики (detailed)
-        var detailed = response.getStatistics().getDetailed();
-        assertNotNull(detailed);
-        assertEquals(2, detailed.size());
+    @Test
+    @Order(2)
+    @DisplayName("Проверка блока 'total': должен корректно суммировать данные со всех сайтов")
+    void testTotalStatistics_ShouldCorrectlySumUpSitesPagesAndLemmas() {
+        log.info("Тест: Блок общей статистики 'total'");
+        TotalStatisticsDTO total = statisticsResponse.getStatistics().getTotal();
+        assertNotNull(total, "Блок 'total' не должен быть null");
 
-        // Проверка статистики для первого сайта
-        var site1Stats = detailed.stream().filter(s -> s.getName().equals(sitesListConfig.getSites().get(0).getName())).findFirst().orElse(null);
-        assertNotNull(site1Stats);
-        assertEquals(sitesListConfig.getSites().get(0).getUrl(), site1Stats.getUrl());
-        assertEquals(Status.INDEXED.toString(), site1Stats.getStatus());
-        assertEquals(2, site1Stats.getPages());
-        assertEquals(2, site1Stats.getLemmas());
-        assertEquals("Ошибок нет", site1Stats.getError());
+        int expectedSites = 2;
+        log.info("Проверка общего количества сайтов. Ожидается: {}, Фактически: {}", expectedSites, total.getSites());
+        assertEquals(expectedSites, total.getSites(), "Общее количество сайтов должно быть 2");
 
-        // Проверка статистики для второго сайта
-        var site2Stats = detailed.stream().filter(s -> s.getName().equals(sitesListConfig.getSites().get(1).getName())).findFirst().orElse(null);
-        assertNotNull(site2Stats);
-        assertEquals(sitesListConfig.getSites().get(1).getUrl(), site2Stats.getUrl());
-        assertEquals(Status.INDEXING.toString(), site2Stats.getStatus());
-        assertEquals(1, site2Stats.getPages());
-        assertEquals(1, site2Stats.getLemmas());
-        assertEquals("Ошибка индексации", site2Stats.getError());
+        int expectedPages = 3;
+        log.info("Проверка общего количества страниц. Ожидается: {}, Фактически: {}", expectedPages, total.getPages());
+        assertEquals(expectedPages, total.getPages(), "Общее количество страниц должно быть 3 (все со первого сайта)");
+
+        int expectedLemmas = 16;
+        log.info("Проверка общего количества лемм. Ожидается: {}, Фактически: {}", expectedLemmas, total.getLemmas());
+        assertEquals(expectedLemmas, total.getLemmas(), "Общее количество лемм должно быть 16");
+
+        log.info("Проверка статуса 'isIndexing'. Ожидается: false, Фактически: {}", total.isIndexing());
+        assertFalse(total.isIndexing(), "Статус 'indexing' должен быть false после завершения");
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Проверка детальной статистики для проиндексированного сайта")
+    void testDetailedStatistics_ShouldShowCorrectDataForIndexedSite() {
+        log.info("Тест: Детальная статистика для проиндексированного сайта");
+        Optional<SiteStatisticsDTO> indexedSiteStatsOpt = findStatisticsByUrl(wireMockServer.baseUrl());
+        assertTrue(indexedSiteStatsOpt.isPresent(), "Статистика для проиндексированного сайта должна присутствовать");
+
+        SiteStatisticsDTO indexedSiteStats = indexedSiteStatsOpt.get();
+        String expectedName = "Test Site 1 (Indexed)";
+        log.info("Проверка имени проиндексированного сайта. Ожидается: '{}', Фактически: '{}'", expectedName, indexedSiteStats.getName());
+        assertEquals(expectedName, indexedSiteStats.getName());
+
+        Status expectedStatus = Status.INDEXED;
+        log.info("Проверка статуса проиндексированного сайта. Ожидается: {}, Фактически: {}", expectedStatus.name(), indexedSiteStats.getStatus());
+        assertEquals(expectedStatus.name(), indexedSiteStats.getStatus());
+
+        int expectedPages = 3;
+        log.info("Проверка количества страниц проиндексированного сайта. Ожидается: {}, Фактически: {}", expectedPages, indexedSiteStats.getPages());
+        assertEquals(expectedPages, indexedSiteStats.getPages(), "Количество страниц для проиндексированного сайта должно быть 3");
+
+        int expectedLemmas = 16;
+        log.info("Проверка количества лемм проиндексированного сайта. Ожидается: {}, Фактически: {}", expectedLemmas, indexedSiteStats.getLemmas());
+        assertEquals(expectedLemmas, indexedSiteStats.getLemmas(), "Количество лемм для проиндексированного сайта должно быть 16");
+
+        assertNotNull(indexedSiteStats.getError(), "Поле ошибки не должно быть null");
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Проверка детальной статистики для пустого (неиндексированного) сайта")
+    void testDetailedStatistics_ShouldShowZeroCountsForEmptySite() {
+        log.info("Тест: Детальная статистика для пустого сайта");
+        Optional<SiteStatisticsDTO> emptySiteStatsOpt = findStatisticsByUrl("http://example.com");
+        assertTrue(emptySiteStatsOpt.isPresent(), "Статистика для пустого сайта должна присутствовать");
+
+        SiteStatisticsDTO emptySiteStats = emptySiteStatsOpt.get();
+        String expectedName = "Test Site 2 (Empty)";
+        log.info("Проверка имени пустого сайта. Ожидается: '{}', Фактически: '{}'", expectedName, emptySiteStats.getName());
+        assertEquals(expectedName, emptySiteStats.getName());
+
+        Status expectedStatus = Status.INDEXED;
+        log.info("Проверка статуса пустого сайта. Ожидается: {}, Фактически: {}", expectedStatus.name(), emptySiteStats.getStatus());
+        assertEquals(expectedStatus.name(), emptySiteStats.getStatus());
+
+        int expectedPages = 0;
+        log.info("Проверка количества страниц пустого сайта. Ожидается: {}, Фактически: {}", expectedPages, emptySiteStats.getPages());
+        assertEquals(expectedPages, emptySiteStats.getPages(), "Количество страниц для пустого сайта должно быть 0");
+
+        int expectedLemmas = 0;
+        log.info("Проверка количества лемм пустого сайта. Ожидается: {}, Фактически: {}", expectedLemmas, emptySiteStats.getLemmas());
+        assertEquals(expectedLemmas, emptySiteStats.getLemmas(), "Количество лемм для пустого сайта должно быть 0");
+    }
+
+    private Optional<SiteStatisticsDTO> findStatisticsByUrl(String url) {
+        return statisticsResponse.getStatistics().getDetailed().stream()
+                .filter(s -> s.getUrl().equals(url))
+                .findFirst();
+    }
+
+    private void waitForIndexingToComplete() throws InterruptedException {
+        int maxWaitTimeSeconds = 30;
+        while (indexingService.isIndexing() && maxWaitTimeSeconds > 0) {
+            Thread.sleep(1000);
+            maxWaitTimeSeconds--;
+        }
+        if (indexingService.isIndexing()) {
+            fail("Индексация не завершилась за 30 секунд.");
+        }
+    }
+
+    private String readTestResource(String path) throws IOException {
+        return Files.readString(Paths.get("src/test/resources/" + path), StandardCharsets.UTF_8);
     }
 }

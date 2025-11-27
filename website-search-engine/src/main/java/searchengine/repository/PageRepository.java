@@ -20,8 +20,5 @@ public interface PageRepository extends JpaRepository<Page, Integer> {
 
     List<Page> findBySite(Site site); // ДОБАВЛЕН МЕТОД
 
-    @Query("SELECT p FROM Page p JOIN Index i ON p.id = i.page.id WHERE i.lemma.id = :lemmaId")
-    List<Page> findByLemma(@Param("lemmaId") int lemmaId);
-
     Optional<Page> findByPathAndSite(String path, Site site);
 }
