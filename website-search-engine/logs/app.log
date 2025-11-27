@@ -1,45 +1,45 @@
-2025-11-24 17:53:10.768 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-11-24 17:53:11.164 [main] INFO  s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
-2025-11-24 17:53:11.173 [main] INFO  s.WebsiteSearchEngineApplication - The following 1 profile is active: "init"
-2025-11-24 17:53:15.611 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-11-24 17:53:15.862 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 217 ms. Found 4 JPA repository interfaces.
-2025-11-24 17:53:18.011 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
-2025-11-24 17:53:18.044 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
-2025-11-24 17:53:18.061 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
-2025-11-24 17:53:18.064 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
-2025-11-24 17:53:18.281 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2025-11-24 17:53:18.288 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 6785 ms
-2025-11-24 17:53:18.728 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-11-24 17:53:19.266 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@42ef042a
-2025-11-24 17:53:19.278 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-11-24 17:53:19.738 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-11-24 17:53:20.075 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
-2025-11-24 17:53:20.237 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-11-24 17:53:21.471 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-11-24 17:53:21.841 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-11-24 17:53:25.238 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-11-24 17:53:25.478 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-11-24 17:53:26.963 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-11-24 17:53:29.987 [main] INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов для 'init' профиля...
-2025-11-24 17:53:30.817 [main] INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: skillbox
-2025-11-24 17:53:30.827 [main] INFO  s.init.StatisticsServiceInitImpl - Проверка доступности сайта: https://skillbox.ru
-2025-11-24 17:53:36.652 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт https://skillbox.ru вернул код ответа: 200
-2025-11-24 17:53:36.666 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт 'skillbox' доступен. Статус: INDEXING
-2025-11-24 17:53:37.033 [main] INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: ipfran
-2025-11-24 17:53:37.034 [main] INFO  s.init.StatisticsServiceInitImpl - Проверка доступности сайта: https://ipfran.ru
-2025-11-24 17:53:38.097 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт https://ipfran.ru вернул код ответа: 200
-2025-11-24 17:53:38.104 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт 'ipfran' доступен. Статус: INDEXING
-2025-11-24 17:53:38.128 [main] INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: ack
-2025-11-24 17:53:38.132 [main] INFO  s.init.StatisticsServiceInitImpl - Проверка доступности сайта: http://ack.by
-2025-11-24 17:53:38.180 [main] ERROR s.init.StatisticsServiceInitImpl - Ошибка IO при проверке доступности сайта http://ack.by: ack.by
-2025-11-24 17:53:38.182 [main] WARN  s.init.StatisticsServiceInitImpl - Сайт 'ack' недоступен. Статус: FAILED
-2025-11-24 17:53:38.192 [main] INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов завершено.
-2025-11-24 17:53:39.102 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
-2025-11-24 17:53:42.714 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
-2025-11-24 17:53:42.797 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path ''
-2025-11-24 17:53:42.803 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
-2025-11-24 17:53:42.804 [main] INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
-2025-11-24 17:53:42.812 [main] INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
-2025-11-24 17:53:42.817 [main] INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
-2025-11-24 17:53:42.825 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
-2025-11-24 17:53:42.862 [main] INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 33.717 seconds (process running for 37.451)
+2025-11-27 15:46:27.446 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-11-27 15:46:27.626 [main] INFO  s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
+2025-11-27 15:46:27.633 [main] INFO  s.WebsiteSearchEngineApplication - The following 1 profile is active: "init"
+2025-11-27 15:46:30.363 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-27 15:46:30.531 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 144 ms. Found 4 JPA repository interfaces.
+2025-11-27 15:46:31.911 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-11-27 15:46:31.937 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-11-27 15:46:31.951 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-27 15:46:31.955 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-11-27 15:46:32.160 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-11-27 15:46:32.166 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4246 ms
+2025-11-27 15:46:32.563 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-11-27 15:46:33.007 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@44592c39
+2025-11-27 15:46:33.025 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-11-27 15:46:33.307 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-27 15:46:33.516 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-11-27 15:46:33.755 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-11-27 15:46:34.327 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-27 15:46:34.444 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-11-27 15:46:36.611 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-27 15:46:36.770 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-27 15:46:37.971 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-11-27 15:46:39.023 [main] INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов для 'init' профиля...
+2025-11-27 15:46:39.369 [main] INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: skillbox
+2025-11-27 15:46:39.370 [main] INFO  s.init.StatisticsServiceInitImpl - Проверка доступности сайта: https://skillbox.ru
+2025-11-27 15:46:40.247 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт https://skillbox.ru вернул код ответа: 200
+2025-11-27 15:46:40.249 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт 'skillbox' доступен. Статус: INDEXING
+2025-11-27 15:46:40.436 [main] INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: ipfran
+2025-11-27 15:46:40.437 [main] INFO  s.init.StatisticsServiceInitImpl - Проверка доступности сайта: https://ipfran.ru
+2025-11-27 15:46:41.156 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт https://ipfran.ru вернул код ответа: 200
+2025-11-27 15:46:41.157 [main] INFO  s.init.StatisticsServiceInitImpl - Сайт 'ipfran' доступен. Статус: INDEXING
+2025-11-27 15:46:41.183 [main] INFO  s.init.StatisticsServiceInitImpl - Создание нового сайта: ack
+2025-11-27 15:46:41.185 [main] INFO  s.init.StatisticsServiceInitImpl - Проверка доступности сайта: http://ack.by
+2025-11-27 15:46:41.530 [main] ERROR s.init.StatisticsServiceInitImpl - Ошибка IO при проверке доступности сайта http://ack.by: ack.by
+2025-11-27 15:46:41.532 [main] WARN  s.init.StatisticsServiceInitImpl - Сайт 'ack' недоступен. Статус: FAILED
+2025-11-27 15:46:41.544 [main] INFO  s.init.StatisticsServiceInitImpl - Инициализация/обновление сайтов завершено.
+2025-11-27 15:46:42.357 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-11-27 15:46:45.002 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-11-27 15:46:45.100 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path ''
+2025-11-27 15:46:45.105 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-27 15:46:45.109 [main] INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
+2025-11-27 15:46:45.117 [main] INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
+2025-11-27 15:46:45.119 [main] INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
+2025-11-27 15:46:45.124 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-11-27 15:46:45.165 [main] INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 18.805 seconds (process running for 21.372)

@@ -32,7 +32,6 @@ public class SearchServiceImpl implements SearchService {
     private final PageRepository pageRepository;
     private final IndexRepository indexRepository;
 
-    // ИСПРАВЛЕНО: Изменен порог фильтрации для более корректной работы тестов и соответствия ТЗ
     private static final double FREQUENCY_THRESHOLD_PERCENT = 1.0;
 
     @Override
@@ -120,12 +119,11 @@ public class SearchServiceImpl implements SearchService {
         if (totalPagesOnSite == 0) {
             return Collections.emptyList();
         }
-        // ИСПРАВЛЕНО: Порог частоты изменен на 1.0, чтобы не отфильтровывать слова, встречающиеся на всех страницах
         long frequencyThreshold = (long) (totalPagesOnSite * FREQUENCY_THRESHOLD_PERCENT);
         log.info("Порог частоты для фильтрации лемм: {}", frequencyThreshold);
 
         return lemmas.stream()
-                .filter(lemma -> lemma.getFrequency() <= frequencyThreshold) // Изменено на <=, чтобы слова, встречающиеся на всех страницах, не отфильтровывались
+                .filter(lemma -> lemma.getFrequency() <= frequencyThreshold)
                 .sorted(Comparator.comparingInt(Lemma::getFrequency))
                 .collect(Collectors.toList());
     }
@@ -159,35 +157,48 @@ public class SearchServiceImpl implements SearchService {
         return results;
     }
 
-    /**
-     * ИСПРАВЛЕНО: Метод полностью переписан для корректной, регистронезависимой обработки Unicode-символов (кириллицы).
-     * Теперь он использует Pattern и Matcher для поиска и подсветки, что является более надежным способом.
-     */
     private String generateSnippet(String text, String query) {
+        log.debug("generateSnippet: Входной текст: '{}'", text.substring(0, Math.min(text.length(), 100)) + "...");
+        log.debug("generateSnippet: Входной запрос: '{}'", query);
+
         try {
             Set<String> queryLemmas = lemmaService.getLemmaSet(query);
+            log.debug("generateSnippet: Леммы из запроса: {}", queryLemmas);
+
             if (queryLemmas.isEmpty()) {
+                log.debug("generateSnippet: Леммы запроса пусты, возвращаем начало текста.");
                 return text.substring(0, Math.min(text.length(), 200)) + "...";
             }
 
-            // 1. Найти все вхождения всех лемм запроса в тексте, регистронезависимо
+            // 1. Найти все вхождения слов, леммы которых совпадают с леммами запроса
             List<Integer> occurrences = new ArrayList<>();
-            for (String lemma : queryLemmas) {
-                // Используем Pattern.quote для экранирования спецсимволов в лемме
-                // Добавляем \b для поиска целых слов
-                Pattern pattern = Pattern.compile("\\b" + Pattern.quote(lemma) + "\\b", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-                Matcher matcher = pattern.matcher(text);
-                while (matcher.find()) {
-                    occurrences.add(matcher.start());
+            // Паттерн для поиска слов (любая последовательность букв Unicode)
+            Pattern wordPattern = Pattern.compile("\\p{L}+", Pattern.UNICODE_CASE);
+            Matcher wordMatcher = wordPattern.matcher(text);
+
+            while (wordMatcher.find()) {
+                String word = wordMatcher.group();
+                // Лемматизируем каждое слово из текста. Используем toLowerCase() для нормализации,
+                // так как LemmaService может быть чувствителен к регистру, а леммы обычно в нижнем регистре.
+                Set<String> wordLemmas = lemmaService.getLemmaSet(word.toLowerCase());
+
+                // Проверяем, есть ли пересечение между леммами слова и леммами запроса
+                if (!Collections.disjoint(wordLemmas, queryLemmas)) {
+                    occurrences.add(wordMatcher.start());
+                    log.debug("generateSnippet: Найдено релевантное слово '{}' (лемма: {}) на позиции {}", word, wordLemmas, wordMatcher.start());
                 }
             }
+            log.debug("generateSnippet: Всего найдено релевантных вхождений: {}", occurrences.size());
 
             if (occurrences.isEmpty()) {
+                log.debug("generateSnippet: Релевантных вхождений лемм не найдено, возвращаем начало текста.");
                 return text.substring(0, Math.min(text.length(), 200)) + "...";
             }
 
             // 2. Найти лучший фрагмент (остальная логика остается той же)
             occurrences.sort(Comparator.naturalOrder());
+            log.debug("generateSnippet: Отсортированные позиции релевантных вхождений: {}", occurrences);
+
             int bestIndex = 0;
             int maxWords = 0;
             final int fragmentSize = 200;
@@ -206,22 +217,45 @@ public class SearchServiceImpl implements SearchService {
                     bestIndex = occurrences.get(i);
                 }
             }
+            log.debug("generateSnippet: Лучший фрагмент начинается с bestIndex: {}", bestIndex);
 
             int start = Math.max(0, bestIndex - 50);
             int end = Math.min(text.length(), start + fragmentSize + 100);
-            String snippet = text.substring(start, end);
+            String snippetText = text.substring(start, end);
+            log.debug("generateSnippet: Сформирован фрагмент текста (до подсветки): '{}'", snippetText);
 
-            // 3. Подсветить все леммы в выбранном фрагменте
-            for (String lemma : queryLemmas) {
-                Pattern pattern = Pattern.compile("\\b" + Pattern.quote(lemma) + "\\b", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-                Matcher matcher = pattern.matcher(snippet);
-                snippet = matcher.replaceAll("<b>$0</b>");
+            // 3. Подсветить релевантные слова в выбранном фрагменте
+            StringBuilder highlightedSnippetBuilder = new StringBuilder();
+            int lastAppendPosition = 0;
+            // Используем тот же паттерн для слов, чтобы найти их в фрагменте
+            Matcher snippetWordMatcher = wordPattern.matcher(snippetText);
+
+            while (snippetWordMatcher.find()) {
+                // Добавляем текст между словами (не-слова)
+                highlightedSnippetBuilder.append(snippetText.substring(lastAppendPosition, snippetWordMatcher.start()));
+
+                String word = snippetWordMatcher.group();
+                // Лемматизируем слово из фрагмента для сравнения
+                Set<String> wordLemmas = lemmaService.getLemmaSet(word.toLowerCase());
+
+                // Если лемма слова совпадает с леммой запроса, подсвечиваем оригинальное слово
+                if (!Collections.disjoint(wordLemmas, queryLemmas)) {
+                    highlightedSnippetBuilder.append("<b>").append(word).append("</b>");
+                    log.debug("generateSnippet: Подсвечено слово '{}' (лемма: {})", word, wordLemmas);
+                } else {
+                    highlightedSnippetBuilder.append(word);
+                }
+                lastAppendPosition = snippetWordMatcher.end();
             }
+            // Добавляем оставшуюся часть фрагмента после последнего слова
+            highlightedSnippetBuilder.append(snippetText.substring(lastAppendPosition));
 
-            return "..." + snippet + "...";
+            String finalSnippet = highlightedSnippetBuilder.toString();
+            log.debug("generateSnippet: Окончательный сниппет: '{}'", "..." + finalSnippet + "...");
+            return "..." + finalSnippet + "...";
 
         } catch (Exception e) {
-            log.warn("Не удалось сгенерировать сниппет: {}", e.getMessage());
+            log.warn("Не удалось сгенерировать сниппет: {}", e.getMessage(), e);
             return text.substring(0, Math.min(text.length(), 200)) + "...";
         }
     }
