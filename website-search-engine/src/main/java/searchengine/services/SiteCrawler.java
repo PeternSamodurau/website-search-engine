@@ -105,7 +105,11 @@ public class SiteCrawler extends RecursiveAction {
 
     private boolean isLinkValid(String link) {
         boolean isEmpty = link.isEmpty();
-        boolean startsWithSite = link.startsWith(site.getUrl());
+
+        String normalizedLink = link.replaceFirst("://www\\.", "://");
+        String normalizedSiteUrl = site.getUrl().replaceFirst("://www\\.", "://");
+        boolean startsWithSite = normalizedLink.startsWith(normalizedSiteUrl);
+
         boolean isVisited = visitedUrls.contains(normalizeUrl(link));
         boolean hasAnchor = link.contains("#");
         boolean isFile = link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|exe|mp3|mp4|avi|mov)$");
