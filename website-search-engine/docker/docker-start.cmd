@@ -17,13 +17,13 @@ echo.
 echo "========================================================"
 echo "  3. Cleaning and building the Gradle project..."
 echo "========================================================"
-call gradlew clean build -x test > nul 2>&1
+call gradlew clean build -x test
 
 rem Проверяем, успешно ли прошла сборка. Если нет - останавливаем скрипт.
 if %errorlevel% neq 0 (
     echo.
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo "  ERROR: Gradle build failed. Run 'gradlew clean build' manually for details."
+    echo "  ERROR: Gradle build failed. See the output above for details."
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     exit /b %errorlevel%
 )

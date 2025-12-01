@@ -55,10 +55,8 @@ public class IndexingServiceTest {
         wireMockServer.start();
         configureFor("localhost", wireMockServer.port());
 
-        // ИСПРАВЛЕНО: Правильный порядок очистки таблиц во избежание ConstraintViolationException
-        indexRepository.deleteAll();
-        lemmaRepository.deleteAll();
-        pageRepository.deleteAll();
+        // Теперь база данных сама обрабатывает каскадное удаление благодаря аннотациям @OnDelete.
+        // Достаточно удалить только сайты.
         siteRepository.deleteAll();
 
         SiteConfig siteConfig = new SiteConfig();

@@ -17,4 +17,10 @@ public interface LemmaService {
      * @param page страница, которую нужно лемматизировать
      */
     void lemmatizePage(Page page);
+
+    /**
+     * Удаляет все данные (индексы, леммы) связанные с конкретной страницей.
+     * @param page страница, данные которой нужно удалить
+     */
+    void deleteDataForPage(Page page);
 }

@@ -9,15 +9,14 @@ import searchengine.config.CrawlerConfig;
 import searchengine.model.Page;
 import searchengine.model.Site;
 import searchengine.repository.PageRepository;
-import searchengine.repository.SiteRepository;
 
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -30,7 +29,7 @@ public class SiteCrawler extends RecursiveAction {
     private final CrawlerConfig crawlerConfig;
     private final PageRepository pageRepository;
     private final LemmaService lemmaService;
-    private final SiteRepository siteRepository;
+    private final AtomicBoolean isIndexing;
 
     public static void init() {
         visitedUrls = ConcurrentHashMap.newKeySet();
@@ -41,12 +40,12 @@ public class SiteCrawler extends RecursiveAction {
         String normalizedUrl = normalizeUrl(url);
         log.info("Начинаю обработку: {}", normalizedUrl);
 
-        if (!visitedUrls.add(normalizedUrl)) {
-            log.warn("Уже посещено: {}. Пропускаю.", normalizedUrl);
+        if (!isIndexing.get()) {
+            log.warn("Индексация остановлена. Прерываю задачу для {}.", normalizedUrl);
             return;
         }
-        if (!IndexingServiceImpl.isIndexing.get()) {
-            log.warn("Индексация остановлена. Прерываю задачу для {}.", normalizedUrl);
+        if (!visitedUrls.add(normalizedUrl)) {
+            log.warn("Уже посещено: {}. Пропускаю.", normalizedUrl);
             return;
         }
 
@@ -76,9 +75,6 @@ public class SiteCrawler extends RecursiveAction {
             pageRepository.save(page);
             log.info("Сохранена страница: {} (Код: {})", normalizedUrl, statusCode);
 
-            site.setStatusTime(LocalDateTime.now());
-            siteRepository.save(site);
-
             if (statusCode >= 200 && statusCode < 300) {
                 lemmaService.lemmatizePage(page);
 
@@ -89,7 +85,7 @@ public class SiteCrawler extends RecursiveAction {
                         .forEach(link -> {
                             if (isLinkValid(link)) {
                                 log.info("Найдена валидная ссылка: {} -> {}. Создаю подзадачу.", normalizedUrl, link);
-                                SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, lemmaService, siteRepository);
+                                SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, lemmaService, isIndexing);
                                 tasks.add(task);
                                 task.fork();
                             } else {

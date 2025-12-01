@@ -37,22 +37,6 @@ public class LemmaServiceImpl implements LemmaService {
     @Override
     @Transactional
     public void lemmatizePage(Page page) {
-        List<Index> oldIndices = indexRepository.findByPage(page);
-
-        if (!oldIndices.isEmpty()) {
-            log.debug("Обнаружены старые данные для страницы {}. Начинаю очистку...", page.getPath());
-            for (Index oldIndex : oldIndices) {
-                Lemma lemma = oldIndex.getLemma();
-                lemma.setFrequency(lemma.getFrequency() - 1);
-                if (lemma.getFrequency() == 0) {
-                    lemmaRepository.delete(lemma);
-                } else {
-                    lemmaRepository.save(lemma);
-                }
-            }
-            indexRepository.deleteAll(oldIndices);
-        }
-
         Document doc = Jsoup.parse(page.getContent());
         String textForLemmas = doc.title() + " " + doc.body().text();
 
@@ -86,6 +70,29 @@ public class LemmaServiceImpl implements LemmaService {
             indexRepository.save(newIndex);
         }
     }
+
+    @Override
+    @Transactional
+    public void deleteDataForPage(Page page) {
+        List<Index> oldIndices = indexRepository.findByPage(page);
+
+        if (oldIndices.isEmpty()) {
+            return;
+        }
+
+        log.debug("Обнаружены старые данные для страницы {}. Начинаю очистку...", page.getPath());
+        for (Index oldIndex : oldIndices) {
+            Lemma lemma = oldIndex.getLemma();
+            lemma.setFrequency(lemma.getFrequency() - 1);
+            if (lemma.getFrequency() == 0) {
+                lemmaRepository.delete(lemma);
+            } else {
+                lemmaRepository.save(lemma);
+            }
+        }
+        indexRepository.deleteAll(oldIndices);
+    }
+
 
     @Override
     public Set<String> getLemmaSet(String text) {

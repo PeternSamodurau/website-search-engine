@@ -4,14 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import searchengine.component.SiteDataCleaner;
 import searchengine.config.CrawlerConfig;
 import searchengine.config.SiteConfig;
 import searchengine.config.SitesListConfig;
 import searchengine.model.Page;
 import searchengine.model.Site;
 import searchengine.model.Status;
-import searchengine.repository.IndexRepository;
-import searchengine.repository.LemmaRepository;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 
@@ -33,14 +32,12 @@ public class IndexingServiceImpl implements IndexingService {
     private ExecutorService siteExecutor;
     private ForkJoinPool pageCrawlerPool;
 
-
     private final SiteRepository siteRepository;
     private final PageRepository pageRepository;
-    private final LemmaRepository lemmaRepository;
-    private final IndexRepository indexRepository;
     private final LemmaService lemmaService;
     private final SitesListConfig sites;
     private final CrawlerConfig crawlerConfig;
+    private final SiteDataCleaner siteDataCleaner;
 
     @Override
     public boolean startIndexing() {
@@ -83,24 +80,11 @@ public class IndexingServiceImpl implements IndexingService {
             return;
         }
 
-        Site site = siteRepository.findByUrl(siteConfig.getUrl())
-                .orElseGet(() -> {
-                    Site newSite = new Site();
-                    newSite.setUrl(siteConfig.getUrl());
-                    newSite.setName(siteConfig.getName());
-                    return newSite;
-                });
+        siteRepository.findByUrl(siteConfig.getUrl()).ifPresent(siteDataCleaner::clearDataForSite);
 
-        if (site.getId() > 0) {
-            log.info("Очистка старых данных для сайта: {}", site.getName());
-            List<Page> pagesToDelete = pageRepository.findBySite(site);
-            if (pagesToDelete != null && !pagesToDelete.isEmpty()) {
-                pagesToDelete.forEach(indexRepository::deleteByPage);
-            }
-            pageRepository.deleteAllBySite(site);
-            lemmaRepository.deleteAllBySite(site);
-        }
-
+        Site site = new Site();
+        site.setUrl(siteConfig.getUrl());
+        site.setName(siteConfig.getName());
         site.setStatus(Status.INDEXING);
         site.setStatusTime(LocalDateTime.now());
         site.setLastError(null);
@@ -111,7 +95,7 @@ public class IndexingServiceImpl implements IndexingService {
         pageCrawlerPool = new ForkJoinPool();
         try {
             SiteCrawler.init();
-            SiteCrawler task = new SiteCrawler(site, site.getUrl(), crawlerConfig, pageRepository, lemmaService, siteRepository);
+            SiteCrawler task = new SiteCrawler(site, site.getUrl(), crawlerConfig, pageRepository, lemmaService, isIndexing);
             pageCrawlerPool.invoke(task);
 
             Site updatedSite = siteRepository.findById(site.getId()).orElse(null);
@@ -200,11 +184,11 @@ public class IndexingServiceImpl implements IndexingService {
             if (path.isEmpty()) {
                 path = "/";
             }
-            
+
             final String finalPath = path;
             pageRepository.findByPathAndSite(finalPath, site).ifPresent(pageToDelete -> {
                 log.warn("Обнаружена существующая страница {}. Запускается упрощенная процедура удаления.", finalPath);
-                indexRepository.deleteByPage(pageToDelete);
+                lemmaService.deleteDataForPage(pageToDelete);
                 pageRepository.delete(pageToDelete);
             });
 
@@ -243,3 +227,4 @@ public class IndexingServiceImpl implements IndexingService {
         return isIndexing.get();
     }
 }
+
