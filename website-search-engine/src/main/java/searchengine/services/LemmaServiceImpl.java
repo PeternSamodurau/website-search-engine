@@ -1,12 +1,10 @@
 package searchengine.services;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.morphology.LuceneMorphology;
-import org.apache.lucene.morphology.english.EnglishLuceneMorphology;
-import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import searchengine.model.Index;
@@ -15,16 +13,26 @@ import searchengine.model.Page;
 import searchengine.repository.IndexRepository;
 import searchengine.repository.LemmaRepository;
 
-import java.io.IOException;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class LemmaServiceImpl implements LemmaService {
 
     private final LemmaRepository lemmaRepository;
     private final IndexRepository indexRepository;
+    private final LuceneMorphology russianLuceneMorphology;
+    private final LuceneMorphology englishLuceneMorphology;
+
+    public LemmaServiceImpl(LemmaRepository lemmaRepository,
+                            IndexRepository indexRepository,
+                            @Qualifier("russianLuceneMorphology") LuceneMorphology russianLuceneMorphology,
+                            @Qualifier("englishLuceneMorphology") LuceneMorphology englishLuceneMorphology) {
+        this.lemmaRepository = lemmaRepository;
+        this.indexRepository = indexRepository;
+        this.russianLuceneMorphology = russianLuceneMorphology;
+        this.englishLuceneMorphology = englishLuceneMorphology;
+    }
 
     @Override
     @Transactional
@@ -46,7 +54,7 @@ public class LemmaServiceImpl implements LemmaService {
         }
 
         Document doc = Jsoup.parse(page.getContent());
-        String textForLemmas = doc.title() + " " + doc.body().text(); // ИЗМЕНЕНИЕ: Получаем текст из <title> и <body>
+        String textForLemmas = doc.title() + " " + doc.body().text();
 
         Map<String, Integer> lemmasFromPage = collectLemmas(textForLemmas);
 
@@ -90,42 +98,35 @@ public class LemmaServiceImpl implements LemmaService {
             return lemmas;
         }
 
-        try {
-            LuceneMorphology luceneMorphologyRu = new RussianLuceneMorphology();
-            LuceneMorphology luceneMorphologyEn = new EnglishLuceneMorphology();
+        String[] words = splitTextIntoWords(text);
 
-            String[] words = splitTextIntoWords(text);
-
-            for (String word : words) {
-                if (word.isBlank()) {
-                    continue;
-                }
-
-                List<String> normalForms;
-                LuceneMorphology luceneMorphology;
-
-                if (isRussian(word)) {
-                    luceneMorphology = luceneMorphologyRu;
-                } else if (isEnglish(word)) {
-                    luceneMorphology = luceneMorphologyEn;
-                } else {
-                    continue;
-                }
-
-                List<String> morphInfo = luceneMorphology.getMorphInfo(word);
-                if (isServicePart(morphInfo)) {
-                    continue;
-                }
-
-                normalForms = luceneMorphology.getNormalForms(word);
-                if (normalForms.isEmpty()) {
-                    continue;
-                }
-                String normalWord = normalForms.get(0);
-                lemmas.put(normalWord, lemmas.getOrDefault(normalWord, 0) + 1);
+        for (String word : words) {
+            if (word.isBlank()) {
+                continue;
             }
-        } catch (IOException e) {
-            log.error("Ошибка при создании морфологического анализатора: {}", e.getMessage());
+
+            List<String> normalForms;
+            LuceneMorphology luceneMorphology;
+
+            if (isRussian(word)) {
+                luceneMorphology = this.russianLuceneMorphology;
+            } else if (isEnglish(word)) {
+                luceneMorphology = this.englishLuceneMorphology;
+            } else {
+                continue;
+            }
+
+            List<String> morphInfo = luceneMorphology.getMorphInfo(word);
+            if (isServicePart(morphInfo)) {
+                continue;
+            }
+
+            normalForms = luceneMorphology.getNormalForms(word);
+            if (normalForms.isEmpty()) {
+                continue;
+            }
+            String normalWord = normalForms.get(0);
+            lemmas.put(normalWord, lemmas.getOrDefault(normalWord, 0) + 1);
         }
         return lemmas;
     }
