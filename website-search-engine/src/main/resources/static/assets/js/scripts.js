@@ -1678,8 +1678,8 @@ var API = function(){
                     } else {
                         // Останавливаем интервал, если индексация завершена
                         clearInterval(statisticsInterval);
-                        var $btnIndex = $('.btn[data-send="startIndexing"]');
-                        if (!$btnIndex.is('[data-check="false"]')) {
+                        var $btnIndex = $('.btn[data-send="stopIndexing"]'); // Find the stop button
+                        if ($btnIndex.length > 0) { // If it exists, it means we just stopped. Flip it.
                             var text = $btnIndex.find('.btn-content').text();
                             $btnIndex.find('.btn-content').text($btnIndex.data('alttext'));
                             $btnIndex
@@ -1687,9 +1687,10 @@ var API = function(){
                                 .data('altsend', 'stopIndexing')
                                 .data('send', 'startIndexing')
                                 .data('alttext', text)
-                                .removeClass('btn_check')
-                            $('.UpdatePageBlock').show(0)
+                                .removeClass('btn_check');
                         }
+                        // In any "not indexing" case, the update block should be visible.
+                        $('.UpdatePageBlock').show(0);
                     }
 
                 } else {
