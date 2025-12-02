@@ -9,6 +9,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import searchengine.config.SiteConfig;
 import searchengine.config.SitesListConfig;
+import searchengine.model.Site;
+import searchengine.model.Status;
 import searchengine.repository.IndexRepository;
 import searchengine.repository.LemmaRepository;
 import searchengine.repository.PageRepository;
@@ -19,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -119,14 +122,24 @@ public class IndexingServiceTest {
     void shouldStopIndexingMidway() throws InterruptedException {
         log.info("Тест остановки индексации: запуск...");
         indexingService.startIndexing();
-        Thread.sleep(500);
+
+        // Ждем, пока индексация начнется (статус INDEXING)
+        Site testSite = waitForSiteStatus(wireMockServer.baseUrl(), Status.INDEXING, 10);
+        assertNotNull(testSite, "Сайт должен перейти в статус INDEXING.");
+        log.info("Индексация сайта '{}' началась (статус: {}).", testSite.getName(), testSite.getStatus());
+
+        // Даем немного времени для индексации нескольких страниц
+        Thread.sleep(500); 
 
         log.info("Отправка команды на остановку...");
         boolean stopResult = indexingService.stopIndexing();
         assertTrue(stopResult, "Остановка индексации должна вернуть true");
 
-        waitForIndexingToComplete();
-
+        // Ждем, пока индексация полностью остановится (статус FAILED или STOPPED)
+        testSite = waitForSiteStatusNot(wireMockServer.baseUrl(), Status.INDEXING, 10);
+        assertNotNull(testSite, "Сайт должен перестать быть в статусе INDEXING.");
+        log.info("Индексация сайта '{}' завершена (статус: {}).", testSite.getName(), testSite.getStatus());
+        
         long actualPageCount = pageRepository.count();
         log.info("Индексация остановлена. В базе найдено {} страниц.", actualPageCount);
         assertTrue(actualPageCount < 3 && actualPageCount > 0, "Количество страниц должно быть больше 0, но меньше 3, если остановка прошла успешно.");
@@ -167,6 +180,30 @@ public class IndexingServiceTest {
         if (indexingService.isIndexing()) {
             fail("Индексация не завершилась за 30 секунд.");
         }
+    }
+
+    private Site waitForSiteStatus(String url, Status expectedStatus, int maxWaitSeconds) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - startTime) < maxWaitSeconds * 1000) {
+            Optional<Site> siteOptional = siteRepository.findByUrl(url);
+            if (siteOptional.isPresent() && siteOptional.get().getStatus() == expectedStatus) {
+                return siteOptional.get();
+            }
+            Thread.sleep(500); // Опрашиваем каждые 500 мс
+        }
+        return siteRepository.findByUrl(url).orElse(null); // Возвращаем текущее состояние или null
+    }
+
+    private Site waitForSiteStatusNot(String url, Status unexpectedStatus, int maxWaitSeconds) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - startTime) < maxWaitSeconds * 1000) {
+            Optional<Site> siteOptional = siteRepository.findByUrl(url);
+            if (siteOptional.isPresent() && siteOptional.get().getStatus() != unexpectedStatus) {
+                return siteOptional.get();
+            }
+            Thread.sleep(500); // Опрашиваем каждые 500 мс
+        }
+        return siteRepository.findByUrl(url).orElse(null); // Возвращаем текущее состояние или null
     }
 
     private String readTestResource(String path) throws IOException {

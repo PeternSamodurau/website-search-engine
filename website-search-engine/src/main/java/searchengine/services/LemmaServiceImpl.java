@@ -14,6 +14,7 @@ import searchengine.repository.IndexRepository;
 import searchengine.repository.LemmaRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -47,27 +48,67 @@ public class LemmaServiceImpl implements LemmaService {
             return;
         }
 
+        Set<String> lemmaStringsOnPage = lemmasFromPage.keySet();
+
+        // Fetch existing lemmas from the database in a single query
+        List<Lemma> existingLemmas = lemmaRepository.findByLemmaInAndSite(lemmaStringsOnPage, page.getSite());
+        Map<String, Lemma> existingLemmasMap = existingLemmas.stream()
+                .collect(Collectors.toMap(Lemma::getLemma, lemma -> lemma));
+
+        List<Lemma> lemmasToUpdate = new ArrayList<>(); // For existing lemmas whose frequency needs incrementing
+        List<String> newLemmaStrings = new ArrayList<>(); // For lemmas that are new to the DB
+
+        for (Map.Entry<String, Integer> lemmaEntry : lemmasFromPage.entrySet()) {
+            String lemmaString = lemmaEntry.getKey();
+
+            if (existingLemmasMap.containsKey(lemmaString)) {
+                // Lemma already exists, update its frequency in memory
+                Lemma lemma = existingLemmasMap.get(lemmaString);
+                lemma.setFrequency(lemma.getFrequency() + 1);
+                lemmasToUpdate.add(lemma); // Add to list for batch update
+            } else {
+                // New lemma, add to list for upsert
+                newLemmaStrings.add(lemmaString);
+            }
+        }
+
+        // Perform batch updates for existing lemmas
+        if (!lemmasToUpdate.isEmpty()) {
+            lemmaRepository.saveAll(lemmasToUpdate);
+        }
+
+        // Perform upserts for new lemmas
+        for (String newLemmaString : newLemmaStrings) {
+            lemmaRepository.upsertLemmaFrequency(newLemmaString, page.getSite().getId());
+        }
+
+        // After all lemmas are either updated or upserted, re-fetch them to get their current IDs and frequencies
+        // This is crucial for correctly linking them to Index entities.
+        List<Lemma> allProcessedLemmas = lemmaRepository.findByLemmaInAndSite(lemmaStringsOnPage, page.getSite());
+        Map<String, Lemma> allProcessedLemmasMap = allProcessedLemmas.stream()
+                .collect(Collectors.toMap(Lemma::getLemma, lemma -> lemma));
+
+        List<Index> indicesToSave = new ArrayList<>();
         for (Map.Entry<String, Integer> lemmaEntry : lemmasFromPage.entrySet()) {
             String lemmaString = lemmaEntry.getKey();
             Integer rankOnPage = lemmaEntry.getValue();
 
-            Lemma lemma = lemmaRepository.findByLemmaAndSite(lemmaString, page.getSite())
-                    .orElseGet(() -> {
-                        Lemma newLemma = new Lemma();
-                        newLemma.setLemma(lemmaString);
-                        newLemma.setSite(page.getSite());
-                        newLemma.setFrequency(0);
-                        return newLemma;
-                    });
-
-            lemma.setFrequency(lemma.getFrequency() + 1);
-            lemmaRepository.save(lemma);
+            Lemma lemma = allProcessedLemmasMap.get(lemmaString);
+            if (lemma == null) {
+                log.error("Лемма {} не найдена после обработки. Это не должно произойти.", lemmaString);
+                continue;
+            }
 
             Index newIndex = new Index();
             newIndex.setPage(page);
             newIndex.setLemma(lemma);
             newIndex.setRank(rankOnPage.floatValue());
-            indexRepository.save(newIndex);
+            indicesToSave.add(newIndex);
+        }
+
+        // Batch save indices
+        if (!indicesToSave.isEmpty()) {
+            indexRepository.saveAll(indicesToSave);
         }
     }
 
@@ -81,15 +122,21 @@ public class LemmaServiceImpl implements LemmaService {
         }
 
         log.debug("Обнаружены старые данные для страницы {}. Начинаю очистку...", page.getPath());
+        List<Lemma> lemmasToUpdate = new ArrayList<>();
+        List<Lemma> lemmasToDelete = new ArrayList<>();
+
         for (Index oldIndex : oldIndices) {
             Lemma lemma = oldIndex.getLemma();
             lemma.setFrequency(lemma.getFrequency() - 1);
             if (lemma.getFrequency() == 0) {
-                lemmaRepository.delete(lemma);
+                lemmasToDelete.add(lemma);
             } else {
-                lemmaRepository.save(lemma);
+                lemmasToUpdate.add(lemma);
             }
         }
+
+        lemmaRepository.saveAll(lemmasToUpdate);
+        lemmaRepository.deleteAll(lemmasToDelete);
         indexRepository.deleteAll(oldIndices);
     }
 

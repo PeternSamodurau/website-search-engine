@@ -3,6 +3,8 @@
 
     var px = ''; //'rt--'
 
+    var statisticsInterval; // Переменная для интервала
+
     /**
      * Функция для вывода набора jQuery по селектору, к селектору добавляются
      * префиксы
@@ -109,7 +111,7 @@ feature.formdata = window.FormData !== undefined;
 var hasProp = !!$.fn.prop;
 
 // attr2 uses prop when it can but checks the return type for
-// an expected string.  this accounts for the case where a form 
+// an expected string.  this accounts for the case where a form
 // contains inputs with names like "action" or "method"; in those
 // cases "prop" returns the element
 $.fn.attr2 = function() {
@@ -256,7 +258,6 @@ $.fn.ajaxSubmit = function(options) {
     }
 
     // are there files to upload?
-
     // [value] (issue #113), also see comment:
     // https://github.com/malsup/form/commit/588306aedba1de01388032d5f42a60159eea9228#commitcomment-2180219
     var fileInputs = $('input[type=file]:enabled[value!=""]', this);
@@ -474,7 +475,7 @@ $.fn.ajaxSubmit = function(options) {
 
         var CLIENT_TIMEOUT_ABORT = 1;
         var SERVER_ABORT = 2;
-                
+
         function getDoc(frame) {
             /* it looks like contentWindow or contentDocument do not
              * carry the protocol property in ie8, when running under ssl
@@ -482,9 +483,9 @@ $.fn.ajaxSubmit = function(options) {
              * the protocol is know but not on the other two objects. strange?
              * "Same origin policy" http://en.wikipedia.org/wiki/Same_origin_policy
              */
-            
+
             var doc = null;
-            
+
             // IE8 cascading access check
             try {
                 if (frame.contentWindow) {
@@ -624,7 +625,7 @@ $.fn.ajaxSubmit = function(options) {
             if (xhr.aborted || callbackProcessed) {
                 return;
             }
-            
+
             doc = getDoc(io);
             if(!doc) {
                 log('cannot access response document');
@@ -795,7 +796,6 @@ $.fn.ajaxSubmit = function(options) {
         };
 
         var httpData = function( xhr, type, s ) { // mostly lifted from jq1.4.4
-
             var ct = xhr.getResponseHeader('content-type') || '',
                 xml = type === 'xml' || !type && ct.indexOf('xml') >= 0,
                 data = xml ? xhr.responseXML : xhr.responseText;
@@ -1242,6 +1242,7 @@ function log() {
 
 })(jQuery);
 
+
 /*
     jQuery Masked Input Plugin
     Copyright (c) 2007 - 2015 Josh Bush (digitalbush.com)
@@ -1268,7 +1269,7 @@ var form = function(){
                 $radio.on('change', function(){
                     changeTitle($this, $(this));
                 });
-                
+
             });
             $(document).on('click', function(e){
                 var $this = $(e.target);
@@ -1282,7 +1283,7 @@ var form = function(){
                     $('.selectList').removeClass('selectList_OPEN');
                 }
             });
-            
+
             // Валидация полей
             $input.on('blur', function(){
                 var $this = $(this),
@@ -1318,10 +1319,10 @@ var form = function(){
                                         message += 'Код должен состоять из 6 цифр';
                                         error = true;
                                 }
-            
+
                         }
                     });
-                    
+
                     if (error) {
                         if ($this.hasClass('form-input')){
                             $this.addClass('form-input_error');
@@ -1333,7 +1334,6 @@ var form = function(){
                             $this.after('<div class="form-error">'+message+'</div>');
                         } else {
                             $this.next('.form-error').text(message);
-            
                         }
                         $this.data('errorinput', true);
                     } else {
@@ -1348,7 +1348,7 @@ var form = function(){
             $form.on('submit', function(e){
                 var $this = $(this),
                     $validate = $this.find('[data-validate]');
-                
+
                 $validate.each(function(){
                     var $this = $(this);
                     $this.trigger('blur');
@@ -1457,7 +1457,7 @@ var API = function(){
             }
         });
     }
-    
+
     var send = {
         startIndexing:{
             address: '/startIndexing',
@@ -1470,6 +1470,16 @@ var API = function(){
                     if ($this.is('[data-btntype="check"]')) {
                         shiftCheck($this);
                     }
+                    // Запускаем интервал
+                    statisticsInterval = setInterval(function() {
+                        sendData(
+                            send['statistics'].address,
+                            send['statistics'].type,
+                            '',
+                            send['statistics'].action,
+                            $('.Statistics')
+                        );
+                    }, 5000);
                 } else {
                     if ($this.next('.API-error').length) {
                         $this.next('.API-error').text(result.error);
@@ -1487,9 +1497,13 @@ var API = function(){
                     if ($this.next('.API-error').length) {
                         $this.next('.API-error').remove();
                     }
-                    if ($this.is('[data-btntype="check"]')) {
-                        shiftCheck($this);
-                    }
+                    sendData(
+                        send['statistics'].address,
+                        send['statistics'].type,
+                        '',
+                        send['statistics'].action,
+                        $('.Statistics')
+                    );
                 } else {
                     if ($this.next('.API-error').length) {
                         $this.next('.API-error').text(result.error);
@@ -1563,7 +1577,7 @@ var API = function(){
                     } else {
                         $('.SearchResult-footer').addClass('SearchResult-footer_hide')
                     }
-                    
+
                 } else {
                     if ($this.next('.API-error').length) {
                         $this.next('.API-error').text(result.error);
@@ -1581,7 +1595,7 @@ var API = function(){
                     if ($this.next('.API-error').length) {
                         $this.next('.API-error').remove();
                     }
-    
+
                     var $statistics = $('.Statistics');
                     $statistics.find('.HideBlock').not('.Statistics-example').remove();
                     $('#totalSites').text(result.statistics.total.sites);
@@ -1601,7 +1615,7 @@ var API = function(){
                             case 'INDEXING':
                                 statusClass = 'Statistics-status_pause';
                                 break;
-                            
+
                         }
                         $('select[name="site"]').append('' +
                             '<option value="' + site.url + '">' +
@@ -1625,8 +1639,8 @@ var API = function(){
                                 '</div><div class="Statistics-option"><strong>Lemmas:</strong> ' + site.lemmas +
                                 '</div><div class="Statistics-option Statistics-option_error"><strong>Error:</strong> ' + site.error + '</div>'+
                                 '')
-    
-                        
+
+
                         $statistics.append($blockSiteExample);
                         var $thisHideBlock = $statistics.find('.HideBlock').last();
                         $thisHideBlock.on('click', HideBlock().trigger);
@@ -1649,18 +1663,35 @@ var API = function(){
                         });
                     });
                     if (result.statistics.total.isIndexing) {
-                        var $btnIndex = $('.btn[data-send="startIndexing"]'),
-                            text = $btnIndex.find('.btn-content').text();
-                        $btnIndex.find('.btn-content').text($btnIndex.data('alttext'));
-                        $btnIndex
-                            .data('check', true)
-                            .data('altsend', 'startIndexing')
-                            .data('send', 'stopIndexing')
-                            .data('alttext', text)
-                            .addClass('btn_check')
-                        $('.UpdatePageBlock').hide(0)
+                        var $btnIndex = $('.btn[data-send="stopIndexing"]');
+                        if (!$btnIndex.is('[data-check="true"]')) {
+                            var text = $btnIndex.find('.btn-content').text();
+                            $btnIndex.find('.btn-content').text($btnIndex.data('alttext'));
+                            $btnIndex
+                                .data('check', true)
+                                .data('altsend', 'startIndexing')
+                                .data('send', 'stopIndexing')
+                                .data('alttext', text)
+                                .addClass('btn_check')
+                            $('.UpdatePageBlock').hide(0)
+                        }
+                    } else {
+                        // Останавливаем интервал, если индексация завершена
+                        clearInterval(statisticsInterval);
+                        var $btnIndex = $('.btn[data-send="startIndexing"]');
+                        if (!$btnIndex.is('[data-check="false"]')) {
+                            var text = $btnIndex.find('.btn-content').text();
+                            $btnIndex.find('.btn-content').text($btnIndex.data('alttext'));
+                            $btnIndex
+                                .data('check', false)
+                                .data('altsend', 'stopIndexing')
+                                .data('send', 'startIndexing')
+                                .data('alttext', text)
+                                .removeClass('btn_check')
+                            $('.UpdatePageBlock').show(0)
+                        }
                     }
-    
+
                 } else {
                     if ($this.next('.API-error').length) {
                         $this.next('.API-error').text(result.error);
@@ -1734,10 +1765,9 @@ var API = function(){
             $send.on('submit click', function(e){
                 var $this = $(this);
                 var data = '';
-                if (($this.hasClass('form') && e.type==='submit')
-                    || (e.type==='click' && !$this.hasClass('form'))){
+                if (($this.hasClass('form') && e.type==='submit') | (e.type==='click' && !$this.hasClass('form'))){
                     e.preventDefault();
-                    
+
                     switch ($this.data('send')) {
                         case 'indexPage':
                             var $page = $this.closest('.form').find('input[name="page"]');
@@ -1762,7 +1792,7 @@ var API = function(){
                                 }
                             }
                             break;
-        
+
                     }
                     sendData(
                         send[$this.data('send')].address,

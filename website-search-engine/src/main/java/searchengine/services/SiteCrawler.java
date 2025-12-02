@@ -14,7 +14,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -22,18 +21,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class SiteCrawler extends RecursiveAction {
 
-    private static volatile Set<String> visitedUrls;
-
     private final Site site;
     private final String url;
     private final CrawlerConfig crawlerConfig;
     private final PageRepository pageRepository;
     private final LemmaService lemmaService;
     private final AtomicBoolean isIndexing;
-
-    public static void init() {
-        visitedUrls = ConcurrentHashMap.newKeySet();
-    }
+    private final Set<String> visitedUrls;
 
     @Override
     protected void compute() {
@@ -44,13 +38,13 @@ public class SiteCrawler extends RecursiveAction {
             log.warn("Индексация остановлена. Прерываю задачу для {}.", normalizedUrl);
             return;
         }
-        if (!visitedUrls.add(normalizedUrl)) {
+        if (!this.visitedUrls.add(normalizedUrl)) { // Изменено: используем this.visitedUrls
             log.warn("Уже посещено: {}. Пропускаю.", normalizedUrl);
             return;
         }
 
         try {
-            Thread.sleep(150);
+            Thread.sleep(crawlerConfig.getDelay()); // Используем задержку из конфига
             String path = new URL(url).getPath();
 
             if (pageRepository.findByPathAndSite(path, site).isPresent()) {
@@ -61,6 +55,7 @@ public class SiteCrawler extends RecursiveAction {
             Connection.Response response = Jsoup.connect(url)
                     .userAgent(crawlerConfig.getUserAgent())
                     .referrer(crawlerConfig.getReferrer())
+                    .timeout(crawlerConfig.getTimeout()) // Добавлено: используем таймаут из конфига
                     .execute();
 
             int statusCode = response.statusCode();
@@ -85,7 +80,8 @@ public class SiteCrawler extends RecursiveAction {
                         .forEach(link -> {
                             if (isLinkValid(link)) {
                                 log.info("Найдена валидная ссылка: {} -> {}. Создаю подзадачу.", normalizedUrl, link);
-                                SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, lemmaService, isIndexing);
+                                // Изменено: передаем this.visitedUrls дочерней задаче
+                                SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, lemmaService, isIndexing, this.visitedUrls);
                                 tasks.add(task);
                                 task.fork();
                             } else {
@@ -110,7 +106,7 @@ public class SiteCrawler extends RecursiveAction {
         String normalizedSiteUrl = site.getUrl().replaceFirst("://www\\.", "://");
         boolean startsWithSite = normalizedLink.startsWith(normalizedSiteUrl);
 
-        boolean isVisited = visitedUrls.contains(normalizeUrl(link));
+        boolean isVisited = this.visitedUrls.contains(normalizeUrl(link)); // Изменено: используем this.visitedUrls
         boolean hasAnchor = link.contains("#");
         boolean isFile = link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|exe|mp3|mp4|avi|mov)$");
 

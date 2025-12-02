@@ -27,4 +27,11 @@ public interface LemmaRepository extends JpaRepository<Lemma, Integer> {
 
     // Добавлен для поиска нескольких лемм на конкретном сайте
     List<Lemma> findByLemmaInAndSite(Collection<String> lemmas, Site site);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO lemma (lemma, site_id, frequency) VALUES (:lemma, :siteId, 1) " +
+            "ON CONFLICT (lemma, site_id) DO UPDATE SET frequency = lemma.frequency + 1",
+            nativeQuery = true)
+    void upsertLemmaFrequency(String lemma, Integer siteId);
 }

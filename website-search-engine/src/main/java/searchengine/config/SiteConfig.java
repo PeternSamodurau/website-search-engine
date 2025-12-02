@@ -8,4 +8,9 @@ import lombok.Setter;
 public class SiteConfig {
     private String url;
     private String name;
+    private boolean enabled;
+
+    public boolean getEnabled() {
+        return enabled;
+    }
 }

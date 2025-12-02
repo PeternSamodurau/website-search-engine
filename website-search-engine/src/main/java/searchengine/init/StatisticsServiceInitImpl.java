@@ -70,17 +70,10 @@ public class StatisticsServiceInitImpl implements StatisticsService {
             });
 
             site.setStatusTime(LocalDateTime.now());
+            site.setStatus(Status.INDEXING); // Устанавливаем статус INDEXING для всех сайтов
+            site.setLastError(null); // Сбрасываем ошибку при инициализации
+            log.info("Сайт '{}' инициализирован со статусом: INDEXING", siteConfig.getName());
 
-            if (isSiteAvailable(siteConfig.getUrl())) {
-                site.setStatus(Status.INDEXING);
-                site.setLastError(null);
-                log.info("Сайт '{}' доступен. Статус: INDEXING", siteConfig.getName());
-            } else {
-                site.setStatus(Status.FAILED);
-                site.setLastError("Сайт недоступен или произошла ошибка при проверке.");
-                // Этот лог теперь будет менее важным, так как детальная информация будет в isSiteAvailable
-                log.warn("Сайт '{}' недоступен. Статус: FAILED", siteConfig.getName());
-            }
             siteRepository.save(site);
         }
         log.info("Инициализация/обновление сайтов завершено.");
@@ -122,32 +115,5 @@ public class StatisticsServiceInitImpl implements StatisticsService {
                 total.getSites(), total.getPages(), total.getLemmas());
 
         return response;
-    }
-
-    // ИЗМЕНЕНО: Добавлено детальное логирование для отладки
-    private boolean isSiteAvailable(String siteUrl) {
-        try {
-            log.info("Проверка доступности сайта: {}", siteUrl);
-            Connection.Response response = Jsoup.connect(siteUrl)
-                    .userAgent(crawlerConfig.getUserAgent())
-                    .referrer(crawlerConfig.getReferrer())
-                    .ignoreHttpErrors(true)
-                    .timeout(10000)
-                    .execute();
-
-            int responseCode = response.statusCode();
-            log.info("Сайт {} вернул код ответа: {}", siteUrl, responseCode);
-
-            boolean isAvailable = (responseCode >= 200 && responseCode < 400);
-            if (!isAvailable) {
-                String body = response.body();
-                log.warn("Сайт {} недоступен. Код: {}. Тело ответа (первые 500 символов): {}",
-                        siteUrl, responseCode, body.substring(0, Math.min(body.length(), 500)));
-            }
-            return isAvailable;
-        } catch (IOException e) {
-            log.error("Ошибка IO при проверке доступности сайта {}: {}", siteUrl, e.getMessage());
-            return false;
-        }
     }
 }
