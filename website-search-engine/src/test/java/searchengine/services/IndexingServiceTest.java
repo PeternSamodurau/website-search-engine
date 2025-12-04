@@ -58,16 +58,15 @@ public class IndexingServiceTest {
         wireMockServer.start();
         configureFor("localhost", wireMockServer.port());
 
-        // Теперь база данных сама обрабатывает каскадное удаление благодаря аннотациям @OnDelete.
-        // Достаточно удалить только сайты.
         siteRepository.deleteAll();
 
         SiteConfig siteConfig = new SiteConfig();
         siteConfig.setUrl(wireMockServer.baseUrl());
         siteConfig.setName("Test Site");
-        siteConfig.setEnabled(true); // FIX: Explicitly enable the site for testing
+        siteConfig.setEnabled(true); // FIX: Allow indexing for tests
         when(sitesListConfig.getSites()).thenReturn(Collections.singletonList(siteConfig));
 
+        // Default stubs for all tests
         stubFor(get(urlEqualTo("/")).willReturn(aResponse()
                 .withHeader("Content-Type", "text/html")
                 .withBody(readTestResource("test-site/index.html"))));
@@ -120,23 +119,26 @@ public class IndexingServiceTest {
 
     @Test
     @DisplayName("Остановка индексации: при вызове stopIndexing() процесс должен быть прерван, в результате чего в базе сохранится меньше страниц, чем есть на сайте.")
-    void shouldStopIndexingMidway() throws InterruptedException {
+    void shouldStopIndexingMidway() throws InterruptedException, IOException { // <--- FIX: Added IOException
+        // Add a delay to one of the pages to ensure indexing is in progress when we try to stop it.
+        stubFor(get(urlEqualTo("/page2")).willReturn(aResponse()
+                .withHeader("Content-Type", "text/html; charset=utf-8")
+                .withBody(readTestResource("test-site/page2.html"))
+                .withFixedDelay(2000))); // 2-second delay
+
         log.info("Тест остановки индексации: запуск...");
         indexingService.startIndexing();
 
-        // Ждем, пока индексация начнется (статус INDEXING)
+        // Wait for indexing to actually start
         Site testSite = waitForSiteStatus(wireMockServer.baseUrl(), Status.INDEXING, 10);
         assertNotNull(testSite, "Сайт должен перейти в статус INDEXING.");
         log.info("Индексация сайта '{}' началась (статус: {}).", testSite.getName(), testSite.getStatus());
-
-        // Даем немного времени для индексации нескольких страниц
-        Thread.sleep(500);
 
         log.info("Отправка команды на остановку...");
         boolean stopResult = indexingService.stopIndexing();
         assertTrue(stopResult, "Остановка индексации должна вернуть true");
 
-        // Ждем, пока индексация полностью остановится (статус FAILED или STOPPED)
+        // Wait for indexing to fully stop
         testSite = waitForSiteStatusNot(wireMockServer.baseUrl(), Status.INDEXING, 10);
         assertNotNull(testSite, "Сайт должен перестать быть в статусе INDEXING.");
         log.info("Индексация сайта '{}' завершена (статус: {}).", testSite.getName(), testSite.getStatus());
@@ -157,17 +159,15 @@ public class IndexingServiceTest {
 
         long actualPageCount = pageRepository.count();
         log.info("Индексация с ошибкой завершена. В базе найдено {} страниц.", actualPageCount);
-        assertEquals(1, actualPageCount, "Должна быть проиндексирована только одна страница, остальные должны быть пропущены из-за ошибки.");
+        assertEquals(1, actualPageCount, "Должна быть проиндексирована только одна страница (index), остальные должны быть пропущены.");
     }
 
     @Test
     @DisplayName("Индексация одной страницы: сервис должен корректно индексировать одну указанную страницу.")
     void shouldIndexSinglePageCorrectly() {
-        // 1. Действие
         boolean result = indexingService.indexPage(wireMockServer.baseUrl() + "/page2");
         assertTrue(result, "Индексация отдельной страницы должна вернуть true");
 
-        // 2. Проверка (только для Page)
         assertEquals(1, pageRepository.count(), "В базе должна быть одна страница.");
         assertEquals("/page2", pageRepository.findAll().get(0).getPath(), "Путь сохраненной страницы должен быть /page2.");
     }
@@ -190,9 +190,9 @@ public class IndexingServiceTest {
             if (siteOptional.isPresent() && siteOptional.get().getStatus() == expectedStatus) {
                 return siteOptional.get();
             }
-            Thread.sleep(500); // Опрашиваем каждые 500 мс
+            Thread.sleep(500);
         }
-        return siteRepository.findByUrl(url).orElse(null); // Возвращаем текущее состояние или null
+        return siteRepository.findByUrl(url).orElse(null);
     }
 
     private Site waitForSiteStatusNot(String url, Status unexpectedStatus, int maxWaitSeconds) throws InterruptedException {
@@ -202,9 +202,9 @@ public class IndexingServiceTest {
             if (siteOptional.isPresent() && siteOptional.get().getStatus() != unexpectedStatus) {
                 return siteOptional.get();
             }
-            Thread.sleep(500); // Опрашиваем каждые 500 мс
+            Thread.sleep(500);
         }
-        return siteRepository.findByUrl(url).orElse(null); // Возвращаем текущее состояние или null
+        return siteRepository.findByUrl(url).orElse(null);
     }
 
     private String readTestResource(String path) throws IOException {
