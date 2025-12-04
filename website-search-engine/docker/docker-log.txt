@@ -6,27 +6,27 @@
 #2 transferring dockerfile: 153B 0.0s done
 #2 DONE 0.0s
 
-#3 [internal] load metadata for docker.io/library/eclipse-temurin:17-jdk-focal
-#3 ...
+#3 [auth] library/eclipse-temurin:pull token for registry-1.docker.io
+#3 DONE 0.0s
 
-#4 [auth] library/eclipse-temurin:pull token for registry-1.docker.io
-#4 DONE 0.0s
-
-#3 [internal] load metadata for docker.io/library/eclipse-temurin:17-jdk-focal
-#3 DONE 1.3s
+#4 [internal] load metadata for docker.io/library/eclipse-temurin:17-jdk-focal
+#4 DONE 1.3s
 
 #5 [internal] load .dockerignore
 #5 transferring context: 2B done
 #5 DONE 0.0s
 
-#6 [1/3] FROM docker.io/library/eclipse-temurin:17-jdk-focal@sha256:5751a59a993d1011047d52df2b56a961a328596d75f6bea23c68b6647490db20
-#6 resolve docker.io/library/eclipse-temurin:17-jdk-focal@sha256:5751a59a993d1011047d52df2b56a961a328596d75f6bea23c68b6647490db20 0.1s done
-#6 DONE 0.1s
+#6 [internal] load build context
+#6 ...
 
-#7 [internal] load build context
-#7 transferring context: 31.15MB 5.0s
-#7 transferring context: 66.76MB 9.9s done
-#7 DONE 9.9s
+#7 [1/3] FROM docker.io/library/eclipse-temurin:17-jdk-focal@sha256:5751a59a993d1011047d52df2b56a961a328596d75f6bea23c68b6647490db20
+#7 resolve docker.io/library/eclipse-temurin:17-jdk-focal@sha256:5751a59a993d1011047d52df2b56a961a328596d75f6bea23c68b6647490db20 0.1s done
+#7 DONE 0.1s
+
+#6 [internal] load build context
+#6 transferring context: 46.39MB 5.1s
+#6 transferring context: 66.76MB 6.9s done
+#6 DONE 6.9s
 
 #8 [2/3] WORKDIR /app
 #8 CACHED
@@ -36,16 +36,20 @@
 
 #10 exporting to image
 #10 exporting layers
-#10 exporting layers 5.1s done
-#10 exporting manifest sha256:8741329c78d9d659c4beea72fb2dc08476b0f9f961d5585522cfba0c66ed2d8a 0.0s done
-#10 exporting config sha256:e6a5743d75c053cd439f843b42d9e2120f12489b90c7979381af65e7d091e5fc 0.0s done
-#10 exporting attestation manifest sha256:59cf08ee564b021adbf20bafebdf8bb99501524abe158d46d7a8aac2ad4fcf36 0.0s done
-#10 exporting manifest list sha256:83c6eaebcc3f4b1b53f37fbdf8662187e66d76cedf14ae4e54bf206abbcaf87f 0.0s done
+#10 exporting layers 20.7s done
+#10 exporting manifest sha256:f29f910ae3211d0bce3936a2226557263cfe7a1e65e2e4ae8cb15382b198a938
+#10 exporting manifest sha256:f29f910ae3211d0bce3936a2226557263cfe7a1e65e2e4ae8cb15382b198a938 1.3s done
+#10 exporting config sha256:b8c68477b11105cec50781fb642d974eef85071f93a200608bb0e2be48e7d5e1
+#10 exporting config sha256:b8c68477b11105cec50781fb642d974eef85071f93a200608bb0e2be48e7d5e1 1.2s done
+#10 exporting attestation manifest sha256:c0c12bbef7233bfe2c4c7632c5aaa18362bf8f337e6767dd85bd63e194d98ab1
+#10 exporting attestation manifest sha256:c0c12bbef7233bfe2c4c7632c5aaa18362bf8f337e6767dd85bd63e194d98ab1 1.8s done
+#10 exporting manifest list sha256:d5d5b0adaa91bdace97e208dd35e830cc690dfd9d67a13058a61a88e289eef80
+#10 exporting manifest list sha256:d5d5b0adaa91bdace97e208dd35e830cc690dfd9d67a13058a61a88e289eef80 0.2s done
 #10 naming to docker.io/library/docker-app:latest
-#10 naming to docker.io/library/docker-app:latest done
+#10 naming to docker.io/library/docker-app:latest 0.0s done
 #10 unpacking to docker.io/library/docker-app:latest
-#10 unpacking to docker.io/library/docker-app:latest 0.8s done
-#10 DONE 6.1s
+#10 unpacking to docker.io/library/docker-app:latest 1.1s done
+#10 DONE 27.8s
 
 #11 resolving provenance for metadata file
 #11 DONE 0.0s

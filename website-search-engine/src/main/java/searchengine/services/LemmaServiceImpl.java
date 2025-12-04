@@ -1,5 +1,6 @@
 package searchengine.services;
 
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.morphology.LuceneMorphology;
 import org.jsoup.Jsoup;
@@ -24,15 +25,18 @@ public class LemmaServiceImpl implements LemmaService {
     private final IndexRepository indexRepository;
     private final LuceneMorphology russianLuceneMorphology;
     private final LuceneMorphology englishLuceneMorphology;
+    private final EntityManager entityManager;
 
     public LemmaServiceImpl(LemmaRepository lemmaRepository,
                             IndexRepository indexRepository,
                             @Qualifier("russianLuceneMorphology") LuceneMorphology russianLuceneMorphology,
-                            @Qualifier("englishLuceneMorphology") LuceneMorphology englishLuceneMorphology) {
+                            @Qualifier("englishLuceneMorphology") LuceneMorphology englishLuceneMorphology,
+                            EntityManager entityManager) {
         this.lemmaRepository = lemmaRepository;
         this.indexRepository = indexRepository;
         this.russianLuceneMorphology = russianLuceneMorphology;
         this.englishLuceneMorphology = englishLuceneMorphology;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -48,55 +52,32 @@ public class LemmaServiceImpl implements LemmaService {
             return;
         }
 
-        Set<String> lemmaStringsOnPage = lemmasFromPage.keySet();
-
         // Fetch existing lemmas from the database in a single query
-        List<Lemma> existingLemmas = lemmaRepository.findByLemmaInAndSite(lemmaStringsOnPage, page.getSite());
-        Map<String, Lemma> existingLemmasMap = existingLemmas.stream()
-                .collect(Collectors.toMap(Lemma::getLemma, lemma -> lemma));
-
-        List<Lemma> lemmasToUpdate = new ArrayList<>(); // For existing lemmas whose frequency needs incrementing
-        List<String> newLemmaStrings = new ArrayList<>(); // For lemmas that are new to the DB
-
-        for (Map.Entry<String, Integer> lemmaEntry : lemmasFromPage.entrySet()) {
-            String lemmaString = lemmaEntry.getKey();
-
-            if (existingLemmasMap.containsKey(lemmaString)) {
-                // Lemma already exists, update its frequency in memory
-                Lemma lemma = existingLemmasMap.get(lemmaString);
-                lemma.setFrequency(lemma.getFrequency() + 1);
-                lemmasToUpdate.add(lemma); // Add to list for batch update
-            } else {
-                // New lemma, add to list for upsert
-                newLemmaStrings.add(lemmaString);
-            }
-        }
-
-        // Perform batch updates for existing lemmas
-        if (!lemmasToUpdate.isEmpty()) {
-            lemmaRepository.saveAll(lemmasToUpdate);
-        }
-
-        // Perform upserts for new lemmas
-        for (String newLemmaString : newLemmaStrings) {
-            lemmaRepository.upsertLemmaFrequency(newLemmaString, page.getSite().getId());
-        }
-
-        // After all lemmas are either updated or upserted, re-fetch them to get their current IDs and frequencies
-        // This is crucial for correctly linking them to Index entities.
-        List<Lemma> allProcessedLemmas = lemmaRepository.findByLemmaInAndSite(lemmaStringsOnPage, page.getSite());
-        Map<String, Lemma> allProcessedLemmasMap = allProcessedLemmas.stream()
+        List<Lemma> existingLemmasList = lemmaRepository.findByLemmaInAndSite(lemmasFromPage.keySet(), page.getSite());
+        Map<String, Lemma> lemmasOnSite = existingLemmasList.stream()
                 .collect(Collectors.toMap(Lemma::getLemma, lemma -> lemma));
 
         List<Index> indicesToSave = new ArrayList<>();
+        List<Lemma> lemmasToSave = new ArrayList<>();
+
         for (Map.Entry<String, Integer> lemmaEntry : lemmasFromPage.entrySet()) {
             String lemmaString = lemmaEntry.getKey();
             Integer rankOnPage = lemmaEntry.getValue();
 
-            Lemma lemma = allProcessedLemmasMap.get(lemmaString);
+            Lemma lemma = lemmasOnSite.get(lemmaString);
             if (lemma == null) {
-                log.error("Лемма {} не найдена после обработки. Это не должно произойти.", lemmaString);
-                continue;
+                // Lemma is new for this site
+                lemma = new Lemma();
+                lemma.setSite(page.getSite());
+                lemma.setLemma(lemmaString);
+                lemma.setFrequency(1);
+                // Add to map to handle duplicates on the same page
+                lemmasOnSite.put(lemmaString, lemma);
+                lemmasToSave.add(lemma);
+            } else {
+                // Existing lemma, just increment frequency
+                lemma.setFrequency(lemma.getFrequency() + 1);
+                lemmasToSave.add(lemma);
             }
 
             Index newIndex = new Index();
@@ -106,10 +87,13 @@ public class LemmaServiceImpl implements LemmaService {
             indicesToSave.add(newIndex);
         }
 
-        // Batch save indices
-        if (!indicesToSave.isEmpty()) {
-            indexRepository.saveAll(indicesToSave);
-        }
+        // Batch save all new and updated lemmas.
+        // When new lemmas are saved, JPA will assign them an ID.
+        lemmaRepository.saveAll(lemmasToSave);
+
+        // Now that all lemmas have been persisted and have an ID,
+        // we can safely save the indices that refer to them.
+        indexRepository.saveAll(indicesToSave);
     }
 
     @Override
@@ -127,17 +111,29 @@ public class LemmaServiceImpl implements LemmaService {
 
         for (Index oldIndex : oldIndices) {
             Lemma lemma = oldIndex.getLemma();
+            if (lemma == null) {
+                continue;
+            }
             lemma.setFrequency(lemma.getFrequency() - 1);
-            if (lemma.getFrequency() == 0) {
+            if (lemma.getFrequency() <= 0) {
                 lemmasToDelete.add(lemma);
             } else {
                 lemmasToUpdate.add(lemma);
             }
         }
 
+        // First, delete the child records
+        indexRepository.deleteAll(oldIndices);
+
+        // Then, update/delete the parent records
         lemmaRepository.saveAll(lemmasToUpdate);
         lemmaRepository.deleteAll(lemmasToDelete);
-        indexRepository.deleteAll(oldIndices);
+
+        // Force synchronization with the database and clear the persistence context
+        indexRepository.flush();
+        entityManager.clear();
+
+        log.debug("Очистка для страницы {} завершена. Контекст персистентности очищен.", page.getPath());
     }
 
 
