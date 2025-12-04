@@ -65,6 +65,7 @@ public class IndexingServiceTest {
         SiteConfig siteConfig = new SiteConfig();
         siteConfig.setUrl(wireMockServer.baseUrl());
         siteConfig.setName("Test Site");
+        siteConfig.setEnabled(true); // FIX: Explicitly enable the site for testing
         when(sitesListConfig.getSites()).thenReturn(Collections.singletonList(siteConfig));
 
         stubFor(get(urlEqualTo("/")).willReturn(aResponse()
@@ -129,7 +130,7 @@ public class IndexingServiceTest {
         log.info("Индексация сайта '{}' началась (статус: {}).", testSite.getName(), testSite.getStatus());
 
         // Даем немного времени для индексации нескольких страниц
-        Thread.sleep(500); 
+        Thread.sleep(500);
 
         log.info("Отправка команды на остановку...");
         boolean stopResult = indexingService.stopIndexing();
@@ -139,7 +140,7 @@ public class IndexingServiceTest {
         testSite = waitForSiteStatusNot(wireMockServer.baseUrl(), Status.INDEXING, 10);
         assertNotNull(testSite, "Сайт должен перестать быть в статусе INDEXING.");
         log.info("Индексация сайта '{}' завершена (статус: {}).", testSite.getName(), testSite.getStatus());
-        
+
         long actualPageCount = pageRepository.count();
         log.info("Индексация остановлена. В базе найдено {} страниц.", actualPageCount);
         assertTrue(actualPageCount < 3 && actualPageCount > 0, "Количество страниц должно быть больше 0, но меньше 3, если остановка прошла успешно.");
