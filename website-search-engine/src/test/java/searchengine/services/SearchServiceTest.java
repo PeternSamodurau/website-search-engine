@@ -59,6 +59,7 @@ public class SearchServiceTest {
         SiteConfig siteConfig = new SiteConfig();
         siteConfig.setUrl(wireMockServer.baseUrl());
         siteConfig.setName("Test Site");
+        siteConfig.setEnabled(true); // FIX: Allow indexing for tests
         when(sitesListConfig.getSites()).thenReturn(Collections.singletonList(siteConfig));
 
         stubFor(get(urlEqualTo("/")).willReturn(aResponse()

@@ -60,6 +60,7 @@ public class LemmaServiceTest {
         SiteConfig siteConfig = new SiteConfig();
         siteConfig.setUrl(wireMockServer.baseUrl());
         siteConfig.setName("Test Site");
+        siteConfig.setEnabled(true); // FIX: Allow indexing for tests
         when(sitesListConfig.getSites()).thenReturn(Collections.singletonList(siteConfig));
     }
 
@@ -82,24 +83,16 @@ public class LemmaServiceTest {
         waitForIndexingToComplete();
 
         // 3. ASSERT
-        // ИСПРАВЛЕНО: Используем findByUrl вместо выдуманного findByName
         Site site = siteRepository.findByUrl(wireMockServer.baseUrl()).orElseThrow();
         List<Lemma> actualLemmas = lemmaRepository.findBySite(site);
-        int expectedLemmaCount = 15;
-        log.info("Проверка количества лемм. Ожидали: {}, Получили: {}", expectedLemmaCount, actualLemmas.size());
-        assertEquals(expectedLemmaCount, actualLemmas.size());
+        assertEquals(15, actualLemmas.size());
 
         Lemma leopardLemma = lemmaRepository.findByLemmaAndSite("леопард", site).orElseThrow();
-        int expectedFrequency = 1;
-        log.info("Проверка frequency для 'леопард'. Ожидали: {}, Получили: {}", expectedFrequency, leopardLemma.getFrequency());
-        assertEquals(expectedFrequency, leopardLemma.getFrequency());
+        assertEquals(1, leopardLemma.getFrequency());
 
-        // ИСПРАВЛЕНО: Используем findByPathAndSite вместо выдуманного findByPathAndSiteId
         Page page = pageRepository.findByPathAndSite("/", site).orElseThrow();
         Index leopardIndex = indexRepository.findByLemmaAndPage(leopardLemma, page).orElseThrow();
-        float expectedRank = 2.0f;
-        log.info("Проверка rank для 'леопард'. Ожидали: {}, Получили: {}", expectedRank, leopardIndex.getRank());
-        assertEquals(expectedRank, leopardIndex.getRank());
+        assertEquals(2.0f, leopardIndex.getRank());
     }
 
     @Test
@@ -121,22 +114,14 @@ public class LemmaServiceTest {
         waitForIndexingToComplete();
 
         // 3. ASSERT
-        // ИСПРАВЛЕНО: Используем findByUrl вместо выдуманного findByName
         Site site = siteRepository.findByUrl(wireMockServer.baseUrl()).orElseThrow();
         List<Lemma> actualLemmas = lemmaRepository.findBySite(site);
-        int expectedLemmaCount = 16;
-        log.info("Проверка количества уникальных лемм. Ожидали: {}, Получили: {}", expectedLemmaCount, actualLemmas.size());
-        assertEquals(expectedLemmaCount, actualLemmas.size());
+        assertEquals(16, actualLemmas.size());
 
         Lemma leopardLemma = lemmaRepository.findByLemmaAndSite("леопард", site).orElseThrow();
-        int expectedFrequency = 3;
-        log.info("Проверка суммарной frequency для 'леопард'. Ожидали: {}, Получили: {}", expectedFrequency, leopardLemma.getFrequency());
-        assertEquals(expectedFrequency, leopardLemma.getFrequency());
+        assertEquals(3, leopardLemma.getFrequency());
 
-        long actualIndexCount = indexRepository.count();
-        long expectedIndexCount = 45; // 15 + 15 + 15
-        log.info("Проверка общего количества индексов. Ожидали: {}, Получили: {}", expectedIndexCount, actualIndexCount);
-        assertEquals(expectedIndexCount, actualIndexCount);
+        assertEquals(45, indexRepository.count());
     }
 
     private void waitForIndexingToComplete() throws InterruptedException {
