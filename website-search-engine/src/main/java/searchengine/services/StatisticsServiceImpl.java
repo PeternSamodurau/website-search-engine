@@ -30,7 +30,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final PageRepository pageRepository;
     private final LemmaRepository lemmaRepository;
     private final SitesListConfig sites;
-    private final IndexingService indexingService; // <-- ДОБАВЛЕНА ЗАВИСИМОСТЬ
+    private final IndexingService indexingService;
 
     @Override
     public StatisticsResponseDTO getStatistics() {
@@ -40,7 +40,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         total.setSites((int) siteRepository.count());
         total.setPages((int) pageRepository.count());
         total.setLemmas((int) lemmaRepository.count());
-        total.setIndexing(indexingService.isIndexing()); // <-- ИСПРАВЛЕНО: Используется реальный статус
+        total.setIndexing(indexingService.isIndexing());
 
         List<SiteStatisticsDTO> detailed = new ArrayList<>();
         List<SiteConfig> sitesList = sites.getSites();
@@ -48,12 +48,10 @@ public class StatisticsServiceImpl implements StatisticsService {
         for (SiteConfig siteConfig : sitesList) {
             log.info("Обработка сайта из конфигурации: {}", siteConfig.getName());
 
-            Optional<Site> siteModelOpt = siteRepository.findAll().stream()
-                    .filter(s -> s.getName().equals(siteConfig.getName()))
-                    .findFirst();
+            Optional<Site> siteModelOpt = siteRepository.findByUrl(siteConfig.getUrl());
 
             if (siteModelOpt.isEmpty()) {
-                log.warn("Сайт '{}' не найден в базе данных. Пропускаем.", siteConfig.getName());
+                log.warn("Сайт '{}' с URL '{}' не найден в базе данных. Пропускаем.", siteConfig.getName(), siteConfig.getUrl());
                 continue;
             }
             Site siteModel = siteModelOpt.get();
