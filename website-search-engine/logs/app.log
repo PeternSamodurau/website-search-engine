@@ -1,54 +1,598 @@
-2025-12-04 07:07:52.900 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-12-04 07:07:53.149 [main] INFO  s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
-2025-12-04 07:07:53.154 [main] INFO  s.WebsiteSearchEngineApplication - No active profile set, falling back to 1 default profile: "default"
-2025-12-04 07:07:55.695 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-12-04 07:07:55.863 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 145 ms. Found 4 JPA repository interfaces.
-2025-12-04 07:07:57.326 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
-2025-12-04 07:07:57.351 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
-2025-12-04 07:07:57.359 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
-2025-12-04 07:07:57.362 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
-2025-12-04 07:07:57.488 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2025-12-04 07:07:57.493 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4074 ms
-2025-12-04 07:07:57.776 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-12-04 07:07:58.017 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@113ee1ce
-2025-12-04 07:07:58.021 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-12-04 07:07:58.284 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-12-04 07:07:58.436 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
-2025-12-04 07:07:58.532 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-12-04 07:07:59.081 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-12-04 07:07:59.180 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-12-04 07:08:01.681 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-12-04 07:08:01.878 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-12-04 07:08:03.096 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-12-04 07:08:04.888 [main] INFO  s.init.SiteInitializationService - Запуск инициализации/обновления сайтов...
-2025-12-04 07:08:05.222 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: ack
-2025-12-04 07:08:05.224 [main] INFO  s.init.SiteInitializationService - Сайт 'ack' инициализирован со статусом: INDEXING
-2025-12-04 07:08:05.350 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: Quotes To Scrape
-2025-12-04 07:08:05.351 [main] INFO  s.init.SiteInitializationService - Сайт 'Quotes To Scrape' инициализирован со статусом: INDEXING
-2025-12-04 07:08:05.362 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: Books To Scrape
-2025-12-04 07:08:05.363 [main] INFO  s.init.SiteInitializationService - Сайт 'Books To Scrape' инициализирован со статусом: INDEXING
-2025-12-04 07:08:05.372 [main] INFO  s.init.SiteInitializationService - Инициализация/обновление сайтов завершено.
-2025-12-04 07:08:05.698 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
-2025-12-04 07:08:07.896 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
-2025-12-04 07:08:07.963 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path ''
-2025-12-04 07:08:07.975 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
-2025-12-04 07:08:07.976 [main] INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
-2025-12-04 07:08:07.980 [main] INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
-2025-12-04 07:08:07.982 [main] INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
-2025-12-04 07:08:07.983 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
-2025-12-04 07:08:08.009 [main] INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 15.914 seconds (process running for 17.866)
-2025-12-04 07:08:31.076 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2025-12-04 07:08:31.131 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2025-12-04 07:08:31.236 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
-2025-12-04 07:08:34.167 [http-nio-8081-exec-6] INFO  s.controllers.ApiController - Получен запрос на статистику
-2025-12-04 07:08:34.184 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - Запрос на получение статистики
-2025-12-04 07:08:34.616 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: siteRepository.count() = 3
-2025-12-04 07:08:34.659 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: pageRepository.count() = 0
-2025-12-04 07:08:34.675 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: lemmaRepository.count() = 0
-2025-12-04 07:08:34.689 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: ack
-2025-12-04 07:08:34.872 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'ack' (ID: 1): страниц = 0, лемм = 0
-2025-12-04 07:08:34.892 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: Quotes To Scrape
-2025-12-04 07:08:34.933 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'Quotes To Scrape' (ID: 2): страниц = 0, лемм = 0
-2025-12-04 07:08:34.954 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: Books To Scrape
-2025-12-04 07:08:35.016 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'Books To Scrape' (ID: 3): страниц = 0, лемм = 0
-2025-12-04 07:08:35.029 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - Статистика успешно собрана. Всего сайтов: 3, страниц: 0, лемм: 0
+2025-12-04 15:35:52.954 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-12-04 15:35:53.199 [main] INFO  s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
+2025-12-04 15:35:53.208 [main] INFO  s.WebsiteSearchEngineApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-04 15:35:56.526 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-04 15:35:56.854 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 276 ms. Found 4 JPA repository interfaces.
+2025-12-04 15:35:58.683 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-12-04 15:35:58.718 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-12-04 15:35:58.733 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-04 15:35:58.735 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-12-04 15:35:59.008 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-04 15:35:59.014 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 5611 ms
+2025-12-04 15:35:59.287 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-04 15:35:59.579 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@bc09d57
+2025-12-04 15:35:59.585 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-04 15:35:59.941 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-04 15:36:00.115 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-12-04 15:36:00.278 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-04 15:36:01.052 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-04 15:36:01.336 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-04 15:36:03.899 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-04 15:36:04.159 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-04 15:36:05.652 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-12-04 15:36:07.621 [main] INFO  s.init.SiteInitializationService - Запуск инициализации/обновления сайтов...
+2025-12-04 15:36:07.961 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: ack
+2025-12-04 15:36:07.962 [main] INFO  s.init.SiteInitializationService - Сайт 'ack' инициализирован со статусом: INDEXING
+2025-12-04 15:36:08.143 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: Quotes To Scrape
+2025-12-04 15:36:08.144 [main] INFO  s.init.SiteInitializationService - Сайт 'Quotes To Scrape' инициализирован со статусом: INDEXING
+2025-12-04 15:36:08.163 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: Books To Scrape
+2025-12-04 15:36:08.164 [main] INFO  s.init.SiteInitializationService - Сайт 'Books To Scrape' инициализирован со статусом: INDEXING
+2025-12-04 15:36:08.176 [main] INFO  s.init.SiteInitializationService - Инициализация/обновление сайтов завершено.
+2025-12-04 15:36:08.561 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-12-04 15:36:10.888 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-12-04 15:36:10.941 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path ''
+2025-12-04 15:36:10.948 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-12-04 15:36:10.948 [main] INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
+2025-12-04 15:36:10.952 [main] INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
+2025-12-04 15:36:10.953 [main] INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
+2025-12-04 15:36:10.954 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-12-04 15:36:10.987 [main] INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 18.873 seconds (process running for 26.982)
+2025-12-04 15:36:30.087 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-04 15:36:30.099 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-12-04 15:36:30.137 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 8 ms
+2025-12-04 15:36:33.219 [http-nio-8081-exec-4] INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-12-04 15:36:33.343 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - Запрос на получение статистики
+2025-12-04 15:36:33.977 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: siteRepository.count() = 3
+2025-12-04 15:36:34.040 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: pageRepository.count() = 0
+2025-12-04 15:36:34.113 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: lemmaRepository.count() = 0
+2025-12-04 15:36:34.210 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: ack
+2025-12-04 15:36:34.610 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'ack' (ID: 1): страниц = 0, лемм = 0
+2025-12-04 15:36:34.667 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: Quotes To Scrape
+2025-12-04 15:36:34.825 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'Quotes To Scrape' (ID: 2): страниц = 0, лемм = 0
+2025-12-04 15:36:34.848 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: Books To Scrape
+2025-12-04 15:36:34.903 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'Books To Scrape' (ID: 3): страниц = 0, лемм = 0
+2025-12-04 15:36:34.923 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - Статистика успешно собрана. Всего сайтов: 3, страниц: 0, лемм: 0
+2025-12-04 15:36:37.935 [http-nio-8081-exec-1] INFO  s.controllers.ApiController - Получен запрос на запуск индексации
+2025-12-04 15:36:37.968 [http-nio-8081-exec-1] INFO  s.services.IndexingServiceImpl - Запуск процесса индексации
+2025-12-04 15:36:38.133 [pool-2-thread-3] INFO  s.component.SiteDataCleaner - Полное удаление данных для сайта: Books To Scrape. Доверяем каскадному удалению в БД.
+2025-12-04 15:36:38.135 [pool-2-thread-1] INFO  s.component.SiteDataCleaner - Полное удаление данных для сайта: ack. Доверяем каскадному удалению в БД.
+2025-12-04 15:36:38.147 [pool-2-thread-2] INFO  s.component.SiteDataCleaner - Полное удаление данных для сайта: Quotes To Scrape. Доверяем каскадному удалению в БД.
+2025-12-04 15:36:38.250 [pool-2-thread-2] INFO  s.component.SiteDataCleaner - Удаление сайта Quotes To Scrape и всех связанных данных завершено.
+2025-12-04 15:36:38.250 [pool-2-thread-3] INFO  s.component.SiteDataCleaner - Удаление сайта Books To Scrape и всех связанных данных завершено.
+2025-12-04 15:36:38.263 [pool-2-thread-1] INFO  s.component.SiteDataCleaner - Удаление сайта ack и всех связанных данных завершено.
+2025-12-04 15:36:38.484 [pool-2-thread-3] INFO  s.services.IndexingServiceImpl - Сайт 'Books To Scrape' пропущен (отключен в конфигурации). Статус: FAILED
+2025-12-04 15:36:38.848 [pool-2-thread-1] WARN  s.services.IndexingServiceImpl - Сайт 'ack' недоступен. Статус: FAILED. Причина: Ошибка IO при проверке доступности сайта: ack.by
+2025-12-04 15:36:39.050 [pool-2-thread-2] INFO  s.services.IndexingServiceImpl - Запуск обхода для сайта: Quotes To Scrape
+2025-12-04 15:36:39.080 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com
+2025-12-04 15:36:40.072 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Сохранена страница: http://quotes.toscrape.com (Код: 200)
+2025-12-04 15:36:41.036 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ищу ссылки на странице http://quotes.toscrape.com
+2025-12-04 15:36:41.057 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/ отброшена как невалидная.
+2025-12-04 15:36:41.062 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/login. Создаю подзадачу.
+2025-12-04 15:36:41.068 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/login
+2025-12-04 15:36:41.068 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/author/Albert-Einstein. Создаю подзадачу.
+2025-12-04 15:36:41.077 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/change/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.081 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Albert-Einstein
+2025-12-04 15:36:41.094 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/change/page/1
+2025-12-04 15:36:41.094 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/deep-thoughts/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.098 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/thinking/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.100 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/world/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.104 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/author/J-K-Rowling. Создаю подзадачу.
+2025-12-04 15:36:41.106 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/abilities/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.107 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/choices/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.109 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/author/Albert-Einstein отброшена как невалидная.
+2025-12-04 15:36:41.113 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/inspirational/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.123 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/life/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.125 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/live/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.129 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/miracle/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.131 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/miracles/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.134 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/author/Jane-Austen. Создаю подзадачу.
+2025-12-04 15:36:41.137 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/aliteracy/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.143 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/books/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.151 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/classic/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.154 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/humor/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.163 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/author/Marilyn-Monroe. Создаю подзадачу.
+2025-12-04 15:36:41.166 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/be-yourself/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.185 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/inspirational/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.189 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/author/Albert-Einstein отброшена как невалидная.
+2025-12-04 15:36:41.199 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/adulthood/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.201 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/success/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.204 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/value/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.213 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/author/Andre-Gide. Создаю подзадачу.
+2025-12-04 15:36:41.216 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/life/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.218 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.229 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/author/Thomas-A-Edison. Создаю подзадачу.
+2025-12-04 15:36:41.231 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/edison/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.233 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/failure/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.235 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/inspirational/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.237 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/paraphrased/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.247 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/author/Eleanor-Roosevelt. Создаю подзадачу.
+2025-12-04 15:36:41.250 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/misattributed-eleanor-roosevelt/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.252 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/author/Steve-Martin. Создаю подзадачу.
+2025-12-04 15:36:41.257 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/humor/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.266 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/obvious/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.270 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/simile/page/1/. Создаю подзадачу.
+2025-12-04 15:36:41.279 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/page/2/. Создаю подзадачу.
+2025-12-04 15:36:41.281 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/love/. Создаю подзадачу.
+2025-12-04 15:36:41.282 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/inspirational/. Создаю подзадачу.
+2025-12-04 15:36:41.284 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/life/. Создаю подзадачу.
+2025-12-04 15:36:41.288 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/humor/. Создаю подзадачу.
+2025-12-04 15:36:41.291 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/books/. Создаю подзадачу.
+2025-12-04 15:36:41.295 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/reading/. Создаю подзадачу.
+2025-12-04 15:36:41.299 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/friendship/. Создаю подзадачу.
+2025-12-04 15:36:41.301 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/friends/. Создаю подзадачу.
+2025-12-04 15:36:41.303 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/truth/. Создаю подзадачу.
+2025-12-04 15:36:41.304 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com -> http://quotes.toscrape.com/tag/simile/. Создаю подзадачу.
+2025-12-04 15:36:41.307 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.goodreads.com/quotes отброшена как невалидная.
+2025-12-04 15:36:41.315 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.zyte.com отброшена как невалидная.
+2025-12-04 15:36:41.744 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Сохранена страница: http://quotes.toscrape.com/login (Код: 200)
+2025-12-04 15:36:41.832 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ищу ссылки на странице http://quotes.toscrape.com/login
+2025-12-04 15:36:41.837 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/ отброшена как невалидная.
+2025-12-04 15:36:41.841 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/login отброшена как невалидная.
+2025-12-04 15:36:41.843 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.goodreads.com/quotes отброшена как невалидная.
+2025-12-04 15:36:41.845 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.zyte.com отброшена как невалидная.
+2025-12-04 15:36:41.847 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/deep-thoughts/page/1
+2025-12-04 15:36:41.882 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Сохранена страница: http://quotes.toscrape.com/tag/change/page/1 (Код: 200)
+2025-12-04 15:36:42.006 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Сохранена страница: http://quotes.toscrape.com/author/Albert-Einstein (Код: 200)
+2025-12-04 15:36:42.097 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ищу ссылки на странице http://quotes.toscrape.com/tag/change/page/1
+2025-12-04 15:36:42.100 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/ отброшена как невалидная.
+2025-12-04 15:36:42.102 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/login отброшена как невалидная.
+2025-12-04 15:36:42.107 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/change/page/1/ отброшена как невалидная.
+2025-12-04 15:36:42.111 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/author/Albert-Einstein отброшена как невалидная.
+2025-12-04 15:36:42.114 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/change/page/1/ отброшена как невалидная.
+2025-12-04 15:36:42.116 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/deep-thoughts/page/1/ отброшена как невалидная.
+2025-12-04 15:36:42.118 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/thinking/page/1/. Создаю подзадачу.
+2025-12-04 15:36:42.121 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/world/page/1/. Создаю подзадачу.
+2025-12-04 15:36:42.132 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/love/. Создаю подзадачу.
+2025-12-04 15:36:42.134 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/inspirational/. Создаю подзадачу.
+2025-12-04 15:36:42.136 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/life/. Создаю подзадачу.
+2025-12-04 15:36:42.139 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/humor/. Создаю подзадачу.
+2025-12-04 15:36:42.151 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/books/. Создаю подзадачу.
+2025-12-04 15:36:42.156 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/reading/. Создаю подзадачу.
+2025-12-04 15:36:42.161 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/friendship/. Создаю подзадачу.
+2025-12-04 15:36:42.170 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/friends/. Создаю подзадачу.
+2025-12-04 15:36:42.181 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/truth/. Создаю подзадачу.
+2025-12-04 15:36:42.184 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/change/page/1 -> http://quotes.toscrape.com/tag/simile/. Создаю подзадачу.
+2025-12-04 15:36:42.188 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.goodreads.com/quotes отброшена как невалидная.
+2025-12-04 15:36:42.191 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.zyte.com отброшена как невалидная.
+2025-12-04 15:36:42.197 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/thinking/page/1
+2025-12-04 15:36:42.500 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Сохранена страница: http://quotes.toscrape.com/tag/deep-thoughts/page/1 (Код: 200)
+2025-12-04 15:36:42.853 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Сохранена страница: http://quotes.toscrape.com/tag/thinking/page/1 (Код: 200)
+2025-12-04 15:36:43.308 [ForkJoinPool-1-worker-3] DEBUG searchengine.services.SiteCrawler - Ищу ссылки на странице http://quotes.toscrape.com/author/Albert-Einstein
+2025-12-04 15:36:43.311 [ForkJoinPool-1-worker-3] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/ отброшена как невалидная.
+2025-12-04 15:36:43.323 [ForkJoinPool-1-worker-3] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/login отброшена как невалидная.
+2025-12-04 15:36:43.325 [ForkJoinPool-1-worker-3] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.goodreads.com/quotes отброшена как невалидная.
+2025-12-04 15:36:43.327 [ForkJoinPool-1-worker-3] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.zyte.com отброшена как невалидная.
+2025-12-04 15:36:43.331 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/thinking/page/1
+2025-12-04 15:36:43.333 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Уже посещено: http://quotes.toscrape.com/tag/thinking/page/1. Пропускаю.
+2025-12-04 15:36:43.330 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/world/page/1
+2025-12-04 15:36:43.335 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/world/page/1
+2025-12-04 15:36:43.338 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Уже посещено: http://quotes.toscrape.com/tag/world/page/1. Пропускаю.
+2025-12-04 15:36:43.339 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/J-K-Rowling
+2025-12-04 15:36:43.530 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ищу ссылки на странице http://quotes.toscrape.com/tag/thinking/page/1
+2025-12-04 15:36:43.534 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/ отброшена как невалидная.
+2025-12-04 15:36:43.540 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/login отброшена как невалидная.
+2025-12-04 15:36:43.541 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/thinking/page/1/ отброшена как невалидная.
+2025-12-04 15:36:43.544 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/author/Albert-Einstein отброшена как невалидная.
+2025-12-04 15:36:43.546 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/change/page/1/ отброшена как невалидная.
+2025-12-04 15:36:43.547 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/deep-thoughts/page/1/ отброшена как невалидная.
+2025-12-04 15:36:43.549 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/thinking/page/1/ отброшена как невалидная.
+2025-12-04 15:36:43.550 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/world/page/1/ отброшена как невалидная.
+2025-12-04 15:36:43.554 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/author/Terry-Pratchett. Создаю подзадачу.
+2025-12-04 15:36:43.560 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/humor/page/1/. Создаю подзадачу.
+2025-12-04 15:36:43.565 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/open-mind/page/1/. Создаю подзадачу.
+2025-12-04 15:36:43.569 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/thinking/page/1/ отброшена как невалидная.
+2025-12-04 15:36:43.572 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/love/. Создаю подзадачу.
+2025-12-04 15:36:43.576 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/inspirational/. Создаю подзадачу.
+2025-12-04 15:36:43.587 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/life/. Создаю подзадачу.
+2025-12-04 15:36:43.591 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/humor/. Создаю подзадачу.
+2025-12-04 15:36:43.596 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/books/. Создаю подзадачу.
+2025-12-04 15:36:43.599 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/reading/. Создаю подзадачу.
+2025-12-04 15:36:43.603 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/friendship/. Создаю подзадачу.
+2025-12-04 15:36:43.606 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/friends/. Создаю подзадачу.
+2025-12-04 15:36:43.611 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/truth/. Создаю подзадачу.
+2025-12-04 15:36:43.616 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/thinking/page/1 -> http://quotes.toscrape.com/tag/simile/. Создаю подзадачу.
+2025-12-04 15:36:43.621 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.goodreads.com/quotes отброшена как невалидная.
+2025-12-04 15:36:43.623 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.zyte.com отброшена как невалидная.
+2025-12-04 15:36:43.629 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Terry-Pratchett
+2025-12-04 15:36:43.692 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ищу ссылки на странице http://quotes.toscrape.com/tag/deep-thoughts/page/1
+2025-12-04 15:36:43.694 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/ отброшена как невалидная.
+2025-12-04 15:36:43.695 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/login отброшена как невалидная.
+2025-12-04 15:36:43.697 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/deep-thoughts/page/1/ отброшена как невалидная.
+2025-12-04 15:36:43.699 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/author/Albert-Einstein отброшена как невалидная.
+2025-12-04 15:36:43.701 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/change/page/1/ отброшена как невалидная.
+2025-12-04 15:36:43.702 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/deep-thoughts/page/1/ отброшена как невалидная.
+2025-12-04 15:36:43.705 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/thinking/page/1/ отброшена как невалидная.
+2025-12-04 15:36:43.706 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/world/page/1/ отброшена как невалидная.
+2025-12-04 15:36:43.709 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/deep-thoughts/page/1 -> http://quotes.toscrape.com/tag/love/. Создаю подзадачу.
+2025-12-04 15:36:43.712 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/deep-thoughts/page/1 -> http://quotes.toscrape.com/tag/inspirational/. Создаю подзадачу.
+2025-12-04 15:36:43.714 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/deep-thoughts/page/1 -> http://quotes.toscrape.com/tag/life/. Создаю подзадачу.
+2025-12-04 15:36:43.715 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/deep-thoughts/page/1 -> http://quotes.toscrape.com/tag/humor/. Создаю подзадачу.
+2025-12-04 15:36:43.717 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/deep-thoughts/page/1 -> http://quotes.toscrape.com/tag/books/. Создаю подзадачу.
+2025-12-04 15:36:43.719 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/deep-thoughts/page/1 -> http://quotes.toscrape.com/tag/reading/. Создаю подзадачу.
+2025-12-04 15:36:43.720 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/deep-thoughts/page/1 -> http://quotes.toscrape.com/tag/friendship/. Создаю подзадачу.
+2025-12-04 15:36:43.722 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/deep-thoughts/page/1 -> http://quotes.toscrape.com/tag/friends/. Создаю подзадачу.
+2025-12-04 15:36:43.725 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/deep-thoughts/page/1 -> http://quotes.toscrape.com/tag/truth/. Создаю подзадачу.
+2025-12-04 15:36:43.728 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/deep-thoughts/page/1 -> http://quotes.toscrape.com/tag/simile/. Создаю подзадачу.
+2025-12-04 15:36:43.729 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.goodreads.com/quotes отброшена как невалидная.
+2025-12-04 15:36:43.732 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.zyte.com отброшена как невалидная.
+2025-12-04 15:36:43.735 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love
+2025-12-04 15:36:44.009 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Сохранена страница: http://quotes.toscrape.com/tag/world/page/1 (Код: 200)
+2025-12-04 15:36:44.048 [http-nio-8081-exec-2] INFO  s.controllers.ApiController - Получен запрос на остановку индексации
+2025-12-04 15:36:44.051 [http-nio-8081-exec-2] INFO  s.services.IndexingServiceImpl - Остановка процесса индексации...
+2025-12-04 15:36:44.124 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Сохранена страница: http://quotes.toscrape.com/author/J-K-Rowling (Код: 200)
+2025-12-04 15:36:44.145 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ищу ссылки на странице http://quotes.toscrape.com/tag/world/page/1
+2025-12-04 15:36:44.146 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/ отброшена как невалидная.
+2025-12-04 15:36:44.148 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/login отброшена как невалидная.
+2025-12-04 15:36:44.151 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/world/page/1/ отброшена как невалидная.
+2025-12-04 15:36:44.155 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/author/Albert-Einstein отброшена как невалидная.
+2025-12-04 15:36:44.160 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/change/page/1/ отброшена как невалидная.
+2025-12-04 15:36:44.162 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/deep-thoughts/page/1/ отброшена как невалидная.
+2025-12-04 15:36:44.163 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/thinking/page/1/ отброшена как невалидная.
+2025-12-04 15:36:44.165 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/world/page/1/ отброшена как невалидная.
+2025-12-04 15:36:44.166 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/love/ отброшена как невалидная.
+2025-12-04 15:36:44.168 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/world/page/1 -> http://quotes.toscrape.com/tag/inspirational/. Создаю подзадачу.
+2025-12-04 15:36:44.173 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/world/page/1 -> http://quotes.toscrape.com/tag/life/. Создаю подзадачу.
+2025-12-04 15:36:44.177 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/world/page/1 -> http://quotes.toscrape.com/tag/humor/. Создаю подзадачу.
+2025-12-04 15:36:44.179 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/world/page/1 -> http://quotes.toscrape.com/tag/books/. Создаю подзадачу.
+2025-12-04 15:36:44.181 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/world/page/1 -> http://quotes.toscrape.com/tag/reading/. Создаю подзадачу.
+2025-12-04 15:36:44.192 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/world/page/1 -> http://quotes.toscrape.com/tag/friendship/. Создаю подзадачу.
+2025-12-04 15:36:44.197 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/world/page/1 -> http://quotes.toscrape.com/tag/friends/. Создаю подзадачу.
+2025-12-04 15:36:44.200 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/world/page/1 -> http://quotes.toscrape.com/tag/truth/. Создаю подзадачу.
+2025-12-04 15:36:44.202 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/world/page/1 -> http://quotes.toscrape.com/tag/simile/. Создаю подзадачу.
+2025-12-04 15:36:44.214 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.goodreads.com/quotes отброшена как невалидная.
+2025-12-04 15:36:44.223 [ForkJoinPool-1-worker-1] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.zyte.com отброшена как невалидная.
+2025-12-04 15:36:44.229 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/inspirational
+2025-12-04 15:36:44.232 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/inspirational.
+2025-12-04 15:36:44.238 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/life
+2025-12-04 15:36:44.246 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/life.
+2025-12-04 15:36:44.248 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/humor
+2025-12-04 15:36:44.250 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/humor.
+2025-12-04 15:36:44.252 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/books
+2025-12-04 15:36:44.256 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/books.
+2025-12-04 15:36:44.257 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/reading
+2025-12-04 15:36:44.262 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/reading.
+2025-12-04 15:36:44.269 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friendship
+2025-12-04 15:36:44.273 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friendship.
+2025-12-04 15:36:44.275 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friends
+2025-12-04 15:36:44.285 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friends.
+2025-12-04 15:36:44.300 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/truth
+2025-12-04 15:36:44.303 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/truth.
+2025-12-04 15:36:44.305 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/simile
+2025-12-04 15:36:44.307 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/simile.
+2025-12-04 15:36:44.314 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love
+2025-12-04 15:36:44.317 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love.
+2025-12-04 15:36:44.321 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/inspirational
+2025-12-04 15:36:44.324 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/inspirational.
+2025-12-04 15:36:44.330 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/life
+2025-12-04 15:36:44.333 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/life.
+2025-12-04 15:36:44.336 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/humor
+2025-12-04 15:36:44.339 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/humor.
+2025-12-04 15:36:44.346 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/books
+2025-12-04 15:36:44.352 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/books.
+2025-12-04 15:36:44.356 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/reading
+2025-12-04 15:36:44.363 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/reading.
+2025-12-04 15:36:44.365 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friendship
+2025-12-04 15:36:44.373 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friendship.
+2025-12-04 15:36:44.378 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friends
+2025-12-04 15:36:44.382 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friends.
+2025-12-04 15:36:44.385 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/truth
+2025-12-04 15:36:44.386 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/truth.
+2025-12-04 15:36:44.391 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/simile
+2025-12-04 15:36:44.396 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/simile.
+2025-12-04 15:36:44.401 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/humor/page/1
+2025-12-04 15:36:44.409 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/humor/page/1.
+2025-12-04 15:36:44.416 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/open-mind/page/1
+2025-12-04 15:36:44.424 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/open-mind/page/1.
+2025-12-04 15:36:44.430 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love
+2025-12-04 15:36:44.433 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love.
+2025-12-04 15:36:44.438 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/inspirational
+2025-12-04 15:36:44.440 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/inspirational.
+2025-12-04 15:36:44.442 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/life
+2025-12-04 15:36:44.448 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/life.
+2025-12-04 15:36:44.453 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/humor
+2025-12-04 15:36:44.455 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/humor.
+2025-12-04 15:36:44.468 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/books
+2025-12-04 15:36:44.478 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/books.
+2025-12-04 15:36:44.495 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/reading
+2025-12-04 15:36:44.504 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/reading.
+2025-12-04 15:36:44.506 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friendship
+2025-12-04 15:36:44.508 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friendship.
+2025-12-04 15:36:44.510 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friends
+2025-12-04 15:36:44.513 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friends.
+2025-12-04 15:36:44.518 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/truth
+2025-12-04 15:36:44.529 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/truth.
+2025-12-04 15:36:44.553 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/simile
+2025-12-04 15:36:44.580 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/simile.
+2025-12-04 15:36:44.606 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/inspirational
+2025-12-04 15:36:44.609 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/inspirational.
+2025-12-04 15:36:44.583 [ForkJoinPool-1-worker-4] INFO  searchengine.services.SiteCrawler - Сохранена страница: http://quotes.toscrape.com/author/Terry-Pratchett (Код: 200)
+2025-12-04 15:36:44.612 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/life
+2025-12-04 15:36:44.618 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/life.
+2025-12-04 15:36:44.621 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/humor
+2025-12-04 15:36:44.623 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/humor.
+2025-12-04 15:36:44.627 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/books
+2025-12-04 15:36:44.631 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/books.
+2025-12-04 15:36:44.637 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/reading
+2025-12-04 15:36:44.640 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/reading.
+2025-12-04 15:36:44.646 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friendship
+2025-12-04 15:36:44.651 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friendship.
+2025-12-04 15:36:44.658 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friends
+2025-12-04 15:36:44.672 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friends.
+2025-12-04 15:36:44.680 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Сохранена страница: http://quotes.toscrape.com/tag/love (Код: 200)
+2025-12-04 15:36:44.684 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/truth
+2025-12-04 15:36:44.696 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/truth.
+2025-12-04 15:36:44.699 [ForkJoinPool-1-worker-1] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/simile
+2025-12-04 15:36:44.702 [ForkJoinPool-1-worker-1] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/simile.
+2025-12-04 15:36:46.757 [ForkJoinPool-1-worker-3] DEBUG searchengine.services.SiteCrawler - Ищу ссылки на странице http://quotes.toscrape.com/author/J-K-Rowling
+2025-12-04 15:36:46.784 [ForkJoinPool-1-worker-3] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/ отброшена как невалидная.
+2025-12-04 15:36:46.796 [ForkJoinPool-1-worker-3] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/login отброшена как невалидная.
+2025-12-04 15:36:46.841 [ForkJoinPool-1-worker-3] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.goodreads.com/quotes отброшена как невалидная.
+2025-12-04 15:36:46.870 [ForkJoinPool-1-worker-3] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.zyte.com отброшена как невалидная.
+2025-12-04 15:36:46.893 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/abilities/page/1
+2025-12-04 15:36:46.905 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/abilities/page/1.
+2025-12-04 15:36:46.921 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/choices/page/1
+2025-12-04 15:36:46.937 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/choices/page/1.
+2025-12-04 15:36:46.953 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/inspirational/page/1
+2025-12-04 15:36:47.008 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/inspirational/page/1.
+2025-12-04 15:36:47.024 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/life/page/1
+2025-12-04 15:36:47.038 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/life/page/1.
+2025-12-04 15:36:47.050 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/live/page/1
+2025-12-04 15:36:47.055 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/live/page/1.
+2025-12-04 15:36:47.067 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/miracle/page/1
+2025-12-04 15:36:47.080 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/miracle/page/1.
+2025-12-04 15:36:47.088 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/miracles/page/1
+2025-12-04 15:36:47.121 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/miracles/page/1.
+2025-12-04 15:36:47.122 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Jane-Austen
+2025-12-04 15:36:47.129 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Jane-Austen.
+2025-12-04 15:36:47.135 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/aliteracy/page/1
+2025-12-04 15:36:47.137 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/aliteracy/page/1.
+2025-12-04 15:36:47.139 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/books/page/1
+2025-12-04 15:36:47.142 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/books/page/1.
+2025-12-04 15:36:47.146 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/classic/page/1
+2025-12-04 15:36:47.153 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/classic/page/1.
+2025-12-04 15:36:47.175 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/humor/page/1
+2025-12-04 15:36:47.187 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/humor/page/1.
+2025-12-04 15:36:47.191 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Marilyn-Monroe
+2025-12-04 15:36:47.193 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Marilyn-Monroe.
+2025-12-04 15:36:47.207 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/be-yourself/page/1
+2025-12-04 15:36:47.229 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/be-yourself/page/1.
+2025-12-04 15:36:47.272 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/inspirational/page/1
+2025-12-04 15:36:47.276 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/inspirational/page/1.
+2025-12-04 15:36:47.288 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/adulthood/page/1
+2025-12-04 15:36:47.290 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/adulthood/page/1.
+2025-12-04 15:36:47.293 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/success/page/1
+2025-12-04 15:36:47.306 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/success/page/1.
+2025-12-04 15:36:47.308 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/value/page/1
+2025-12-04 15:36:47.315 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/value/page/1.
+2025-12-04 15:36:47.317 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Andre-Gide
+2025-12-04 15:36:47.324 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Andre-Gide.
+2025-12-04 15:36:47.326 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/life/page/1
+2025-12-04 15:36:47.340 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/life/page/1.
+2025-12-04 15:36:47.341 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:47.341 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:47.342 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Thomas-A-Edison
+2025-12-04 15:36:47.343 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Thomas-A-Edison.
+2025-12-04 15:36:47.346 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/edison/page/1
+2025-12-04 15:36:47.358 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/edison/page/1.
+2025-12-04 15:36:47.368 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/failure/page/1
+2025-12-04 15:36:47.372 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/failure/page/1.
+2025-12-04 15:36:47.389 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/inspirational/page/1
+2025-12-04 15:36:47.391 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/inspirational/page/1.
+2025-12-04 15:36:47.404 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/paraphrased/page/1
+2025-12-04 15:36:47.406 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/paraphrased/page/1.
+2025-12-04 15:36:47.408 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Eleanor-Roosevelt
+2025-12-04 15:36:47.412 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Eleanor-Roosevelt.
+2025-12-04 15:36:47.422 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/misattributed-eleanor-roosevelt/page/1
+2025-12-04 15:36:47.437 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/misattributed-eleanor-roosevelt/page/1.
+2025-12-04 15:36:47.505 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Steve-Martin
+2025-12-04 15:36:47.512 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Steve-Martin.
+2025-12-04 15:36:47.514 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/humor/page/1
+2025-12-04 15:36:47.522 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/humor/page/1.
+2025-12-04 15:36:47.549 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/obvious/page/1
+2025-12-04 15:36:47.559 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/obvious/page/1.
+2025-12-04 15:36:47.572 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/simile/page/1
+2025-12-04 15:36:47.597 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/simile/page/1.
+2025-12-04 15:36:47.599 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/page/2
+2025-12-04 15:36:47.600 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/page/2.
+2025-12-04 15:36:47.613 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love
+2025-12-04 15:36:47.627 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love.
+2025-12-04 15:36:47.662 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/inspirational
+2025-12-04 15:36:47.670 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/inspirational.
+2025-12-04 15:36:47.672 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/life
+2025-12-04 15:36:47.679 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/life.
+2025-12-04 15:36:47.684 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/humor
+2025-12-04 15:36:47.686 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/humor.
+2025-12-04 15:36:47.688 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/books
+2025-12-04 15:36:47.690 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/books.
+2025-12-04 15:36:47.692 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/reading
+2025-12-04 15:36:47.712 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/reading.
+2025-12-04 15:36:47.714 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friendship
+2025-12-04 15:36:47.719 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friendship.
+2025-12-04 15:36:47.721 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friends
+2025-12-04 15:36:47.723 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friends.
+2025-12-04 15:36:47.736 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/truth
+2025-12-04 15:36:47.754 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/truth.
+2025-12-04 15:36:47.755 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/simile
+2025-12-04 15:36:47.757 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/simile.
+2025-12-04 15:36:48.089 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ищу ссылки на странице http://quotes.toscrape.com/tag/love
+2025-12-04 15:36:48.090 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/ отброшена как невалидная.
+2025-12-04 15:36:48.092 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/login отброшена как невалидная.
+2025-12-04 15:36:48.093 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.096 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:48.097 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/author/Andre-Gide. Создаю подзадачу.
+2025-12-04 15:36:48.102 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:48.106 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Andre-Gide
+2025-12-04 15:36:48.108 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Andre-Gide.
+2025-12-04 15:36:48.104 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/life/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.111 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/life/page/1
+2025-12-04 15:36:48.111 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.112 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/life/page/1.
+2025-12-04 15:36:48.114 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/author/Marilyn-Monroe. Создаю подзадачу.
+2025-12-04 15:36:48.114 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:48.116 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/friends/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.126 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:48.129 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/heartbreak/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.130 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Marilyn-Monroe
+2025-12-04 15:36:48.131 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/inspirational/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.159 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Marilyn-Monroe.
+2025-12-04 15:36:48.197 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friends/page/1
+2025-12-04 15:36:48.185 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/life/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.206 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friends/page/1.
+2025-12-04 15:36:48.225 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/heartbreak/page/1
+2025-12-04 15:36:48.224 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.226 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/heartbreak/page/1.
+2025-12-04 15:36:48.233 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/inspirational/page/1
+2025-12-04 15:36:48.233 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/sisters/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.234 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/inspirational/page/1.
+2025-12-04 15:36:48.238 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/author/Bob-Marley. Создаю подзадачу.
+2025-12-04 15:36:48.239 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/life/page/1
+2025-12-04 15:36:48.241 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/life/page/1.
+2025-12-04 15:36:48.245 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:48.241 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.248 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:48.254 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/author/Elie-Wiesel. Создаю подзадачу.
+2025-12-04 15:36:48.264 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/activism/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.262 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/sisters/page/1
+2025-12-04 15:36:48.269 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/sisters/page/1.
+2025-12-04 15:36:48.270 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/apathy/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.280 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/hate/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.279 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Bob-Marley
+2025-12-04 15:36:48.282 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/indifference/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.285 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Bob-Marley.
+2025-12-04 15:36:48.297 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:48.301 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:48.303 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Elie-Wiesel
+2025-12-04 15:36:48.288 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/inspirational/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.317 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.316 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Elie-Wiesel.
+2025-12-04 15:36:48.338 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/activism/page/1
+2025-12-04 15:36:48.339 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/opposite/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.357 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/philosophy/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.340 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/activism/page/1.
+2025-12-04 15:36:48.373 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/author/Friedrich-Nietzsche. Создаю подзадачу.
+2025-12-04 15:36:48.374 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/apathy/page/1
+2025-12-04 15:36:48.392 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/apathy/page/1.
+2025-12-04 15:36:48.388 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/friendship/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.400 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/hate/page/1
+2025-12-04 15:36:48.403 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/lack-of-friendship/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.412 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/hate/page/1.
+2025-12-04 15:36:48.423 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/lack-of-love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.430 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.421 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/indifference/page/1
+2025-12-04 15:36:48.431 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/marriage/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.439 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/indifference/page/1.
+2025-12-04 15:36:48.441 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/unhappy-marriage/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.453 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/inspirational/page/1
+2025-12-04 15:36:48.475 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/inspirational/page/1.
+2025-12-04 15:36:48.476 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:48.465 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/author/Pablo-Neruda. Создаю подзадачу.
+2025-12-04 15:36:48.477 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.476 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:48.478 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/opposite/page/1
+2025-12-04 15:36:48.479 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/poetry/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.480 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/opposite/page/1.
+2025-12-04 15:36:48.491 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/author/Marilyn-Monroe. Создаю подзадачу.
+2025-12-04 15:36:48.509 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/girls/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.509 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.499 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/philosophy/page/1
+2025-12-04 15:36:48.513 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/philosophy/page/1.
+2025-12-04 15:36:48.512 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/author/Marilyn-Monroe. Создаю подзадачу.
+2025-12-04 15:36:48.519 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.514 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Friedrich-Nietzsche
+2025-12-04 15:36:48.529 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Friedrich-Nietzsche.
+2025-12-04 15:36:48.524 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/author/James-Baldwin. Создаю подзадачу.
+2025-12-04 15:36:48.532 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friendship/page/1
+2025-12-04 15:36:48.538 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.548 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friendship/page/1.
+2025-12-04 15:36:48.553 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/author/Jane-Austen. Создаю подзадачу.
+2025-12-04 15:36:48.555 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/lack-of-friendship/page/1
+2025-12-04 15:36:48.562 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/lack-of-friendship/page/1.
+2025-12-04 15:36:48.564 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/lack-of-love/page/1
+2025-12-04 15:36:48.565 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/lack-of-love/page/1.
+2025-12-04 15:36:48.559 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/friendship/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.586 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/1/. Создаю подзадачу.
+2025-12-04 15:36:48.574 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:48.587 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/love/page/2/. Создаю подзадачу.
+2025-12-04 15:36:48.589 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:48.592 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/marriage/page/1
+2025-12-04 15:36:48.593 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/tag/love/ отброшена как невалидная.
+2025-12-04 15:36:48.595 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/marriage/page/1.
+2025-12-04 15:36:48.598 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/unhappy-marriage/page/1
+2025-12-04 15:36:48.599 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/inspirational/. Создаю подзадачу.
+2025-12-04 15:36:48.610 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/life/. Создаю подзадачу.
+2025-12-04 15:36:48.612 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/humor/. Создаю подзадачу.
+2025-12-04 15:36:48.614 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/books/. Создаю подзадачу.
+2025-12-04 15:36:48.609 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/unhappy-marriage/page/1.
+2025-12-04 15:36:48.619 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/reading/. Создаю подзадачу.
+2025-12-04 15:36:48.636 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/friendship/. Создаю подзадачу.
+2025-12-04 15:36:48.638 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/friends/. Создаю подзадачу.
+2025-12-04 15:36:48.641 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/truth/. Создаю подзадачу.
+2025-12-04 15:36:48.642 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Найдена валидная ссылка: http://quotes.toscrape.com/tag/love -> http://quotes.toscrape.com/tag/simile/. Создаю подзадачу.
+2025-12-04 15:36:48.622 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Pablo-Neruda
+2025-12-04 15:36:48.648 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Pablo-Neruda.
+2025-12-04 15:36:48.649 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:48.650 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:48.651 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/poetry/page/1
+2025-12-04 15:36:48.652 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/poetry/page/1.
+2025-12-04 15:36:48.653 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Marilyn-Monroe
+2025-12-04 15:36:48.654 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Marilyn-Monroe.
+2025-12-04 15:36:48.647 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.goodreads.com/quotes отброшена как невалидная.
+2025-12-04 15:36:48.664 [ForkJoinPool-1-worker-2] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.zyte.com отброшена как невалидная.
+2025-12-04 15:36:48.656 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/girls/page/1
+2025-12-04 15:36:48.680 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/girls/page/1.
+2025-12-04 15:36:48.681 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:48.682 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:48.683 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Marilyn-Monroe
+2025-12-04 15:36:48.684 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Marilyn-Monroe.
+2025-12-04 15:36:48.685 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:48.685 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:48.686 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/James-Baldwin
+2025-12-04 15:36:48.686 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/James-Baldwin.
+2025-12-04 15:36:48.686 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:48.687 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:48.687 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/author/Jane-Austen
+2025-12-04 15:36:48.688 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/author/Jane-Austen.
+2025-12-04 15:36:48.689 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friendship/page/1
+2025-12-04 15:36:48.689 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friendship/page/1.
+2025-12-04 15:36:48.690 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/1
+2025-12-04 15:36:48.690 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/1.
+2025-12-04 15:36:48.691 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/love/page/2
+2025-12-04 15:36:48.692 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/love/page/2.
+2025-12-04 15:36:48.693 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/inspirational
+2025-12-04 15:36:48.703 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/inspirational.
+2025-12-04 15:36:48.715 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/life
+2025-12-04 15:36:48.716 [ForkJoinPool-1-worker-2] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/life.
+2025-12-04 15:36:48.715 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/humor
+2025-12-04 15:36:48.717 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/humor.
+2025-12-04 15:36:48.718 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/books
+2025-12-04 15:36:48.719 [ForkJoinPool-1-worker-2] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/books.
+2025-12-04 15:36:48.718 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/reading
+2025-12-04 15:36:48.720 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/reading.
+2025-12-04 15:36:48.720 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friendship
+2025-12-04 15:36:48.721 [ForkJoinPool-1-worker-2] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friendship.
+2025-12-04 15:36:48.721 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/friends
+2025-12-04 15:36:48.723 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/friends.
+2025-12-04 15:36:48.723 [ForkJoinPool-1-worker-2] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/truth
+2025-12-04 15:36:48.724 [ForkJoinPool-1-worker-2] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/truth.
+2025-12-04 15:36:48.723 [ForkJoinPool-1-worker-3] INFO  searchengine.services.SiteCrawler - Начинаю обработку: http://quotes.toscrape.com/tag/simile
+2025-12-04 15:36:48.734 [ForkJoinPool-1-worker-3] WARN  searchengine.services.SiteCrawler - Индексация остановлена. Прерываю задачу для http://quotes.toscrape.com/tag/simile.
+2025-12-04 15:36:49.015 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ищу ссылки на странице http://quotes.toscrape.com/author/Terry-Pratchett
+2025-12-04 15:36:49.016 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/ отброшена как невалидная.
+2025-12-04 15:36:49.018 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка http://quotes.toscrape.com/login отброшена как невалидная.
+2025-12-04 15:36:49.019 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.goodreads.com/quotes отброшена как невалидная.
+2025-12-04 15:36:49.021 [ForkJoinPool-1-worker-4] DEBUG searchengine.services.SiteCrawler - Ссылка https://www.zyte.com отброшена как невалидная.
+2025-12-04 15:36:49.039 [pool-2-thread-2] WARN  s.services.IndexingServiceImpl - Обход сайта 'Quotes To Scrape' был остановлен пользователем.
+2025-12-04 15:36:49.056 [http-nio-8081-exec-2] WARN  s.services.IndexingServiceImpl - Не все задачи индексации завершились после принудительной остановки.
+2025-12-04 15:36:49.082 [Indexing-Manager-Thread] INFO  s.services.IndexingServiceImpl - Процесс индексации ВСЕХ сайтов завершен (остановлен пользователем).
+2025-12-04 15:36:53.374 [http-nio-8081-exec-6] INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-12-04 15:36:53.386 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - Запрос на получение статистики
+2025-12-04 15:36:53.435 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: siteRepository.count() = 3
+2025-12-04 15:36:53.451 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: pageRepository.count() = 10
+2025-12-04 15:36:53.452 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: lemmaRepository.count() = 836
+2025-12-04 15:36:53.454 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: ack
+2025-12-04 15:36:53.490 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'ack' (ID: 4): страниц = 0, лемм = 0
+2025-12-04 15:36:53.504 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: Quotes To Scrape
+2025-12-04 15:36:53.546 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'Quotes To Scrape' (ID: 6): страниц = 10, лемм = 836
+2025-12-04 15:36:53.547 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: Books To Scrape
+2025-12-04 15:36:53.577 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'Books To Scrape' (ID: 5): страниц = 0, лемм = 0
+2025-12-04 15:36:53.581 [http-nio-8081-exec-6] INFO  s.services.StatisticsServiceImpl - Статистика успешно собрана. Всего сайтов: 3, страниц: 10, лемм: 836
