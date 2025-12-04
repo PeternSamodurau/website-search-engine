@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.RecursiveAction;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -26,7 +26,7 @@ public class SiteCrawler extends RecursiveAction {
     private final CrawlerConfig crawlerConfig;
     private final PageRepository pageRepository;
     private final LemmaService lemmaService;
-    private final AtomicBoolean isIndexing;
+    private final Supplier<Boolean> isIndexing;
     private final Set<String> visitedUrls;
 
     @Override

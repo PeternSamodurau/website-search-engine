@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class IndexingServiceImpl implements IndexingService {
 
-    public static final AtomicBoolean isIndexing = new AtomicBoolean(false);
+    private final AtomicBoolean isIndexing = new AtomicBoolean(false);
     private ExecutorService siteExecutor;
 
     private final SiteRepository siteRepository;
@@ -152,7 +152,7 @@ public class IndexingServiceImpl implements IndexingService {
         Set<String> siteVisitedUrls = ConcurrentHashMap.newKeySet();
 
         try {
-            SiteCrawler task = new SiteCrawler(site, site.getUrl(), crawlerConfig, pageRepository, lemmaService, isIndexing, siteVisitedUrls);
+            SiteCrawler task = new SiteCrawler(site, site.getUrl(), crawlerConfig, pageRepository, lemmaService, this::isIndexing, siteVisitedUrls);
             pageCrawlerPool.invoke(task);
 
             Site updatedSite = siteRepository.findById(site.getId()).orElse(null);
