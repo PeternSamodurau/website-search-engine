@@ -37,7 +37,7 @@ public class LemmaServiceImpl implements LemmaService {
 
     @Override
     @Transactional
-    public void lemmatizePage(Page page) {
+    public synchronized void lemmatizePage(Page page) {
         Document doc = Jsoup.parse(page.getContent());
         String textForLemmas = doc.title() + " " + doc.body().text();
 
