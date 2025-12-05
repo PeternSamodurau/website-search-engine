@@ -60,19 +60,24 @@ public class IndexingServiceImpl implements IndexingService {
                                     return;
                                 }
 
-                                Site site = siteRepository.findByUrl(siteConfig.getUrl()).orElseGet(() -> {
-                                    Site newSite = new Site();
-                                    newSite.setName(siteConfig.getName());
-                                    newSite.setUrl(siteConfig.getUrl());
-                                    return newSite;
-                                });
+                                // --- START: Исправленная логика для избежания гонки транзакций ---
 
-                                siteDataCleaner.clearDataForSite(site); // Clear existing data if any
+                                // 1. Сначала полностью удаляем старый сайт и все его данные, если он существует.
+                                // Это гарантирует, что мы начнем с чистого листа.
+                                siteRepository.findByUrl(siteConfig.getUrl()).ifPresent(siteDataCleaner::clearDataForSite);
 
+                                // 2. Создаем НОВЫЙ, чистый объект Site, так как старый был удален.
+                                Site site = new Site();
+                                site.setName(siteConfig.getName());
+                                site.setUrl(siteConfig.getUrl());
+                                site.setStatus(Status.INDEXING); // Сразу задаем начальный статус
                                 site.setStatusTime(LocalDateTime.now());
-                                site.setStatus(Status.INDEXING); // Initial status for all sites
                                 site.setLastError(null);
-                                siteRepository.save(site); // Save with INDEXING status
+
+                                // 3. Сохраняем новый сайт. Теперь `site` - это управляемый (managed) объект.
+                                site = siteRepository.save(site);
+
+                                // --- END: Исправленная логика ---
 
                                 if (!siteConfig.getEnabled()) {
                                     site.setStatus(Status.FAILED);
