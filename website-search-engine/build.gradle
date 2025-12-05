@@ -1,78 +1,88 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.0'
-	id 'io.spring.dependency-management' version '1.1.6'
+    id 'java'
+    id 'org.springframework.boot' version '3.5.8'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+// Блок для централизованного управления версиями зависимостей
+ext {
+    springdocVersion = "2.0.4"
+    javaDotenvVersion = "5.2.2"
+    jsoupVersion = "1.17.2"
+    luceneVersion = "1.5"
+    mapstructVersion = "1.5.3.Final"
+    postgresqlVersion = "42.6.0"
+    wiremockVersion = "3.6.0"
 }
 
 repositories {
-	mavenCentral()
-	// Репозиторий из ТЗ с аутентификации по токену
-	maven {
-		url "https://gitlab.skillbox.ru/api/v4/projects/263574/packages/maven"
-		credentials(HttpHeaderCredentials) {
-			name = "Private-Token"
-			value = "glpat-Viu1C6oUSddYB3JdKviW"
-		}
-		authentication {
-			header(HttpHeaderAuthentication)
-		}
-	}
+    mavenCentral()
+    maven {
+        url "https://gitlab.skillbox.ru/api/v4/projects/263574/packages/maven"
+        credentials(HttpHeaderCredentials) {
+            name = "Private-Token"
+            value = "glpat-Viu1C6oUSddYB3JdKviW"
+        }
+        authentication {
+            header(HttpHeaderAuthentication)
+        }
+    }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-aop'
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
-	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation 'io.github.cdimascio:java-dotenv:5.2.2'
-	implementation 'org.jsoup:jsoup:1.17.2'
+    //======================================//
+    //      ОСНОВНЫЕ ЗАВИСИМОСТИ (APP)      //
+    //======================================//
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-	// Зависимости для лемматизатора из ТЗ
-	implementation 'org.apache.lucene.morphology:morph:1.5'
-	implementation 'org.apache.lucene.analysis:morphology:1.5'
-	implementation 'org.apache.lucene.morphology:dictionary-reader:1.5'
-	implementation 'org.apache.lucene.morphology:english:1.5'
-	implementation 'org.apache.lucene.morphology:russian:1.5'
+    // --- Database & Persistence ---
+    implementation "org.postgresql:postgresql:${postgresqlVersion}"
+    annotationProcessor 'org.hibernate.orm:hibernate-jpamodelgen'
+
+    // --- Инструменты и утилиты ---
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0"
+    implementation "io.github.cdimascio:java-dotenv:${javaDotenvVersion}"
+    implementation "org.jsoup:jsoup:${jsoupVersion}"
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // --- Морфология (Lucene) ---
+    implementation "org.apache.lucene.morphology:morph:${luceneVersion}"
+    implementation "org.apache.lucene.analysis:morphology:${luceneVersion}"
+    implementation "org.apache.lucene.morphology:dictionary-reader:${luceneVersion}"
+    implementation "org.apache.lucene.morphology:english:${luceneVersion}"
+    implementation "org.apache.lucene.morphology:russian:${luceneVersion}"
 
 
-	compileOnly("org.projectlombok:lombok")
-	runtimeOnly 'org.postgresql:postgresql:42.6.0'
-	annotationProcessor("org.projectlombok:lombok")
-	implementation("org.mapstruct:mapstruct:1.5.3.Final")
-	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
-
-
+    //======================================//
+    //      ТЕСТОВЫЕ ЗАВИСИМОСТИ (TEST)     //
+    //======================================//
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.wiremock:wiremock-standalone:3.6.0'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
+    testImplementation "org.wiremock:wiremock-standalone:${wiremockVersion}"
     testImplementation 'com.h2database:h2'
-
-    // *** ИСПРАВЛЕНИЕ: Добавляем Lombok для тестов ***
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
-
 tasks.named('test') {
-	useJUnitPlatform()
-	reports {
-		junitXml.required.set(true)
-		html.required.set(true)
-	}
+    useJUnitPlatform()
 }
