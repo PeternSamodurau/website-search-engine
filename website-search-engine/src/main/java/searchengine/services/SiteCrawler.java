@@ -9,8 +9,10 @@ import searchengine.config.CrawlerConfig;
 import searchengine.model.Page;
 import searchengine.model.Site;
 import searchengine.repository.PageRepository;
+import searchengine.repository.SiteRepository;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +27,7 @@ public class SiteCrawler extends RecursiveAction {
     private final String url;
     private final CrawlerConfig crawlerConfig;
     private final PageRepository pageRepository;
+    private final SiteRepository siteRepository; // Добавлено
     private final LemmaService lemmaService;
     private final Supplier<Boolean> isIndexing;
     private final Set<String> visitedUrls;
@@ -38,13 +41,13 @@ public class SiteCrawler extends RecursiveAction {
             log.warn("Индексация остановлена. Прерываю задачу для {}.", normalizedUrl);
             return;
         }
-        if (!this.visitedUrls.add(normalizedUrl)) { // Изменено: используем this.visitedUrls
+        if (!this.visitedUrls.add(normalizedUrl)) {
             log.warn("Уже посещено: {}. Пропускаю.", normalizedUrl);
             return;
         }
 
         try {
-            Thread.sleep(crawlerConfig.getDelay()); // Используем задержку из конфига
+            Thread.sleep(crawlerConfig.getDelay());
             String path = new URL(url).getPath();
 
             if (pageRepository.findByPathAndSite(path, site).isPresent()) {
@@ -55,7 +58,7 @@ public class SiteCrawler extends RecursiveAction {
             Connection.Response response = Jsoup.connect(url)
                     .userAgent(crawlerConfig.getUserAgent())
                     .referrer(crawlerConfig.getReferrer())
-                    .timeout(crawlerConfig.getTimeout()) // Добавлено: используем таймаут из конфига
+                    .timeout(crawlerConfig.getTimeout())
                     .execute();
 
             int statusCode = response.statusCode();
@@ -70,6 +73,11 @@ public class SiteCrawler extends RecursiveAction {
             pageRepository.save(page);
             log.info("Сохранена страница: {} (Код: {})", normalizedUrl, statusCode);
 
+            // --- НАЧАЛО: Обновление status_time ---
+            site.setStatusTime(LocalDateTime.now());
+            siteRepository.save(site);
+            // --- КОНЕЦ: Обновление status_time ---
+
             if (statusCode >= 200 && statusCode < 300) {
                 lemmaService.lemmatizePage(page);
 
@@ -80,8 +88,7 @@ public class SiteCrawler extends RecursiveAction {
                         .forEach(link -> {
                             if (isLinkValid(link)) {
                                 log.info("Найдена валидная ссылка: {} -> {}. Создаю подзадачу.", normalizedUrl, link);
-                                // Изменено: передаем this.visitedUrls дочерней задаче
-                                SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, lemmaService, isIndexing, this.visitedUrls);
+                                SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, siteRepository, lemmaService, isIndexing, this.visitedUrls);
                                 tasks.add(task);
                                 task.fork();
                             } else {
@@ -106,7 +113,7 @@ public class SiteCrawler extends RecursiveAction {
         String normalizedSiteUrl = site.getUrl().replaceFirst("://www\\.", "://");
         boolean startsWithSite = normalizedLink.startsWith(normalizedSiteUrl);
 
-        boolean isVisited = this.visitedUrls.contains(normalizeUrl(link)); // Изменено: используем this.visitedUrls
+        boolean isVisited = this.visitedUrls.contains(normalizeUrl(link));
         boolean hasAnchor = link.contains("#");
         boolean isFile = link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|exe|mp3|mp4|avi|mov)$");
 

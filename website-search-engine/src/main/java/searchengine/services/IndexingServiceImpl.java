@@ -60,24 +60,16 @@ public class IndexingServiceImpl implements IndexingService {
                                     return;
                                 }
 
-                                // --- START: Исправленная логика для избежания гонки транзакций ---
-
-                                // 1. Сначала полностью удаляем старый сайт и все его данные, если он существует.
-                                // Это гарантирует, что мы начнем с чистого листа.
                                 siteRepository.findByUrl(siteConfig.getUrl()).ifPresent(siteDataCleaner::clearDataForSite);
 
-                                // 2. Создаем НОВЫЙ, чистый объект Site, так как старый был удален.
                                 Site site = new Site();
                                 site.setName(siteConfig.getName());
                                 site.setUrl(siteConfig.getUrl());
-                                site.setStatus(Status.INDEXING); // Сразу задаем начальный статус
+                                site.setStatus(Status.INDEXING);
                                 site.setStatusTime(LocalDateTime.now());
                                 site.setLastError(null);
 
-                                // 3. Сохраняем новый сайт. Теперь `site` - это управляемый (managed) объект.
                                 site = siteRepository.save(site);
-
-                                // --- END: Исправленная логика ---
 
                                 if (!siteConfig.getEnabled()) {
                                     site.setStatus(Status.FAILED);
@@ -85,10 +77,9 @@ public class IndexingServiceImpl implements IndexingService {
                                     site.setStatusTime(LocalDateTime.now());
                                     siteRepository.save(site);
                                     log.info("Сайт '{}' пропущен (отключен в конфигурации). Статус: FAILED", siteConfig.getName());
-                                    return; // Skip crawling for disabled sites
+                                    return;
                                 }
 
-                                // Check site availability
                                 String availabilityError = checkSiteAvailability(siteConfig.getUrl());
                                 if (availabilityError != null) {
                                     site.setStatus(Status.FAILED);
@@ -96,10 +87,9 @@ public class IndexingServiceImpl implements IndexingService {
                                     site.setStatusTime(LocalDateTime.now());
                                     siteRepository.save(site);
                                     log.warn("Сайт '{}' недоступен. Статус: FAILED. Причина: {}", siteConfig.getName(), availabilityError);
-                                    return; // Skip crawling for unavailable sites
+                                    return;
                                 }
 
-                                // If enabled and available, proceed with actual crawling
                                 indexSite(site, siteConfig);
                             }, siteExecutor))
                             .collect(Collectors.toList());
@@ -122,11 +112,10 @@ public class IndexingServiceImpl implements IndexingService {
                             siteExecutor.shutdownNow();
                         }
                     }
-                    // This logic ensures isIndexing is set to false only if it wasn't stopped by stopIndexing()
-                    if (isIndexing.get()) { // If flag is still true, it means indexing completed naturally
+                    if (isIndexing.get()) {
                         isIndexing.set(false);
                         log.info("Процесс индексации ВСЕХ сайтов завершен естественным путем.");
-                    } else { // If flag is false, it means stopIndexing() was called
+                    } else {
                         log.info("Процесс индексации ВСЕХ сайтов завершен (остановлен пользователем).");
                     }
                 }
@@ -138,10 +127,9 @@ public class IndexingServiceImpl implements IndexingService {
         }
     }
 
-    private void indexSite(Site site, SiteConfig siteConfig) { // Modified signature
+    private void indexSite(Site site, SiteConfig siteConfig) {
         if (!isIndexing.get()) {
             log.info("Обход сайта '{}' пропущен, так как индексация остановлена пользователем.", site.getName());
-            // Update status to FAILED if it was INDEXING and not already FAILED
             if (site.getStatus() == Status.INDEXING) {
                 site.setStatus(Status.FAILED);
                 site.setLastError("Индексация остановлена пользователем");
@@ -157,7 +145,7 @@ public class IndexingServiceImpl implements IndexingService {
         Set<String> siteVisitedUrls = ConcurrentHashMap.newKeySet();
 
         try {
-            SiteCrawler task = new SiteCrawler(site, site.getUrl(), crawlerConfig, pageRepository, lemmaService, this::isIndexing, siteVisitedUrls);
+            SiteCrawler task = new SiteCrawler(site, site.getUrl(), crawlerConfig, pageRepository, siteRepository, lemmaService, this::isIndexing, siteVisitedUrls);
             pageCrawlerPool.invoke(task);
 
             Site updatedSite = siteRepository.findById(site.getId()).orElse(null);
@@ -167,11 +155,10 @@ public class IndexingServiceImpl implements IndexingService {
                 return;
             }
 
-            if (isIndexing.get()) { // Check if indexing was not globally stopped
+            if (isIndexing.get()) {
                 updatedSite.setStatus(Status.INDEXED);
                 log.info("Обход сайта '{}' успешно завершен.", updatedSite.getName());
             } else {
-                // This branch means it was stopped by stopIndexing()
                 updatedSite.setStatus(Status.FAILED);
                 updatedSite.setLastError("Индексация остановлена пользователем");
                 log.warn("Обход сайта '{}' был остановлен пользователем.", updatedSite.getName());
@@ -189,10 +176,10 @@ public class IndexingServiceImpl implements IndexingService {
             }
         } finally {
             if (pageCrawlerPool != null && !pageCrawlerPool.isShutdown()) {
-                if (!isIndexing.get()) { // If global stop flag is set, forcefully shut down
+                if (!isIndexing.get()) {
                     pageCrawlerPool.shutdownNow();
                 } else {
-                    pageCrawlerPool.shutdown(); // Otherwise, graceful shutdown
+                    pageCrawlerPool.shutdown();
                 }
             }
         }
@@ -206,12 +193,11 @@ public class IndexingServiceImpl implements IndexingService {
             return false;
         }
         log.info("Остановка процесса индексации...");
-        isIndexing.set(false); // Устанавливаем флаг остановки
+        isIndexing.set(false);
 
         if (siteExecutor != null && !siteExecutor.isShutdown()) {
-            siteExecutor.shutdownNow(); // Прерываем потоки, выполняющие indexSite
+            siteExecutor.shutdownNow();
             try {
-                // Ждем завершения всех задач после принудительной остановки
                 if (!siteExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
                     log.warn("Не все задачи индексации завершились после принудительной остановки.");
                 }
@@ -221,7 +207,6 @@ public class IndexingServiceImpl implements IndexingService {
             }
         }
         
-        // Обновляем статус всех сайтов, которые были в процессе индексации (INDEXING)
         siteRepository.findAllByStatus(Status.INDEXING).forEach(site -> {
             site.setStatus(Status.FAILED);
             site.setLastError("Индексация остановлена пользователем.");
@@ -317,12 +302,12 @@ public class IndexingServiceImpl implements IndexingService {
                     .userAgent(crawlerConfig.getUserAgent())
                     .referrer(crawlerConfig.getReferrer())
                     .ignoreHttpErrors(true)
-                    .timeout(crawlerConfig.getTimeout()) // Use crawlerConfig timeout
+                    .timeout(crawlerConfig.getTimeout())
                     .execute();
 
             int responseCode = response.statusCode();
             if (responseCode >= 200 && responseCode < 400) {
-                return null; // Site is available
+                return null;
             } else {
                 return "Сайт вернул код ответа: " + responseCode + ". Тело ответа (первые 500 символов): " +
                        response.body().substring(0, Math.min(response.body().length(), 500));

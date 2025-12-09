@@ -1,5 +1,6 @@
 package searchengine.services;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -184,7 +185,7 @@ public class StatisticsServiceTest {
         log.info("Проверка количества лемм проиндексированного сайта. Ожидается: {}, Фактически: {}", expectedLemmas, indexedSiteStats.getLemmas());
         assertEquals(expectedLemmas, indexedSiteStats.getLemmas(), "Количество лемм для проиндексированного сайта должно быть 16");
 
-        assertNotNull(indexedSiteStats.getError(), "Поле ошибки не должно быть null");
+        assertNull(indexedSiteStats.getError(), "Поле ошибки для успешно проиндексированного сайта должно быть null");
     }
 
     @Test
