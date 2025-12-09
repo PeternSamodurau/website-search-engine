@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import searchengine.dto.response.SearchResponseDTO;
 import searchengine.dto.response.SearchDataDTO;
@@ -32,7 +33,8 @@ public class SearchServiceImpl implements SearchService {
     private final PageRepository pageRepository;
     private final IndexRepository indexRepository;
 
-    private static final double FREQUENCY_THRESHOLD_PERCENT = 1.0;
+    @Value("${search.lemma-frequency-threshold:0.9}")
+    private double frequencyThresholdPercent;
 
     @Override
     public SearchResponseDTO search(String query, String siteUrl, int offset, int limit) {
@@ -119,7 +121,7 @@ public class SearchServiceImpl implements SearchService {
         if (totalPagesOnSite == 0) {
             return Collections.emptyList();
         }
-        long frequencyThreshold = (long) (totalPagesOnSite * FREQUENCY_THRESHOLD_PERCENT);
+        long frequencyThreshold = (long) (totalPagesOnSite * frequencyThresholdPercent);
         log.info("Порог частоты для фильтрации лемм: {}", frequencyThreshold);
 
         return lemmas.stream()
