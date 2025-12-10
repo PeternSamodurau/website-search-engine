@@ -34,20 +34,6 @@ public class StatisticsServiceImpl implements StatisticsService {
     public StatisticsResponseDTO getStatistics() {
         log.info("Запрос на получение статистики");
 
-        TotalStatisticsDTO total = new TotalStatisticsDTO();
-        long totalSitesCount = siteRepository.count();
-        long totalPagesCount = pageRepository.count(); // Получаем общее количество страниц
-        long totalLemmasCount = lemmaRepository.count(); // Получаем общее количество лемм
-
-        log.info("DEBUG: siteRepository.count() = {}", totalSitesCount);
-        log.info("DEBUG: pageRepository.count() = {}", totalPagesCount);
-        log.info("DEBUG: lemmaRepository.count() = {}", totalLemmasCount);
-
-        total.setSites((int) totalSitesCount);
-        total.setPages((int) totalPagesCount);
-        total.setLemmas((int) totalLemmasCount);
-        total.setIndexing(indexingService.isIndexing());
-
         List<SiteStatisticsDTO> detailed = new ArrayList<>();
         List<SiteConfig> sitesList = sites.getSites();
 
@@ -78,6 +64,16 @@ public class StatisticsServiceImpl implements StatisticsService {
             item.setStatusTime(siteModel.getStatusTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             detailed.add(item);
         }
+
+        TotalStatisticsDTO total = new TotalStatisticsDTO();
+        total.setSites(detailed.size());
+        total.setIndexing(indexingService.isIndexing());
+
+        int totalPages = detailed.stream().mapToInt(SiteStatisticsDTO::getPages).sum();
+        int totalLemmas = detailed.stream().mapToInt(SiteStatisticsDTO::getLemmas).sum();
+
+        total.setPages(totalPages);
+        total.setLemmas(totalLemmas);
 
         StatisticsDataDTO data = new StatisticsDataDTO();
         data.setTotal(total);
