@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import searchengine.config.SiteConfig;
 import searchengine.config.SitesListConfig;
 import searchengine.model.Site;
 import searchengine.repository.SiteRepository;
@@ -16,7 +15,6 @@ public class SiteDataCleaner {
 
     private final SiteRepository siteRepository;
     private final SitesListConfig sites;
-
 
     @Transactional
     public void clearDataForSite(Site site) {

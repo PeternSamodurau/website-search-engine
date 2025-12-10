@@ -24,7 +24,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      # ИСПРАВЛЕНО: Добавлена переменная для установки часового пояса
+      # переменная для установки часового пояса
       - TZ=Europe/Moscow
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/website_db
       - SPRING_DATASOURCE_USERNAME=postgres

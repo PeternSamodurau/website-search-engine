@@ -13,5 +13,5 @@ public class CrawlerConfig {
     private String userAgent;
     private String referrer;
     private int delay;
-    private int timeout; // Добавлено свойство timeout
+    private int timeout;
 }
