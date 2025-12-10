@@ -1,4 +1,3 @@
-HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -38,5 +37,5 @@ out/
 !/docker/docker-log.txt
 !/logs/app.log
 !/final_project/
+!/ТЗ.md
 
-!/logs/
