@@ -213,6 +213,12 @@ public class SearchServiceImpl implements SearchService {
             log.debug("generateSnippet: Лучший фрагмент начинается с bestIndex: {}", bestIndex);
 
             int start = Math.max(0, bestIndex - 50);
+            if (start > 0) {
+                int spaceIndex = text.lastIndexOf(' ', start);
+                if (spaceIndex != -1) {
+                    start = spaceIndex + 1;
+                }
+            }
             int end = Math.min(text.length(), start + fragmentSize + 100);
             String snippetText = text.substring(start, end);
             log.debug("generateSnippet: Сформирован фрагмент текста (до подсветки): '{}'", snippetText);
