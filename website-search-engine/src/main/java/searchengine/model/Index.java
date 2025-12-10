@@ -8,7 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "\"index\"") // "index" - ключевое слово
+@Table(name = "\"index\"")
 @Getter
 @Setter
 public class Index {
@@ -27,7 +27,7 @@ public class Index {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Lemma lemma;
 
-    @Column(name = "\"rank\"", nullable = false) // "rank" - ключевое слово
+    @Column(name = "\"rank\"", nullable = false)
     private float rank;
 
 }

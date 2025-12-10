@@ -6,8 +6,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import searchengine.dto.response.SearchResponseDTO;
-import searchengine.dto.response.SearchDataDTO;
+import searchengine.dto.search.SearchResponseDTO;
+import searchengine.dto.search.SearchDataDTO;
 import searchengine.model.Index;
 import searchengine.model.Lemma;
 import searchengine.model.Page;
@@ -85,11 +85,10 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private List<SearchDataDTO> searchSite(Site site, String query, Set<String> queryLemmas) {
-        // 1. Находим леммы в базе
+
         List<Lemma> foundLemmas = lemmaRepository.findByLemmaInAndSite(queryLemmas, site);
         log.info("Найдено {} лемм в базе для сайта {}: {}", foundLemmas.size(), site.getName(), foundLemmas.stream().map(Lemma::getLemma).collect(Collectors.toList()));
 
-        // 2. Фильтруем слишком частые и сортируем по редкости
         List<Lemma> filteredAndSortedLemmas = filterAndSortLemmas(foundLemmas, site);
         if (filteredAndSortedLemmas.isEmpty()) {
             log.warn("Все леммы были отфильтрованы (слишком частые или не найдены).");
@@ -97,7 +96,6 @@ public class SearchServiceImpl implements SearchService {
         }
         log.info("Отфильтрованные и отсортированные леммы (от редкой к частой): {}", filteredAndSortedLemmas.stream().map(Lemma::getLemma).collect(Collectors.toList()));
 
-        // 3. Получаем ID страниц, содержащих ВСЕ леммы, одним запросом
         List<Integer> lemmaIds = filteredAndSortedLemmas.stream().map(Lemma::getId).collect(Collectors.toList());
         List<Integer> pageIds = indexRepository.findPageIdsByLemmaIds(lemmaIds, lemmaIds.size());
         log.info("Найдено {} страниц, содержащих все леммы.", pageIds.size());
@@ -106,7 +104,6 @@ public class SearchServiceImpl implements SearchService {
             return Collections.emptyList();
         }
 
-        // 4. Получаем страницы и индексы для расчета релевантности
         List<Page> foundPages = pageRepository.findAllById(pageIds);
         List<Index> indexes = indexRepository.findByPageInAndLemmaIn(foundPages, foundLemmas);
         Map<Integer, Float> absoluteRelevanceByPageId = calculateAbsoluteRelevance(indexes);
@@ -172,19 +169,14 @@ public class SearchServiceImpl implements SearchService {
                 return text.substring(0, Math.min(text.length(), 200)) + "...";
             }
 
-            // 1. Найти все вхождения слов, леммы которых совпадают с леммами запроса
             List<Integer> occurrences = new ArrayList<>();
-            // Паттерн для поиска слов (любая последовательность букв Unicode)
             Pattern wordPattern = Pattern.compile("\\p{L}+", Pattern.UNICODE_CASE);
             Matcher wordMatcher = wordPattern.matcher(text);
 
             while (wordMatcher.find()) {
                 String word = wordMatcher.group();
-                // Лемматизируем каждое слово из текста. Используем toLowerCase() для нормализации,
-                // так как LemmaService может быть чувствителен к регистру, а леммы обычно в нижнем регистре.
                 Set<String> wordLemmas = lemmaService.getLemmaSet(word.toLowerCase());
 
-                // Проверяем, есть ли пересечение между леммами слова и леммами запроса
                 if (!Collections.disjoint(wordLemmas, queryLemmas)) {
                     occurrences.add(wordMatcher.start());
                     log.debug("generateSnippet: Найдено релевантное слово '{}' (лемма: {}) на позиции {}", word, wordLemmas, wordMatcher.start());
@@ -197,7 +189,6 @@ public class SearchServiceImpl implements SearchService {
                 return text.substring(0, Math.min(text.length(), 200)) + "...";
             }
 
-            // 2. Найти лучший фрагмент (остальная логика остается той же)
             occurrences.sort(Comparator.naturalOrder());
             log.debug("generateSnippet: Отсортированные позиции релевантных вхождений: {}", occurrences);
 
@@ -226,21 +217,20 @@ public class SearchServiceImpl implements SearchService {
             String snippetText = text.substring(start, end);
             log.debug("generateSnippet: Сформирован фрагмент текста (до подсветки): '{}'", snippetText);
 
-            // 3. Подсветить релевантные слова в выбранном фрагменте
             StringBuilder highlightedSnippetBuilder = new StringBuilder();
             int lastAppendPosition = 0;
-            // Используем тот же паттерн для слов, чтобы найти их в фрагменте
+
             Matcher snippetWordMatcher = wordPattern.matcher(snippetText);
 
             while (snippetWordMatcher.find()) {
-                // Добавляем текст между словами (не-слова)
+
                 highlightedSnippetBuilder.append(snippetText.substring(lastAppendPosition, snippetWordMatcher.start()));
 
                 String word = snippetWordMatcher.group();
-                // Лемматизируем слово из фрагмента для сравнения
+
                 Set<String> wordLemmas = lemmaService.getLemmaSet(word.toLowerCase());
 
-                // Если лемма слова совпадает с леммой запроса, подсвечиваем оригинальное слово
+
                 if (!Collections.disjoint(wordLemmas, queryLemmas)) {
                     highlightedSnippetBuilder.append("<b>").append(word).append("</b>");
                     log.debug("generateSnippet: Подсвечено слово '{}' (лемма: {})", word, wordLemmas);
@@ -249,7 +239,7 @@ public class SearchServiceImpl implements SearchService {
                 }
                 lastAppendPosition = snippetWordMatcher.end();
             }
-            // Добавляем оставшуюся часть фрагмента после последнего слова
+
             highlightedSnippetBuilder.append(snippetText.substring(lastAppendPosition));
 
             String finalSnippet = highlightedSnippetBuilder.toString();

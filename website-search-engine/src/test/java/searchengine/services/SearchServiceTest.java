@@ -9,8 +9,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import searchengine.config.SiteConfig;
 import searchengine.config.SitesListConfig;
-import searchengine.dto.response.SearchDataDTO;
-import searchengine.dto.response.SearchResponseDTO;
+import searchengine.dto.search.SearchDataDTO;
+import searchengine.dto.search.SearchResponseDTO;
 import searchengine.repository.IndexRepository;
 import searchengine.repository.LemmaRepository;
 import searchengine.repository.PageRepository;
@@ -59,7 +59,7 @@ public class SearchServiceTest {
         SiteConfig siteConfig = new SiteConfig();
         siteConfig.setUrl(wireMockServer.baseUrl());
         siteConfig.setName("Test Site");
-        siteConfig.setEnabled(true); // FIX: Allow indexing for tests
+        siteConfig.setEnabled(true);
         when(sitesListConfig.getSites()).thenReturn(Collections.singletonList(siteConfig));
 
         stubFor(get(urlEqualTo("/")).willReturn(aResponse()
@@ -87,7 +87,6 @@ public class SearchServiceTest {
         SearchResponseDTO response = (SearchResponseDTO) searchService.search("третья", null, 0, 20);
 
         assertTrue(response.isResult());
-        // ИСПРАВЛЕНО: Тестовые данные содержат слово "третья" на 2 страницах
         assertEquals(2, response.getCount());
         List<String> foundUris = response.getData().stream().map(SearchDataDTO::getUri).collect(Collectors.toList());
         assertTrue(foundUris.contains("/page3"));
@@ -99,7 +98,6 @@ public class SearchServiceTest {
         SearchResponseDTO response = (SearchResponseDTO) searchService.search("вторая страница", null, 0, 20);
 
         assertTrue(response.isResult());
-        // ИСПРАВЛЕНО: Тестовые данные содержат слова "вторая" и "страница" на 2 страницах
         assertEquals(2, response.getCount());
         List<String> foundUris = response.getData().stream().map(SearchDataDTO::getUri).collect(Collectors.toList());
         assertTrue(foundUris.contains("/page2"));
@@ -127,7 +125,6 @@ public class SearchServiceTest {
         SearchDataDTO secondResult = response.getData().get(1);
         SearchDataDTO lastResult = response.getData().get(2);
 
-        // ИСПРАВЛЕНО: В тестовых данных релевантность некоторых страниц одинакова, поэтому проверяем >=
         log.info("Проверка релевантности: первый ({}) >= второго ({}).", firstResult.getRelevance(), secondResult.getRelevance());
         assertTrue(firstResult.getRelevance() >= secondResult.getRelevance());
         log.info("Проверка релевантности: второй ({}) >= последнего ({}).", secondResult.getRelevance(), lastResult.getRelevance());

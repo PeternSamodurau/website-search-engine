@@ -1,8 +1,7 @@
-package searchengine.dto.response;
+package searchengine.dto.search;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-
 import java.util.List;
 
 @Data
@@ -12,10 +11,6 @@ public class SearchResponseDTO {
     private String error;
     private int count;
     private List<SearchDataDTO> data;
-
-    public SearchResponseDTO(boolean result) {
-        this.result = result;
-    }
 
     public SearchResponseDTO(boolean result, String error) {
         this.result = result;

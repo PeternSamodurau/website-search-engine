@@ -1,6 +1,5 @@
 package searchengine.services;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -72,49 +71,49 @@ public class StatisticsServiceTest {
     @BeforeEach
     void setUp() throws IOException, InterruptedException {
         log.info("--- Начало настройки теста ---");
-        // 1. Очистка БД
+
         indexRepository.deleteAll();
         lemmaRepository.deleteAll();
         pageRepository.deleteAll();
         siteRepository.deleteAll();
         log.info("Репозитории очищены.");
 
-        // 2. Настройка моков для двух сайтов
+
         SiteConfig siteConfig1 = new SiteConfig();
         siteConfig1.setUrl(wireMockServer.baseUrl());
         siteConfig1.setName("Test Site 1 (Indexed)");
-        siteConfig1.setEnabled(true); // FIX: Allow indexing for this site
+        siteConfig1.setEnabled(true);
 
         SiteConfig siteConfig2 = new SiteConfig();
         siteConfig2.setUrl("http://example.com");
         siteConfig2.setName("Test Site 2 (Empty)");
-        siteConfig2.setEnabled(false); // FIX: Explicitly disable indexing for this site
+        siteConfig2.setEnabled(false);
 
         when(sitesListConfig.getSites()).thenReturn(Arrays.asList(siteConfig1, siteConfig2));
         log.info("Мок для SitesListConfig настроен с 2 сайтами.");
 
-        // 3. Настройка WireMock
+
         stubFor(get(urlEqualTo("/")).willReturn(aResponse().withHeader("Content-Type", "text/html").withBody(readTestResource("test-site/index.html"))));
         stubFor(get(urlEqualTo("/page2")).willReturn(aResponse().withHeader("Content-Type", "text/html").withBody(readTestResource("test-site/page2.html"))));
         stubFor(get(urlEqualTo("/page3")).willReturn(aResponse().withHeader("Content-Type", "text/html").withBody(readTestResource("test-site/page3.html"))));
         log.info("Заглушки WireMock настроены.");
 
-        // 4. Добавляем второй сайт в БД вручную, чтобы он просто существовал для статистики
+
         Site emptySite = new Site();
         emptySite.setUrl(siteConfig2.getUrl());
         emptySite.setName(siteConfig2.getName());
-        emptySite.setStatus(Status.INDEXED); // Предположим, он был проиндексирован ранее и пуст
+        emptySite.setStatus(Status.INDEXED);
         emptySite.setStatusTime(LocalDateTime.now());
         siteRepository.save(emptySite);
         log.info("Пустой сайт создан в БД.");
 
-        // 5. Запуск и ожидание полной индексации (затронет только siteConfig1)
+
         log.info("Запуск полной индексации...");
         indexingService.startIndexing();
         waitForIndexingToComplete();
         log.info("Индексация завершена.");
 
-        // 6. Получение статистики
+
         statisticsResponse = statisticsService.getStatistics();
         log.info("Статистика получена. --- Настройка теста завершена ---");
     }
@@ -201,7 +200,7 @@ public class StatisticsServiceTest {
         log.info("Проверка имени пустого сайта. Ожидается: '{}', Фактически: '{}'", expectedName, emptySiteStats.getName());
         assertEquals(expectedName, emptySiteStats.getName());
 
-        Status expectedStatus = Status.FAILED; // <--- FIX: The service now correctly marks a disabled site as FAILED.
+        Status expectedStatus = Status.FAILED;
         log.info("Проверка статуса пустого сайта. Ожидается: {}, Фактически: {}", expectedStatus.name(), emptySiteStats.getStatus());
         assertEquals(expectedStatus.name(), emptySiteStats.getStatus());
 

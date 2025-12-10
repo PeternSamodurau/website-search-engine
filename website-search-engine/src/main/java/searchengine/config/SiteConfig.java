@@ -11,6 +11,6 @@ public class SiteConfig {
     private boolean enabled;
 
     public boolean getEnabled() {
-        return enabled;
+      return enabled;
     }
 }

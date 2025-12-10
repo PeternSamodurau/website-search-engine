@@ -63,10 +63,10 @@ public class IndexingServiceTest {
         SiteConfig siteConfig = new SiteConfig();
         siteConfig.setUrl(wireMockServer.baseUrl());
         siteConfig.setName("Test Site");
-        siteConfig.setEnabled(true); // FIX: Allow indexing for tests
+        siteConfig.setEnabled(true);
         when(sitesListConfig.getSites()).thenReturn(Collections.singletonList(siteConfig));
 
-        // Default stubs for all tests
+
         stubFor(get(urlEqualTo("/")).willReturn(aResponse()
                 .withHeader("Content-Type", "text/html")
                 .withBody(readTestResource("test-site/index.html"))));
@@ -119,26 +119,24 @@ public class IndexingServiceTest {
 
     @Test
     @DisplayName("Остановка индексации: при вызове stopIndexing() процесс должен быть прерван, в результате чего в базе сохранится меньше страниц, чем есть на сайте.")
-    void shouldStopIndexingMidway() throws InterruptedException, IOException { // <--- FIX: Added IOException
-        // Add a delay to one of the pages to ensure indexing is in progress when we try to stop it.
+    void shouldStopIndexingMidway() throws InterruptedException, IOException {
         stubFor(get(urlEqualTo("/page2")).willReturn(aResponse()
                 .withHeader("Content-Type", "text/html; charset=utf-8")
                 .withBody(readTestResource("test-site/page2.html"))
-                .withFixedDelay(2000))); // 2-second delay
+                .withFixedDelay(2000)));
 
         log.info("Тест остановки индексации: запуск...");
-        indexingService.startIndexing();
 
-        // Wait for indexing to actually start
+        indexingService.startIndexing();
         Site testSite = waitForSiteStatus(wireMockServer.baseUrl(), Status.INDEXING, 10);
         assertNotNull(testSite, "Сайт должен перейти в статус INDEXING.");
+
         log.info("Индексация сайта '{}' началась (статус: {}).", testSite.getName(), testSite.getStatus());
 
         log.info("Отправка команды на остановку...");
         boolean stopResult = indexingService.stopIndexing();
         assertTrue(stopResult, "Остановка индексации должна вернуть true");
 
-        // Wait for indexing to fully stop
         testSite = waitForSiteStatusNot(wireMockServer.baseUrl(), Status.INDEXING, 10);
         assertNotNull(testSite, "Сайт должен перестать быть в статусе INDEXING.");
         log.info("Индексация сайта '{}' завершена (статус: {}).", testSite.getName(), testSite.getStatus());

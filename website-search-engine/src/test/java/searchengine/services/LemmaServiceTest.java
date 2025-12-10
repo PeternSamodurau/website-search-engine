@@ -98,7 +98,7 @@ public class LemmaServiceTest {
     @Test
     @DisplayName("Проверка лемматизации ТРЕХ страниц: корректные lemmas, rank и frequency")
     void lemmatizeThreePages_ShouldSumFrequencies() throws InterruptedException {
-        // 1. ARRANGE
+
         stubFor(get(urlEqualTo("/")).willReturn(aResponse()
                 .withHeader("Content-Type", "text/html")
                 .withBody(readTestResource("test-site/index.html"))));
@@ -109,11 +109,11 @@ public class LemmaServiceTest {
                 .withHeader("Content-Type", "text/html")
                 .withBody(readTestResource("test-site/page3.html"))));
 
-        // 2. ACT
+
         indexingService.startIndexing();
         waitForIndexingToComplete();
 
-        // 3. ASSERT
+
         Site site = siteRepository.findByUrl(wireMockServer.baseUrl()).orElseThrow();
         List<Lemma> actualLemmas = lemmaRepository.findBySite(site);
         assertEquals(16, actualLemmas.size());

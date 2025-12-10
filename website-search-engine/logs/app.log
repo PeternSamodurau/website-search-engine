@@ -9818,3 +9818,6 @@ error was encountered while trying to use an ErrorDocument to handle the request
 2025-12-10 13:22:06.800 [http-nio-8081-exec-3] DEBUG s.services.SearchServiceImpl - generateSnippet: Подсвечено слово 'novelist' (лемма: [novelist])
 2025-12-10 13:22:06.801 [http-nio-8081-exec-3] DEBUG s.services.SearchServiceImpl - generateSnippet: Окончательный сниппет: '...h Karl Bukowski) was a German-born American poet, <b>novelist</b> and short story writer. His writing was influenced by the social, cultural and economic ambience of his home city of Los Angeles.It is marked by an emphasis on the ordinary lives of poor Americans, the act of writing, alcohol, relationships ...'
 2025-12-10 13:22:06.802 [http-nio-8081-exec-3] INFO  s.services.SearchServiceImpl - Поиск завершен. Найдено всего: 9. Возвращено после пагинации: 1
+2025-12-10 14:41:20.272 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-10 14:41:20.310 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-12-10 14:41:20.340 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

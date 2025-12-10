@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import searchengine.component.ApiResponseFactory;
-import searchengine.dto.response.SearchResponseDTO;
+import searchengine.dto.search.SearchResponseDTO;
 import searchengine.dto.statistics.StatisticsResponseDTO;
 import searchengine.services.IndexingService;
 import searchengine.services.SearchService;

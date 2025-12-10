@@ -13,7 +13,7 @@ java {
     }
 }
 
-// Блок для централизованного управления версиями зависимостей
+
 ext {
     springdocVersion = "2.0.4"
     javaDotenvVersion = "5.2.2"
@@ -38,20 +38,16 @@ repositories {
 }
 
 dependencies {
-    //======================================//
-    //      ОСНОВНЫЕ ЗАВИСИМОСТИ (APP)      //
-    //======================================//
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // --- Database & Persistence ---
     runtimeOnly 'org.postgresql:postgresql:42.6.0'
     annotationProcessor 'org.hibernate.orm:hibernate-jpamodelgen'
 
-    // --- Инструменты и утилиты ---
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0"
     implementation "io.github.cdimascio:java-dotenv:${javaDotenvVersion}"
     implementation "org.jsoup:jsoup:${jsoupVersion}"
@@ -60,17 +56,12 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // --- Морфология (Lucene) ---
     implementation "org.apache.lucene.morphology:morph:${luceneVersion}"
     implementation "org.apache.lucene.analysis:morphology:${luceneVersion}"
     implementation "org.apache.lucene.morphology:dictionary-reader:${luceneVersion}"
     implementation "org.apache.lucene.morphology:english:${luceneVersion}"
     implementation "org.apache.lucene.morphology:russian:${luceneVersion}"
 
-
-    //======================================//
-    //      ТЕСТОВЫЕ ЗАВИСИМОСТИ (TEST)     //
-    //======================================//
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "org.wiremock:wiremock-standalone:${wiremockVersion}"
     testImplementation 'com.h2database:h2'

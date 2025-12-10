@@ -52,7 +52,6 @@ public class LemmaServiceImpl implements LemmaService {
             return;
         }
 
-        // Fetch existing lemmas from the database in a single query
         List<Lemma> existingLemmasList = lemmaRepository.findByLemmaInAndSite(lemmasFromPage.keySet(), page.getSite());
         Map<String, Lemma> lemmasOnSite = existingLemmasList.stream()
                 .collect(Collectors.toMap(Lemma::getLemma, lemma -> lemma));
@@ -66,16 +65,15 @@ public class LemmaServiceImpl implements LemmaService {
 
             Lemma lemma = lemmasOnSite.get(lemmaString);
             if (lemma == null) {
-                // Lemma is new for this site
+
                 lemma = new Lemma();
                 lemma.setSite(page.getSite());
                 lemma.setLemma(lemmaString);
                 lemma.setFrequency(1);
-                // Add to map to handle duplicates on the same page
+
                 lemmasOnSite.put(lemmaString, lemma);
                 lemmasToSave.add(lemma);
             } else {
-                // Existing lemma, just increment frequency
                 lemma.setFrequency(lemma.getFrequency() + 1);
                 lemmasToSave.add(lemma);
             }
@@ -87,12 +85,8 @@ public class LemmaServiceImpl implements LemmaService {
             indicesToSave.add(newIndex);
         }
 
-        // Batch save all new and updated lemmas.
-        // When new lemmas are saved, JPA will assign them an ID.
         lemmaRepository.saveAll(lemmasToSave);
 
-        // Now that all lemmas have been persisted and have an ID,
-        // we can safely save the indices that refer to them.
         indexRepository.saveAll(indicesToSave);
     }
 
@@ -122,14 +116,10 @@ public class LemmaServiceImpl implements LemmaService {
             }
         }
 
-        // First, delete the child records
         indexRepository.deleteAll(oldIndices);
-
-        // Then, update/delete the parent records
         lemmaRepository.saveAll(lemmasToUpdate);
         lemmaRepository.deleteAll(lemmasToDelete);
 
-        // Force synchronization with the database and clear the persistence context
         indexRepository.flush();
         entityManager.clear();
 

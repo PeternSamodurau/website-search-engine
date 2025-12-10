@@ -25,7 +25,6 @@ public interface LemmaRepository extends JpaRepository<Lemma, Integer> {
     @Query("DELETE FROM Lemma l WHERE l.site = :site")
     void deleteAllBySite(Site site);
 
-    // Добавлен для поиска нескольких лемм на конкретном сайте
     List<Lemma> findByLemmaInAndSite(Collection<String> lemmas, Site site);
 
     @Modifying

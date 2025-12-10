@@ -40,25 +40,4 @@ public interface IndexRepository extends JpaRepository<Index, Integer> {
      * ИСПРАВЛЕНО: Добавлен метод для удаления всех индексов, связанных с конкретной страницей.
      * @param page страница, для которой нужно удалить индексы
      */
-    @Transactional
-    @Modifying
-    void deleteByPage(Page page);
-
-    // НОВЫЕ МЕТОДЫ, КОТОРЫЕ НУЖНО ДОБАВИТЬ:
-
-    /**
-     * Удаляет все записи Index, связанные с указанным списком страниц.
-     * @param pages список страниц, для которых нужно удалить индексы
-     */
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Index i WHERE i.page IN :pages")
-    void deleteByPageIn(@Param("pages") List<Page> pages);
-
-    /**
-     * Подсчитывает количество записей Index, связанных с указанным списком страниц.
-     * @param pages список страниц
-     * @return количество записей Index
-     */
-    long countByPageIn(List<Page> pages);
 }

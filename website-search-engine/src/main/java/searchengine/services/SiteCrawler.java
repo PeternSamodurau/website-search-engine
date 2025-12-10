@@ -73,10 +73,8 @@ public class SiteCrawler extends RecursiveAction {
             pageRepository.save(page);
             log.info("Сохранена страница: {} (Код: {})", normalizedUrl, statusCode);
 
-            // --- НАЧАЛО: Обновление status_time ---
             site.setStatusTime(LocalDateTime.now());
             siteRepository.save(site);
-            // --- КОНЕЦ: Обновление status_time ---
 
             if (statusCode >= 200 && statusCode < 300) {
                 lemmaService.lemmatizePage(page);

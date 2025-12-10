@@ -1,4 +1,4 @@
-package searchengine.init; // Оставляем пакет, как есть
+package searchengine.init;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -21,20 +21,18 @@ import java.util.List;
 @RequiredArgsConstructor
 @Profile("init")
 @Slf4j
-public class SiteInitializationService { // Переименованный класс
+public class SiteInitializationService {
 
     private final SitesListConfig sites;
     private final SiteRepository siteRepository;
     private final PageRepository pageRepository;
     private final LemmaRepository lemmaRepository;
-    // Удалены IndexingService и CrawlerConfig, так как они не используются в initializeSites
 
     @PostConstruct
     @Transactional
     public void initializeSites() {
-        log.info("Запуск инициализации/обновления сайтов..."); // Изменено сообщение в логе
+        log.info("Запуск инициализации/обновления сайтов...");
 
-        // Удаление сайтов из БД, отсутствующих в конфигурации
         List<Site> sitesInDb = siteRepository.findAll();
         for (Site siteInDb : sitesInDb) {
             boolean foundInConfig = sites.getSites().stream()
@@ -47,7 +45,6 @@ public class SiteInitializationService { // Переименованный кл�
             }
         }
 
-        // Создание или обновление сайтов из конфигурации
         for (SiteConfig siteConfig : sites.getSites()) {
             Site site = siteRepository.findByUrl(siteConfig.getUrl()).orElseGet(() -> {
                 log.info("Создание нового сайта: {}", siteConfig.getName());
@@ -59,13 +56,11 @@ public class SiteInitializationService { // Переименованный кл�
 
             site.setStatusTime(LocalDateTime.now());
             site.setStatus(Status.INDEXING); // Устанавливаем статус INDEXING для всех сайтов
-            site.setLastError(null); // Сбрасываем ошибку при инициализации
+            site.setLastError(null);
             log.info("Сайт '{}' инициализирован со статусом: INDEXING", siteConfig.getName());
 
             siteRepository.save(site);
         }
         log.info("Инициализация/обновление сайтов завершено.");
     }
-
-    // Метод getStatistics() удален, так как этот класс больше не реализует StatisticsService
 }

@@ -62,8 +62,8 @@ public class StatisticsServiceImpl implements StatisticsService {
             }
             Site siteModel = siteModelOpt.get();
 
-            long sitePagesCount = pageRepository.countBySiteId(siteModel.getId()); // Получаем страницы для конкретного сайта
-            long siteLemmasCount = lemmaRepository.countBySite(siteModel); // Получаем леммы для конкретного сайта
+            long sitePagesCount = pageRepository.countBySiteId(siteModel.getId());
+            long siteLemmasCount = lemmaRepository.countBySite(siteModel);
 
             log.info("DEBUG: Для сайта '{}' (ID: {}): страниц = {}, лемм = {}",
                     siteModel.getName(), siteModel.getId(), sitePagesCount, siteLemmasCount);

@@ -18,7 +18,5 @@ public interface PageRepository extends JpaRepository<Page, Integer> {
     @Transactional
     void deleteAllBySite(Site site);
 
-    List<Page> findBySite(Site site); // ДОБАВЛЕН МЕТОД
-
     Optional<Page> findByPathAndSite(String path, Site site);
 }
