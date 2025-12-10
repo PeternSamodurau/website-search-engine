@@ -47,35 +47,40 @@ public class LemmaServiceImpl implements LemmaService {
 
         Map<String, Integer> lemmasFromPage = collectLemmas(textForLemmas);
 
+
         if (lemmasFromPage.isEmpty()) {
             log.warn("Для страницы {} не найдено подходящих лемм.", page.getPath());
             return;
         }
 
-        List<Lemma> existingLemmasList = lemmaRepository.findByLemmaInAndSite(lemmasFromPage.keySet(), page.getSite());
-        Map<String, Lemma> lemmasOnSite = existingLemmasList.stream()
+        // 1. Сначала выполняем upsert для всех лемм, чтобы обновить их частоту или создать новые.
+        // Это гарантирует, что все леммы существуют в БД с актуальной частотой.
+        for (String lemmaString : lemmasFromPage.keySet()) {
+            lemmaRepository.upsertLemmaFrequency(lemmaString, page.getSite().getId());
+        }
+        // Важно: после upsert'а, объекты Lemma в памяти (если они были) не отражают обновленную частоту.
+        // Нам нужно получить актуальные объекты Lemma из БД для создания Index.
+
+        // 2. Получаем актуальные объекты Lemma из базы данных.
+        // Это нужно, чтобы связать Index с правильными (возможно, обновленными) сущностями Lemma.
+        List<Lemma> updatedLemmas = lemmaRepository.findByLemmaInAndSite(lemmasFromPage.keySet(), page.getSite());
+        Map<String, Lemma> lemmaMap = updatedLemmas.stream()
                 .collect(Collectors.toMap(Lemma::getLemma, lemma -> lemma));
 
         List<Index> indicesToSave = new ArrayList<>();
-        List<Lemma> lemmasToSave = new ArrayList<>();
 
+        // 3. Создаем объекты Index, используя актуальные Lemma.
         for (Map.Entry<String, Integer> lemmaEntry : lemmasFromPage.entrySet()) {
             String lemmaString = lemmaEntry.getKey();
             Integer rankOnPage = lemmaEntry.getValue();
 
-            Lemma lemma = lemmasOnSite.get(lemmaString);
+            Lemma lemma = lemmaMap.get(lemmaString); // Получаем актуальный объект Lemma
+
             if (lemma == null) {
-
-                lemma = new Lemma();
-                lemma.setSite(page.getSite());
-                lemma.setLemma(lemmaString);
-                lemma.setFrequency(1);
-
-                lemmasOnSite.put(lemmaString, lemma);
-                lemmasToSave.add(lemma);
-            } else {
-                lemma.setFrequency(lemma.getFrequency() + 1);
-                lemmasToSave.add(lemma);
+                // Этого не должно произойти, если upsert прошел успешно, но для безопасности
+                log.error("Лемма '{}' не найдена после upsert для сайта {}. Пропускаю создание индекса.",
+                        lemmaString, page.getSite().getName());
+                continue;
             }
 
             Index newIndex = new Index();
@@ -85,8 +90,7 @@ public class LemmaServiceImpl implements LemmaService {
             indicesToSave.add(newIndex);
         }
 
-        lemmaRepository.saveAll(lemmasToSave);
-
+        // 4. Сохраняем все индексы.
         indexRepository.saveAll(indicesToSave);
     }
 
@@ -116,7 +120,7 @@ public class LemmaServiceImpl implements LemmaService {
             }
         }
 
-        indexRepository.deleteAll(oldIndices);
+        indexRepository.deleteAllByPage(page);
         lemmaRepository.saveAll(lemmasToUpdate);
         lemmaRepository.deleteAll(lemmasToDelete);
 
@@ -142,6 +146,10 @@ public class LemmaServiceImpl implements LemmaService {
 
         for (String word : words) {
             if (word.isBlank()) {
+                continue;
+            }
+            // Проверка на минимальную длину слова
+            if (word.length() < 2) { // Отфильтровываем слова длиной менее 2 символов
                 continue;
             }
 
@@ -183,8 +191,8 @@ public class LemmaServiceImpl implements LemmaService {
             return false;
         }
         String info = morphInfo.get(0);
-        return info.contains("ПРЕДЛ") || info.contains("СОЮЗ") || info.contains("МЕЖД") || info.contains("ЧАСТ") // Русский
-                || info.contains("PREP") || info.contains("CONJ") || info.contains("PART"); // Английский
+        return info.contains("ПРЕДЛ") || info.contains("СОЮЗ") || info.contains("МЕЖД") || info.contains("ЧАСТ") || info.contains("МЕСТОИМ") // Русский
+                || info.contains("PREP") || info.contains("CONJ") || info.contains("PART") || info.contains("PN"); // Английский
     }
 
     private boolean isRussian(String word) {

@@ -89,8 +89,6 @@ public class SiteCrawler extends RecursiveAction {
                                 SiteCrawler task = new SiteCrawler(site, link, crawlerConfig, pageRepository, siteRepository, lemmaService, isIndexing, this.visitedUrls);
                                 tasks.add(task);
                                 task.fork();
-                            } else {
-                                log.debug("Ссылка {} отброшена как невалидная.", link);
                             }
                         });
 
@@ -106,18 +104,34 @@ public class SiteCrawler extends RecursiveAction {
 
     private boolean isLinkValid(String link) {
         boolean isEmpty = link.isEmpty();
+        if (isEmpty) {
+            log.debug("Ссылка {} отброшена: пустая.", link);
+            return false;
+        }
 
         String normalizedLink = link.replaceFirst("://www\\.", "://");
         String normalizedSiteUrl = site.getUrl().replaceFirst("://www\\.", "://");
         boolean startsWithSite = normalizedLink.startsWith(normalizedSiteUrl);
+        if (!startsWithSite) {
+            log.debug("Ссылка {} отброшена: не принадлежит текущему сайту ({}).", link, site.getUrl());
+            return false;
+        }
 
         boolean isVisited = this.visitedUrls.contains(normalizeUrl(link));
-        boolean hasAnchor = link.contains("#");
-        boolean isFile = link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|exe|mp3|mp4|avi|mov)$");
+        if (isVisited) {
+            log.debug("Ссылка {} отброшена: уже посещена.", link);
+            return false;
+        }
 
-        if (isEmpty || !startsWithSite || isVisited || hasAnchor || isFile) {
-            log.trace("Проверка ссылки {}: isEmpty={}, startsWithSite={}, isVisited={}, hasAnchor={}, isFile={}",
-                    link, isEmpty, startsWithSite, isVisited, hasAnchor, isFile);
+        boolean hasAnchor = link.contains("#");
+        if (hasAnchor) {
+            log.debug("Ссылка {} отброшена: содержит якорь.", link);
+            return false;
+        }
+
+        boolean isFile = link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|exe|mp3|mp4|avi|mov)$");
+        if (isFile) {
+            log.debug("Ссылка {} отброшена: является файлом.", link);
             return false;
         }
         return true;

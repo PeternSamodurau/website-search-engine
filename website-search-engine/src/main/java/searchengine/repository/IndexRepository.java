@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+
 @Repository
 public interface IndexRepository extends JpaRepository<Index, Integer> {
     Optional<Index> findByLemmaAndPage(Lemma lemma, Page page);
@@ -37,7 +38,20 @@ public interface IndexRepository extends JpaRepository<Index, Integer> {
     List<Index> findByPageInAndLemmaIn(Collection<Page> pages, Collection<Lemma> lemmas);
 
     /**
-     * ИСПРАВЛЕНО: Добавлен метод для удаления всех индексов, связанных с конкретной страницей.
+     * Удаляет все записи индекса, связанные с конкретной страницей.
+     * Используется для переиндексации страницы.
      * @param page страница, для которой нужно удалить индексы
      */
+    @Modifying
+    @Transactional
+    void deleteAllByPage(Page page);
+
+    /**
+     * Подсчитывает количество уникальных страниц, на которых встречается лемма.
+     * Используется для фильтрации слишком частых лемм в поиске.
+     * @param lemmaId ID леммы
+     * @return количество страниц, на которых встречается лемма
+     */
+    @Query("SELECT COUNT(DISTINCT i.page.id) FROM Index i WHERE i.lemma.id = :lemmaId")
+    long countPagesForLemmaId(@Param("lemmaId") Integer lemmaId);
 }

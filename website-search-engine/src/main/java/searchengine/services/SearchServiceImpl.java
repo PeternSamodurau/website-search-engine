@@ -121,9 +121,16 @@ public class SearchServiceImpl implements SearchService {
         long frequencyThreshold = (long) (totalPagesOnSite * frequencyThresholdPercent);
         log.info("Порог частоты для фильтрации лемм: {}", frequencyThreshold);
 
+        // Получаем количество страниц для каждой леммы
+        Map<Lemma, Long> lemmaPageCounts = new HashMap<>();
+        for (Lemma lemma : lemmas) {
+            long pagesCount = indexRepository.countPagesForLemmaId(lemma.getId());
+            lemmaPageCounts.put(lemma, pagesCount);
+        }
+
         return lemmas.stream()
-                .filter(lemma -> lemma.getFrequency() <= frequencyThreshold)
-                .sorted(Comparator.comparingInt(Lemma::getFrequency))
+                .filter(lemma -> lemmaPageCounts.getOrDefault(lemma, 0L) <= frequencyThreshold)
+                .sorted(Comparator.comparingLong(lemma -> lemmaPageCounts.getOrDefault(lemma, 0L)))
                 .collect(Collectors.toList());
     }
 
