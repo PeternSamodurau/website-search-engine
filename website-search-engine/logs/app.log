@@ -1,52 +1,55 @@
-2025-12-09 15:44:51.511 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.3.Final
-2025-12-09 15:44:51.727 [main] INFO  s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
-2025-12-09 15:44:51.767 [main] INFO  s.WebsiteSearchEngineApplication - No active profile set, falling back to 1 default profile: "default"
-2025-12-09 15:44:55.980 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-12-09 15:44:56.237 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 217 ms. Found 4 JPA repository interfaces.
-2025-12-09 15:44:58.684 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
-2025-12-09 15:44:58.733 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
-2025-12-09 15:44:58.756 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
-2025-12-09 15:44:58.764 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.49]
-2025-12-09 15:44:58.915 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2025-12-09 15:44:58.929 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 6851 ms
-2025-12-09 15:44:59.326 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-12-09 15:44:59.829 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1f129467
-2025-12-09 15:44:59.844 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-12-09 15:45:00.284 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-12-09 15:45:00.516 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.36.Final
-2025-12-09 15:45:00.651 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-12-09 15:45:01.938 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-12-09 15:45:02.167 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-12-09 15:45:02.242 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
-	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
-	Database driver: undefined/unknown
-	Database version: 13.23
-	Autocommit mode: undefined/unknown
-	Isolation level: undefined/unknown
-	Minimum pool size: undefined/unknown
-	Maximum pool size: undefined/unknown
-2025-12-09 15:45:05.727 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-12-09 15:45:05.926 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-12-09 15:45:07.075 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-12-09 15:45:08.933 [main] INFO  s.init.SiteInitializationService - Запуск инициализации/обновления сайтов...
-2025-12-09 15:45:09.240 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: ack
-2025-12-09 15:45:09.243 [main] INFO  s.init.SiteInitializationService - Сайт 'ack' инициализирован со статусом: INDEXING
-2025-12-09 15:45:09.348 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: Quotes To Scrape
-2025-12-09 15:45:09.350 [main] INFO  s.init.SiteInitializationService - Сайт 'Quotes To Scrape' инициализирован со статусом: INDEXING
-2025-12-09 15:45:09.366 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: Books To Scrape
-2025-12-09 15:45:09.368 [main] INFO  s.init.SiteInitializationService - Сайт 'Books To Scrape' инициализирован со статусом: INDEXING
-2025-12-09 15:45:09.377 [main] INFO  s.init.SiteInitializationService - Инициализация/обновление сайтов завершено.
-2025-12-09 15:45:09.806 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
-2025-12-09 15:45:11.231 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
-2025-12-09 15:45:11.320 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
-2025-12-09 15:45:11.326 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
-2025-12-09 15:45:11.328 [main] INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
-2025-12-09 15:45:11.339 [main] INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
-2025-12-09 15:45:11.351 [main] INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
-2025-12-09 15:45:11.352 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
-2025-12-09 15:45:11.392 [main] INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 21.229 seconds (process running for 26.41)
-2025-12-09 16:19:45.747 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
-2025-12-09 16:19:46.014 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
-2025-12-09 16:19:46.160 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-12-09 16:19:46.216 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
-2025-12-09 16:19:46.273 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-12-10 13:08:59.457 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-12-10 13:09:00.186 [main] INFO  s.WebsiteSearchEngineApplication - Starting WebsiteSearchEngineApplication v0.0.1-SNAPSHOT using Java 17.0.15 with PID 1 (/app/app.jar started by root in /app)
+2025-12-10 13:09:00.191 [main] INFO  s.WebsiteSearchEngineApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-10 13:09:07.006 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-10 13:09:07.391 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 341 ms. Found 4 JPA repository interfaces.
+2025-12-10 13:09:09.749 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-12-10 13:09:09.775 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8081"]
+2025-12-10 13:09:09.786 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-10 13:09:09.790 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-12-10 13:09:09.940 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-10 13:09:09.953 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 8696 ms
+2025-12-10 13:09:10.209 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-10 13:09:10.628 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@100aa331
+2025-12-10 13:09:10.637 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-10 13:09:11.186 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-10 13:09:11.346 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-12-10 13:09:11.452 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-10 13:09:13.634 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-10 13:09:14.211 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-10 13:09:20.509 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-10 13:09:21.063 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-10 13:09:25.109 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-12-10 13:09:28.439 [main] INFO  s.init.SiteInitializationService - Запуск инициализации/обновления сайтов...
+2025-12-10 13:09:29.050 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: ack
+2025-12-10 13:09:29.057 [main] INFO  s.init.SiteInitializationService - Сайт 'ack' инициализирован со статусом: INDEXING
+2025-12-10 13:09:29.365 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: Quotes To Scrape
+2025-12-10 13:09:29.366 [main] INFO  s.init.SiteInitializationService - Сайт 'Quotes To Scrape' инициализирован со статусом: INDEXING
+2025-12-10 13:09:29.398 [main] INFO  s.init.SiteInitializationService - Создание нового сайта: Books To Scrape
+2025-12-10 13:09:29.400 [main] INFO  s.init.SiteInitializationService - Сайт 'Books To Scrape' инициализирован со статусом: INDEXING
+2025-12-10 13:09:29.419 [main] INFO  s.init.SiteInitializationService - Инициализация/обновление сайтов завершено.
+2025-12-10 13:09:30.120 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-12-10 13:09:32.163 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8081"]
+2025-12-10 13:09:32.289 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path ''
+2025-12-10 13:09:32.296 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-12-10 13:09:32.298 [main] INFO  s.WebsiteSearchEngineApplication - Application is ready! You can access it at the following URLs:
+2025-12-10 13:09:32.301 [main] INFO  s.WebsiteSearchEngineApplication - Home page:     http://localhost:8081/
+2025-12-10 13:09:32.312 [main] INFO  s.WebsiteSearchEngineApplication - Swagger UI:    http://localhost:8081/swagger-ui.html
+2025-12-10 13:09:32.315 [main] INFO  s.WebsiteSearchEngineApplication - ==================================================================
+2025-12-10 13:09:32.364 [main] INFO  s.WebsiteSearchEngineApplication - Started WebsiteSearchEngineApplication in 34.549 seconds (process running for 40.755)
+2025-12-10 13:11:30.736 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-10 13:11:30.766 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-12-10 13:11:30.817 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 18 ms
+2025-12-10 13:11:33.037 [http-nio-8081-exec-4] INFO  s.controllers.ApiController - Получен запрос на статистику
+2025-12-10 13:11:33.045 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - Запрос на получение статистики
+2025-12-10 13:11:34.809 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: siteRepository.count() = 3
+2025-12-10 13:11:35.589 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: pageRepository.count() = 0
+2025-12-10 13:11:35.584 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: lemmaRepository.count() = 0
+2025-12-10 13:11:35.626 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: ack
+2025-12-10 13:11:36.195 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'ack' (ID: 1): страниц = 0, лемм = 0
+2025-12-10 13:11:37.420 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: Quotes To Scrape
+2025-12-10 13:11:37.695 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'Quotes To Scrape' (ID: 2): страниц = 0, лемм = 0
+2025-12-10 13:11:37.791 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - Обработка сайта из конфигурации: Books To Scrape
+2025-12-10 13:11:37.887 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - DEBUG: Для сайта 'Books To Scrape' (ID: 3): страниц = 0, лемм = 0
+2025-12-10 13:11:37.922 [http-nio-8081-exec-4] INFO  s.services.StatisticsServiceImpl - Статистика успешно собрана. Всего сайтов: 3, страниц: 0, лемм: 0
+2025-12-10 13:11:45.031 [http-nio-8081-exec-3] INFO  o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 2279 ms

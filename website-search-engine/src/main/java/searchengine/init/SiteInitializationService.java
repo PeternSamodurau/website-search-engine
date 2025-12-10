@@ -3,6 +3,7 @@ package searchengine.init; // Оставляем пакет, как есть
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import searchengine.config.SiteConfig;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Profile("init")
 @Slf4j
 public class SiteInitializationService { // Переименованный класс
 
