@@ -34,10 +34,9 @@ out/
 
 ### VS Code ###
 .vscode/
-!/docker/docker-log.txt
-!/logs/app.log
-!/final_project/
-!/ТЗ.md
+/docker/docker-log.txt
+/logs/app.log
+/ТЗ.md
 
 # Exclude ProjectExporter
 src/main/java/searchengine/ProjectExporter.java
