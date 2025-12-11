@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import searchengine.config.CrawlerConfig;
 import searchengine.model.Page;
 import searchengine.model.Site;
+import searchengine.model.Status;
 import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
@@ -27,7 +29,7 @@ public class SiteCrawler extends RecursiveAction {
     private final String url;
     private final CrawlerConfig crawlerConfig;
     private final PageRepository pageRepository;
-    private final SiteRepository siteRepository; // Добавлено
+    private final SiteRepository siteRepository;
     private final LemmaService lemmaService;
     private final Supplier<Boolean> isIndexing;
     private final Set<String> visitedUrls;
@@ -47,7 +49,14 @@ public class SiteCrawler extends RecursiveAction {
         }
 
         try {
-            Thread.sleep(crawlerConfig.getDelay());
+            // Используем настраиваемую задержку из конфигурации
+            int minDelay = crawlerConfig.getMinDelay();
+            int maxDelay = crawlerConfig.getMaxDelay();
+            long randomDelay = (minDelay >= maxDelay) ? minDelay : ThreadLocalRandom.current().nextLong(minDelay, maxDelay + 1);
+
+            log.debug("Задержка перед запросом: {} мс", randomDelay);
+            Thread.sleep(randomDelay);
+
             String path = new URL(url).getPath();
 
             if (pageRepository.findByPathAndSite(path, site).isPresent()) {
@@ -95,52 +104,76 @@ public class SiteCrawler extends RecursiveAction {
                 for (SiteCrawler task : tasks) {
                     task.join();
                 }
+            } else {
+                log.warn("Страница {} получила код состояния {}, поэтому не будет проиндексирована и просканирована на наличие ссылок.", normalizedUrl, statusCode);
             }
 
         } catch (Exception e) {
             log.error("Ошибка при обработке URL: {}. Ошибка: {}", url, e.getMessage());
+            site.setStatus(Status.FAILED);
+            site.setLastError("Ошибка при обработке URL: " + url + ". " + e.getMessage());
+            siteRepository.save(site);
         }
     }
 
     private boolean isLinkValid(String link) {
-        boolean isEmpty = link.isEmpty();
-        if (isEmpty) {
+        if (link.isEmpty()) {
             log.debug("Ссылка {} отброшена: пустая.", link);
             return false;
         }
 
-        String normalizedLink = link.replaceFirst("://www\\.", "://");
-        String normalizedSiteUrl = site.getUrl().replaceFirst("://www\\.", "://");
-        boolean startsWithSite = normalizedLink.startsWith(normalizedSiteUrl);
-        if (!startsWithSite) {
-            log.debug("Ссылка {} отброшена: не принадлежит текущему сайту ({}).", link, site.getUrl());
-            return false;
-        }
-
-        boolean isVisited = this.visitedUrls.contains(normalizeUrl(link));
-        if (isVisited) {
-            log.debug("Ссылка {} отброшена: уже посещена.", link);
-            return false;
-        }
-
-        boolean hasAnchor = link.contains("#");
-        if (hasAnchor) {
+        // Проверки на оригинальной ссылке
+        if (link.contains("#")) {
             log.debug("Ссылка {} отброшена: содержит якорь.", link);
             return false;
         }
-
-        boolean isFile = link.matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|exe|mp3|mp4|avi|mov)$");
-        if (isFile) {
+        if (link.toLowerCase().matches(".*\\.(jpg|jpeg|png|gif|bmp|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|exe|mp3|mp4|avi|mov)$")) {
             log.debug("Ссылка {} отброшена: является файлом.", link);
             return false;
         }
+
+        // Использование полностью нормализованной ссылки для остальных проверок
+        String normalizedLink = normalizeUrl(link);
+
+        String normalizedSiteUrl = normalizeUrl(site.getUrl());
+        if (!normalizedLink.startsWith(normalizedSiteUrl)) {
+            log.debug("Ссылка {} (нормализованная: {}) отброшена: не принадлежит текущему сайту (нормализованный: {}).", link, normalizedLink, normalizedSiteUrl);
+            return false;
+        }
+
+        if (this.visitedUrls.contains(normalizedLink)) {
+            log.debug("Ссылка {} (нормализованная: {}) отброшена: уже посещена.", link, normalizedLink);
+            return false;
+        }
+
         return true;
     }
 
     private String normalizeUrl(String urlToNormalize) {
-        if (urlToNormalize != null && urlToNormalize.endsWith("/")) {
-            return urlToNormalize.substring(0, urlToNormalize.length() - 1);
+        if (urlToNormalize == null || urlToNormalize.isEmpty()) {
+            return urlToNormalize;
         }
-        return urlToNormalize;
+
+        String normalized = urlToNormalize.toLowerCase();
+
+        // Удаление query-параметров и якорей
+        int queryIndex = normalized.indexOf('?');
+        if (queryIndex != -1) {
+            normalized = normalized.substring(0, queryIndex);
+        }
+        int anchorIndex = normalized.indexOf('#');
+        if (anchorIndex != -1) {
+            normalized = normalized.substring(0, anchorIndex);
+        }
+
+        // Удаление "www."
+        normalized = normalized.replaceFirst("://www\\.", "://");
+
+        // Удаление конечного слэша
+        if (normalized.endsWith("/")) {
+            normalized = normalized.substring(0, normalized.length() - 1);
+        }
+
+        return normalized;
     }
 }

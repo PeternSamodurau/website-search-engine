@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class CrawlerConfig {
     private String userAgent;
     private String referrer;
-    private int delay;
+    private int minDelay;
+    private int maxDelay;
     private int timeout;
 }
