@@ -18,7 +18,7 @@ public interface LemmaRepository extends JpaRepository<Lemma, Integer> {
 
     List<Lemma> findBySite(Site site);
 
-    int countBySite(Site site);
+    long countBySite(Site site);
 
     @Modifying
     @Transactional
@@ -29,11 +29,8 @@ public interface LemmaRepository extends JpaRepository<Lemma, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "MERGE INTO lemma AS l " +
-            "USING (VALUES (:lemma, :siteId)) AS s(lemma_val, site_id_val) " +
-            "ON (l.lemma = s.lemma_val AND l.site_id = s.site_id_val) " +
-            "WHEN MATCHED THEN UPDATE SET l.frequency = l.frequency + 1 " +
-            "WHEN NOT MATCHED THEN INSERT (lemma, site_id, frequency) VALUES (:lemma, :siteId, 1)",
+    @Query(value = "INSERT INTO lemma (lemma, site_id, frequency) VALUES (:lemma, :siteId, 1) " +
+            "ON DUPLICATE KEY UPDATE frequency = frequency + 1",
             nativeQuery = true)
     void upsertLemmaFrequency(String lemma, Integer siteId);
 }

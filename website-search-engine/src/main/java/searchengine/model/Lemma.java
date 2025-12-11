@@ -8,7 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "lemma")
+@Table(name = "lemma", uniqueConstraints = {@UniqueConstraint(columnNames = {"lemma", "site_id"})})
 @Getter
 @Setter
 public class Lemma {
@@ -22,7 +22,7 @@ public class Lemma {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Site site;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String lemma;
 
     @Column(nullable = false)

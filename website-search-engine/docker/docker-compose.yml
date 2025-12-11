@@ -1,20 +1,21 @@
 services:
-  postgres:
-    image: postgres:13
+  mysql:
+    image: mysql:8.0
     container_name: website-search-engine-db
     ports:
-      - "5432:5432"
+      - "3306:3306"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=website_db
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=website_db
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d website_db"]
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
     volumes:
-      - website-search-engine-db-data:/var/lib/postgresql/data
+      - website-search-engine-db-data:/var/lib/mysql
 
   app:
     container_name: website-search-engine
@@ -26,12 +27,12 @@ services:
     environment:
       # переменная для установки часового пояса
       - TZ=Europe/Moscow
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/website_db
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/website_db?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
     volumes:
       - ../logs:/app/logs

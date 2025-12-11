@@ -42,42 +42,41 @@ public class LemmaServiceImpl implements LemmaService {
     @Override
     @Transactional
     public synchronized void lemmatizePage(Page page) {
+        // 1. Удаляем старые данные для этой страницы, чтобы обеспечить корректный подсчет частоты.
+        deleteDataForPage(page);
+
+        // 2. Парсим и собираем новые леммы.
         Document doc = Jsoup.parse(page.getContent());
         String textForLemmas = doc.title() + " " + doc.body().text();
 
         Map<String, Integer> lemmasFromPage = collectLemmas(textForLemmas);
-
 
         if (lemmasFromPage.isEmpty()) {
             log.warn("Для страницы {} не найдено подходящих лемм.", page.getPath());
             return;
         }
 
-        // 1. Сначала выполняем upsert для всех лемм, чтобы обновить их частоту или создать новые.
-        // Это гарантирует, что все леммы существуют в БД с актуальной частотой.
+        // 3. Выполняем upsert для всех лемм, чтобы обновить их частоту или создать новые.
+        // Поскольку старые данные были удалены, это эквивалентно инкременту частоты на 1 для каждой леммы.
         for (String lemmaString : lemmasFromPage.keySet()) {
             lemmaRepository.upsertLemmaFrequency(lemmaString, page.getSite().getId());
         }
-        // Важно: после upsert'а, объекты Lemma в памяти (если они были) не отражают обновленную частоту.
-        // Нам нужно получить актуальные объекты Lemma из БД для создания Index.
 
-        // 2. Получаем актуальные объекты Lemma из базы данных.
-        // Это нужно, чтобы связать Index с правильными (возможно, обновленными) сущностями Lemma.
+        // 4. Получаем актуальные объекты Lemma из базы данных для создания Index.
         List<Lemma> updatedLemmas = lemmaRepository.findByLemmaInAndSite(lemmasFromPage.keySet(), page.getSite());
         Map<String, Lemma> lemmaMap = updatedLemmas.stream()
                 .collect(Collectors.toMap(Lemma::getLemma, lemma -> lemma));
 
         List<Index> indicesToSave = new ArrayList<>();
 
-        // 3. Создаем объекты Index, используя актуальные Lemma.
+        // 5. Создаем объекты Index, используя актуальные Lemma.
         for (Map.Entry<String, Integer> lemmaEntry : lemmasFromPage.entrySet()) {
             String lemmaString = lemmaEntry.getKey();
             Integer rankOnPage = lemmaEntry.getValue();
 
-            Lemma lemma = lemmaMap.get(lemmaString); // Получаем актуальный объект Lemma
+            Lemma lemma = lemmaMap.get(lemmaString);
 
             if (lemma == null) {
-                // Этого не должно произойти, если upsert прошел успешно, но для безопасности
                 log.error("Лемма '{}' не найдена после upsert для сайта {}. Пропускаю создание индекса.",
                         lemmaString, page.getSite().getName());
                 continue;
@@ -90,7 +89,7 @@ public class LemmaServiceImpl implements LemmaService {
             indicesToSave.add(newIndex);
         }
 
-        // 4. Сохраняем все индексы.
+        // 6. Сохраняем все новые индексы.
         indexRepository.saveAll(indicesToSave);
     }
 
@@ -104,14 +103,21 @@ public class LemmaServiceImpl implements LemmaService {
         }
 
         log.debug("Обнаружены старые данные для страницы {}. Начинаю очистку...", page.getPath());
+
+        // 1. Собираем уникальный набор лемм, связанных с удаляемой страницей.
+        Set<Lemma> uniqueLemmas = oldIndices.stream()
+                .map(Index::getLemma)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        // 2. Удаляем все старые записи Index для данной страницы.
+        indexRepository.deleteAllByPage(page);
+
         List<Lemma> lemmasToUpdate = new ArrayList<>();
         List<Lemma> lemmasToDelete = new ArrayList<>();
 
-        for (Index oldIndex : oldIndices) {
-            Lemma lemma = oldIndex.getLemma();
-            if (lemma == null) {
-                continue;
-            }
+        // 3. Для каждой уникальной леммы уменьшаем ее частоту на 1.
+        for (Lemma lemma : uniqueLemmas) {
             lemma.setFrequency(lemma.getFrequency() - 1);
             if (lemma.getFrequency() <= 0) {
                 lemmasToDelete.add(lemma);
@@ -120,10 +126,15 @@ public class LemmaServiceImpl implements LemmaService {
             }
         }
 
-        indexRepository.deleteAllByPage(page);
-        lemmaRepository.saveAll(lemmasToUpdate);
-        lemmaRepository.deleteAll(lemmasToDelete);
+        // 4. Сохраняем обновленные леммы и удаляем те, чья частота стала нулевой.
+        if (!lemmasToUpdate.isEmpty()) {
+            lemmaRepository.saveAll(lemmasToUpdate);
+        }
+        if (!lemmasToDelete.isEmpty()) {
+            lemmaRepository.deleteAll(lemmasToDelete);
+        }
 
+        // 5. Очищаем контекст персистентности для предотвращения неожиданного поведения.
         indexRepository.flush();
         entityManager.clear();
 
