@@ -21,13 +21,13 @@ CREATE TABLE `page`
 (
     `id`      INT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `site_id` INT      NOT NULL,
-    `path`    TEXT     NOT NULL,
+    `path`    VARCHAR(512) NOT NULL,
     `code`    INT      NOT NULL,
     `content` MEDIUMTEXT NOT NULL,
     FOREIGN KEY (`site_id`) REFERENCES `site` (`id`) ON DELETE CASCADE
 );
--- Добавляем индекс на path с указанием длины префикса
-CREATE INDEX `path_index` ON `page` (`path`(512), `site_id`);
+-- Добавляем индекс на path
+CREATE INDEX `path_index` ON `page` (`path`, `site_id`);
 
 
 -- Создаем таблицу lemma
@@ -38,7 +38,7 @@ CREATE TABLE `lemma`
     `lemma`     VARCHAR(255) NOT NULL,
     `frequency` INT          NOT NULL,
     FOREIGN KEY (`site_id`) REFERENCES `site` (`id`) ON DELETE CASCADE,
-    UNIQUE KEY `uk_lemma_site` (`site_id`, `lemma`)
+    CONSTRAINT `uk_lemma_site` UNIQUE (`site_id`, `lemma`)
 );
 
 -- Создаем таблицу index

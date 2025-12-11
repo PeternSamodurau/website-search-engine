@@ -60,7 +60,7 @@ public class LemmaServiceTest {
         SiteConfig siteConfig = new SiteConfig();
         siteConfig.setUrl(wireMockServer.baseUrl());
         siteConfig.setName("Test Site");
-        siteConfig.setEnabled(true); // FIX: Allow indexing for tests
+        siteConfig.setEnabled(true);
         when(sitesListConfig.getSites()).thenReturn(Collections.singletonList(siteConfig));
     }
 
@@ -72,17 +72,15 @@ public class LemmaServiceTest {
     @Test
     @DisplayName("Проверка лемматизации ОДНОЙ страницы: корректные lemmas, rank и frequency")
     void lemmatizeSinglePage_ShouldProduceCorrectRanksAndFrequency() throws InterruptedException {
-        // 1. ARRANGE
+
         stubFor(get(urlEqualTo("/")).willReturn(aResponse()
                 .withHeader("Content-Type", "text/html")
                 .withBody(readTestResource("test-site/index.html"))));
         stubFor(get(urlEqualTo("/page2")).willReturn(aResponse().withStatus(404)));
 
-        // 2. ACT
         indexingService.startIndexing();
         waitForIndexingToComplete();
 
-        // 3. ASSERT
         Site site = siteRepository.findByUrl(wireMockServer.baseUrl()).orElseThrow();
         List<Lemma> actualLemmas = lemmaRepository.findBySite(site);
         assertEquals(15, actualLemmas.size());
@@ -109,10 +107,8 @@ public class LemmaServiceTest {
                 .withHeader("Content-Type", "text/html")
                 .withBody(readTestResource("test-site/page3.html"))));
 
-
         indexingService.startIndexing();
         waitForIndexingToComplete();
-
 
         Site site = siteRepository.findByUrl(wireMockServer.baseUrl()).orElseThrow();
         List<Lemma> actualLemmas = lemmaRepository.findBySite(site);

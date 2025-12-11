@@ -208,7 +208,7 @@ public class IndexingServiceImpl implements IndexingService {
         
         siteRepository.findAllByStatus(Status.INDEXING).forEach(site -> {
             site.setStatus(Status.FAILED);
-            site.setLastError("Индексация остановлена пользователем.");
+            site.setLastError("Индексация остановлена пользователем");
             site.setStatusTime(LocalDateTime.now());
             siteRepository.save(site);
         });

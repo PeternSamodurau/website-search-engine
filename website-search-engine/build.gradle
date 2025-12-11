@@ -45,7 +45,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    runtimeOnly 'com.mysql:mysql-connector-j' // Заменено на MySQL
+    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.hibernate.orm:hibernate-jpamodelgen'
 
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0"

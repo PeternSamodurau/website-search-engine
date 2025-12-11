@@ -39,3 +39,5 @@ out/
 !/final_project/
 !/ТЗ.md
 
+# Exclude ProjectExporter
+src/main/java/searchengine/ProjectExporter.java

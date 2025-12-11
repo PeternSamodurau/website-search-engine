@@ -55,7 +55,7 @@ public class SiteInitializationService {
             });
 
             site.setStatusTime(LocalDateTime.now());
-            site.setStatus(Status.INDEXING); // Устанавливаем статус INDEXING для всех сайтов
+            site.setStatus(Status.INDEXING); // Первоначально устанавливаем статус INDEXING для всех сайтов
             site.setLastError(null);
             log.info("Сайт '{}' инициализирован со статусом: INDEXING", siteConfig.getName());
 

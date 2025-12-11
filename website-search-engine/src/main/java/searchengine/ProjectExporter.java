@@ -29,7 +29,7 @@ public class ProjectExporter {
                 return;
             }
 
-            // группируем по подпапкам
+
             Map<String, List<Path>> grouped = new LinkedHashMap<>();
             for (Path file : files) {
                 Path rel = projectPath.relativize(file.getParent());

@@ -57,7 +57,7 @@ public class LemmaServiceImpl implements LemmaService {
         }
 
         // 3. Выполняем upsert для всех лемм, чтобы обновить их частоту или создать новые.
-        // Поскольку старые данные были удалены, это эквивалентно инкременту частоты на 1 для каждой леммы.
+
         for (String lemmaString : lemmasFromPage.keySet()) {
             lemmaRepository.upsertLemmaFrequency(lemmaString, page.getSite().getId());
         }

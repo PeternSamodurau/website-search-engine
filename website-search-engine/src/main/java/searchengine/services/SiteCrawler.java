@@ -121,8 +121,6 @@ public class SiteCrawler extends RecursiveAction {
             log.debug("Ссылка {} отброшена: пустая.", link);
             return false;
         }
-
-        // Проверки на оригинальной ссылке
         if (link.contains("#")) {
             log.debug("Ссылка {} отброшена: содержит якорь.", link);
             return false;
