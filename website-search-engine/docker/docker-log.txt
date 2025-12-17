@@ -13,7 +13,7 @@
 #4 DONE 0.0s
 
 #3 [internal] load metadata for docker.io/library/eclipse-temurin:17-jdk-focal
-#3 DONE 1.3s
+#3 DONE 1.4s
 
 #5 [internal] load .dockerignore
 #5 transferring context: 2B done
@@ -24,31 +24,35 @@
 #6 DONE 0.1s
 
 #7 [internal] load build context
-#7 transferring context: 50.76MB 5.1s
-#7 transferring context: 67.84MB 7.1s done
-#7 DONE 7.1s
+#7 transferring context: 23.85MB 5.1s
+#7 transferring context: 37.19MB 10.2s
+#7 transferring context: 49.58MB 15.3s
+#7 transferring context: 55.38MB 20.4s
+#7 transferring context: 64.52MB 25.4s
+#7 transferring context: 67.84MB 27.2s done
+#7 DONE 27.2s
 
 #8 [2/3] WORKDIR /app
 #8 CACHED
 
 #9 [3/3] COPY build/libs/*.jar app.jar
-#9 DONE 0.8s
+#9 DONE 0.9s
 
 #10 exporting to image
 #10 exporting layers
-#10 exporting layers 5.9s done
-#10 exporting manifest sha256:5817ea63cdc00d8e1863b592ff167bfd418cfba8734d197d610b781abb439ced 0.0s done
-#10 exporting config sha256:33e82b937ebb9a5b61f517a89ec3675536c80abba5928ddcd8816276c88afb66 0.1s done
-#10 exporting attestation manifest sha256:7ba7ec4e701202baf214f33ae26c40a22aa584e2e03728898337aebe42426586
-#10 exporting attestation manifest sha256:7ba7ec4e701202baf214f33ae26c40a22aa584e2e03728898337aebe42426586 0.1s done
-#10 exporting manifest list sha256:bde1ef64daef270a8a52f5b95b4fc92af79dd1c4ecf580fe054387cbdb60e95c 0.0s done
+#10 exporting layers 9.2s done
+#10 exporting manifest sha256:87d2ff71e2e0e5e7fc1a018e629c5c5de385498327ffbfdf2c905df9ea8b0bc3 0.0s done
+#10 exporting config sha256:2a5d0d9a513f754c9167509bd4992822e90cb683352e7ed6b9e136f2cbf7e70f 0.1s done
+#10 exporting attestation manifest sha256:7ced32b65bcf0b8739dcd12f4677953f8b0f60bcb1c317baf033f5d649bdf385 0.1s done
+#10 exporting manifest list sha256:00d33eb39dfaaf0d5b2276397eaff4fdeace87b083ec9e85143e3c768e010070
+#10 exporting manifest list sha256:00d33eb39dfaaf0d5b2276397eaff4fdeace87b083ec9e85143e3c768e010070 0.1s done
 #10 naming to docker.io/library/docker-app:latest done
 #10 unpacking to docker.io/library/docker-app:latest
-#10 unpacking to docker.io/library/docker-app:latest 1.5s done
-#10 DONE 7.7s
+#10 unpacking to docker.io/library/docker-app:latest 2.0s done
+#10 DONE 11.7s
 
 #11 resolving provenance for metadata file
-#11 DONE 0.0s
+#11 DONE 0.1s
  docker-app  Built
  Network docker_default  Creating
  Network docker_default  Created

@@ -26,7 +26,7 @@ public interface IndexRepository extends JpaRepository<Index, Integer> {
      * @param lemmaCount количество лемм в списке (для проверки в HAVING)
      * @return список ID страниц
      */
-    @Query(value = "SELECT i.page_id FROM \"index\" i WHERE i.lemma_id IN :lemmaIds GROUP BY i.page_id HAVING COUNT(DISTINCT i.lemma_id) = :lemmaCount", nativeQuery = true)
+    @Query(value = "SELECT i.page_id FROM `index` i WHERE i.lemma_id IN :lemmaIds GROUP BY i.page_id HAVING COUNT(DISTINCT i.lemma_id) = :lemmaCount", nativeQuery = true)
     List<Integer> findPageIdsByLemmaIds(@Param("lemmaIds") List<Integer> lemmaIds, @Param("lemmaCount") int lemmaCount);
 
     /**

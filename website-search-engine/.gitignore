@@ -40,3 +40,4 @@ out/
 
 # Exclude ProjectExporter
 src/main/java/searchengine/ProjectExporter.java
+src/main/java/searchengine/LemmaTestRunner.java
